@@ -41,6 +41,7 @@ void TdJson::_bind_methods()
     ClassDB::bind_method(D_METHOD("send", "request"), &TdJson::send);
     ClassDB::bind_method(D_METHOD("receive", "timeout"), &TdJson::receive);
     ClassDB::bind_method(D_METHOD("destroy"), &TdJson::destroy);
+    ClassDB::bind_method(D_METHOD("execute", "request"), &TdJson::execute);
 
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::STRING, "response")));
 }
