@@ -1,0 +1,111 @@
+# General
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor directories
+.vscode/
+.idea/
+.vs/
+
+# OS temporary files
+*~
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+build/
+dist/
+pip-wheel-metadata/
+*.egg-info/
+venv/
+env/
+.venv/
+
+# SCons
+.sconsign.dblite
+
+# Compiled object files, libraries and executables
+*.o
+*.obj
+*.lo
+*.la
+*.al
+*.lai
+*.pyc
+*.class
+*.so
+*.dylib
+*.a
+*.lib
+*.dll
+*.exe
+*.out
+*.app
+*.pdb
+
+# Godot
+.import/
+export.cfg
+export_presets.cfg
+*.imported
+.godot/  # local editor settings, sometimes present
+*.mono/ # mono caches
+*.mono
+
+# Godot export templates / builds
+export/**/    # exported game builds
+
+# godot-cpp / gdextension builds
+gen/
+bin/
+lib/
+build/
+
+# tdlib / thirdparty build artifacts
+thirdparty/**/bin/
+thirdparty/**/lib/
+
+# Logs and temp
+*.log
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Archives
+*.zip
+*.tar.gz
+*.tar
+*.7z
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+
+# JetBrains IDE caches
+/.idea/**/workspace.xml
+/.idea/**/tasks.xml
+/.idea/**/usage.statistics.xml
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# macOS specific
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Windows thumbnail cache
+ehthumbs.db
+
+# User-specific files
+*.log
+
+# End of file

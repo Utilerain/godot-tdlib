@@ -1,0 +1,21 @@
+[configuration]
+
+entry_symbol = "tdjson_library_init"
+compatibility_minimum = 4.5
+reloadable = true
+
+[icons]
+TdJson = "icons/telegram.png"
+
+[libraries]
+
+windows.x86_64 = "bin/godot_tdlib.dll"
+
+[dependencies]
+
+windows.x86_64 = {
+    "bin/libcrypto-3-x64.dll": "",
+    "bin/libssl-3-x64.dll": "",
+    "bin/tdjson.dll": "",
+    "bin/zlib1.dll": ""
+}
