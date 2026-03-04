@@ -12,9 +12,8 @@ public:
     void send(String request);
     String execute(String request);
     String receive(double timeout);
-    void destroy();
 
 private:
-    void* client;
+    int session_id;
 };
 }

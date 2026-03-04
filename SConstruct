@@ -9,8 +9,6 @@ tdlib_lib_path = "thirdparty/tdlib/lib"
 env.Append(CPPPATH=["src/", tdlib_include])
 env.Append(LIBPATH=[tdlib_lib_path])
 env.Append(LIBS=["tdjson"])
-env.Append(CPPDEFINES=["TDJSON_STATIC_DEFINE"])
-
 sources = Glob("src/*.cpp")
 
 target_lib = "addons/godot-tdlib/bin/godot_tdlib"
