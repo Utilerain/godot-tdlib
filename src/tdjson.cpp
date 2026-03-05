@@ -24,6 +24,7 @@ void TdJson::send(String request)
 String TdJson::execute(String request)
 {
     const char* response = td_execute(request.utf8().get_data());
+    
     return String(response != nullptr ? response : "");
 }
 
@@ -36,7 +37,6 @@ String TdJson::execute(String request)
  */
 String TdJson::receive(double timeout) 
 {
-    
     const char* response = td_receive(timeout);
 
     if (response != nullptr) {
