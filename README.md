@@ -8,7 +8,7 @@ GDExtension C++ library for working with TdLib (JSON interface) on Godot Engine
 4. `TdJson.execute`
 
 ### Functions in process
-1. `TdJson.set_log_callback`
+1. `TdJson.set_log_callback` and other log settings
 2. Something else...
 
 ## Usage

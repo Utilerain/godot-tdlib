@@ -12,8 +12,12 @@ public:
     void send(String request);
     String execute(String request);
     String receive(double timeout);
+    void set_max_verbosity_level(int verbosity_level);
+    int get_client_id();
 
 private:
     int session_id;
+    void set_log_message_callback();
+    int max_verbosity_level = 4;
 };
 }

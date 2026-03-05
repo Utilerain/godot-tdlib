@@ -12,30 +12,34 @@ var response: Dictionary
 var running = true
 #endregion
 
-var USR_PATH = ProjectSettings.globalize_path("usr://")
+var USR_PATH = OS.get_user_data_dir()
+@onready var richtextlab: RichTextLabel = get_node("RichTextLabel")
 
-func _init() -> void:
+func _ready() -> void:
 	client = TdJson.new()
+	client.set_max_verbosity_level(2)
+	client.send(JSON.stringify(reqversion))
 	client.request_received.connect(receive_signal)
-	thrd.start(td_background_work)
-	
+	thrd.start(_wait_response)
 
-func td_background_work():
+func _wait_response():
 	while running:
-		client.receive(0.1)
+		client.receive(1.0)
+		
 
 func receive_signal(_response: String):
 	self.response = JSON.parse_string(_response)
-	print(_response)
 	update_state()
 
 func update_state():
+	if richtextlab:
+		richtextlab.text += "\n"+JSON.stringify(response)
 	if response["@type"] == "updateAuthorizationState" and response.has("authorization_state"):
 		if response["authorization_state"]["@type"] == "authorizationStateWaitTdlibParameters":
 			client.send(JSON.stringify(
 			{
 				"@type": "setTdlibParameters",
-				"database_directory": "tdlib_data",
+				"database_directory": USR_PATH+"tdlib_data",
 				"use_message_database": true,
 				"use_secret_chats": true,
 				"api_id": self.api_id,
@@ -45,7 +49,7 @@ func update_state():
 				"application_version": "0.0.1",
 			}
 		))
-	
+
 func _exit_tree() -> void:
 	running = false
 	thrd.wait_to_finish()
