@@ -13,6 +13,10 @@ config_version=5
 config/name="example"
 run/main_scene="uid://jqu3uv4w6urp"
 config/features=PackedStringArray("4.5", "GL Compatibility")
+run/low_processor_mode=true
+boot_splash/show_image=false
+boot_splash/fullsize=false
+boot_splash/use_filter=false
 config/icon="res://icon.svg"
 
 [autoload]

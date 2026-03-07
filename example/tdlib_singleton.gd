@@ -22,21 +22,22 @@ signal password_received(password: String)
 func _ready() -> void:
 	client = TdJson.new()
 	client.set_max_verbosity_level(2)
-	client.send(JSON.stringify(reqversion))
+	client.send(reqversion)
 	client.request_received.connect(receive_signal)
 	thrd.start(_wait_response)
 
 func _wait_response():
 	while running:
 		client.receive(1.0)
-		
 
-func receive_signal(_response: String):
-	self.response = JSON.parse_string(_response)
+func receive_signal(_response: Dictionary): 
+	_handle_update.call_deferred(_response)
+	
+func _handle_update(data):
+	response = data
 	update_state()
 	
 func update_state():
-	
 	var event_type = response["@type"]
 	
 	if event_type == "updateAuthorizationState":
@@ -47,7 +48,7 @@ func update_state():
 			return
 		
 		elif auth_type == "authorizationStateWaitTdlibParameters":
-			client.send(JSON.stringify(
+			client.send(
 			{
 				"@type": "setTdlibParameters",
 				"database_directory": USR_PATH+"/tdlib_data",
@@ -59,39 +60,38 @@ func update_state():
 				"device_model": "Godot TDLib Client",
 				"application_version": "0.0.1",
 			}
-		))
+		)
 		
 		elif auth_type == "authorizationStateWaitPhoneNumber":
 			wait_for_phone_number.emit()
 			var phone_number = await phone_number_received
-			client.send(JSON.stringify(
+			client.send(
 				{
 					"@type": "setAuthenticationPhoneNumber",
 					"phone_number": phone_number
 				}
-			))
+			)
 		
 		elif auth_type == "authorizationStateWaitCode":
 			wait_for_auth_code.emit()
 			var auth_code = await auth_code_received
-			client.send(JSON.stringify(
+			client.send(
 				{
 					"@type": "checkAuthenticationCode",
 					"code": auth_code
 				}
-			))
+			)
 		
 		elif auth_type == "authorizationStateWaitPassword":
 			wait_for_password.emit()
 			var password = await password_received
-			client.send( JSON.stringify(
+			client.send(
 				{
 					"@type": "checkAuthenticationPassword", "password": password
 				}
-			))
+			)
 			
-
 
 func _exit_tree() -> void:
 	running = false
-	thrd.wait_to_finish()
+	thrd.wait_to_finish.call_deferred()

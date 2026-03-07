@@ -1,5 +1,6 @@
 #include "tdjson.hpp"
 #include <godot_cpp/godot.hpp>
+#include <godot_cpp/classes/json.hpp>
 #include <td/telegram/td_json_client.h>
 #include <td/telegram/Log.h>
 
@@ -9,9 +10,10 @@ using namespace godot;
  * Sends request to the TDLib client. May be called from any thread.
  * \param[in] request JSON-serialized null-terminated request to TDLib.
  */
-void TdJson::send(String request) 
+void TdJson::send(Dictionary request) 
 {
-    td_send(session_id, request.utf8().get_data());
+    String _req = JSON::stringify(request);
+    td_send(client_id, _req.utf8().get_data());
 }
 
 /**
@@ -21,11 +23,12 @@ void TdJson::send(String request)
  * \param[in] request JSON-serialized null-terminated request to TDLib.
  * \return JSON-serialized null-terminated request response.
  */
-String TdJson::execute(String request)
+Dictionary TdJson::execute(Dictionary request)
 {
-    const char* response = td_execute(request.utf8().get_data());
+    String _req = JSON::stringify(request);
+    const char* response = td_execute(_req.utf8().get_data());
     
-    return String(response != nullptr ? response : "");
+    return Dictionary(JSON::parse_string(String(response != nullptr ? response : "")));
 }
 
 /**
@@ -35,15 +38,15 @@ String TdJson::execute(String request)
  * \return JSON-serialized null-terminated incoming update or request response. May be NULL if the timeout expires.
  * \attention This function will crash your project without creating thread 
  */
-String TdJson::receive(double timeout) 
+Dictionary TdJson::receive(double timeout) 
 {
     const char* response = td_receive(timeout);
 
     if (response != nullptr) {
-        emit_signal("request_received", String(response));
-        return String(response);
+        emit_signal("request_received", Dictionary(JSON::parse_string(String(response))));
+        return Dictionary(JSON::parse_string(String(response)));
     }
-    return String();
+    return Dictionary();
 }
 
 void TdJson::set_log_message_callback() 
@@ -69,14 +72,14 @@ void godot::TdJson::set_max_verbosity_level(int verbosity_level)
 // Constructor
 TdJson::TdJson() 
 {
-    session_id = td_create_client_id();
+    client_id = td_create_client_id();
     set_log_message_callback();
 }
 
 // Return the session id
 int TdJson::get_client_id() 
 {
-    return session_id;
+    return client_id;
 }
 
 // Bindings for godot
@@ -88,5 +91,5 @@ void TdJson::_bind_methods()
     ClassDB::bind_method(D_METHOD("set_max_verbosity_level", "verbosity_level"), &TdJson::set_max_verbosity_level);
     ClassDB::bind_method(D_METHOD("get_client_id"), &TdJson::get_client_id);
 
-    ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::STRING, "response")));
+    ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
 }
