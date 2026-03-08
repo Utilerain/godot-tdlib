@@ -1,0 +1,96 @@
+[gd_scene load_steps=2 format=3 uid="uid://jqu3uv4w6urp"]
+
+[ext_resource type="Script" uid="uid://dx0o8rsk3vdrj" path="res://login.gd" id="1_mn7xn"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mn7xn")
+
+[node name="LoginContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 21.0
+offset_top = 18.0
+offset_right = -23.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PhoneContainer" type="HBoxContainer" parent="LoginContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="LoginContainer/PhoneContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.6
+text = "Please enter phone number"
+
+[node name="PhoneEdit" type="LineEdit" parent="LoginContainer/PhoneContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "phone number"
+
+[node name="Phone" type="Button" parent="LoginContainer/PhoneContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.7
+text = "Send"
+
+[node name="CodeContainer" type="HBoxContainer" parent="LoginContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="LoginContainer/CodeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.6
+text = "Please enter Code"
+
+[node name="CodeEdit" type="LineEdit" parent="LoginContainer/CodeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "code"
+
+[node name="Code" type="Button" parent="LoginContainer/CodeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.7
+text = "Send"
+
+[node name="PassContainer" type="HBoxContainer" parent="LoginContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="LoginContainer/PassContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.6
+text = "Please enter password"
+
+[node name="PasswordEdit" type="LineEdit" parent="LoginContainer/PassContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "password"
+secret = true
+
+[node name="Password" type="Button" parent="LoginContainer/PassContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.7
+text = "Send"
+
+[node name="Label" type="Label" parent="LoginContainer"]
+visible = false
+layout_mode = 2
+text = "LOGIN"

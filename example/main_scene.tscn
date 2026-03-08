@@ -1,0 +1,118 @@
+[gd_scene load_steps=4 format=3 uid="uid://ccpa30322khxt"]
+
+[ext_resource type="Script" uid="uid://cb88blq20nlfh" path="res://main_scene.gd" id="1_0f027"]
+[ext_resource type="PackedScene" uid="uid://di3dmumewbhdu" path="res://ui/ChatItem.res" id="2_2c62f"]
+
+[sub_resource type="SystemFont" id="SystemFont_0f027"]
+font_names = PackedStringArray("Courier New")
+
+[node name="MainScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0f027")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+color = Color(0.3428032, 0.14703539, 0.39378312, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/ColorRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/ColorRect/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+
+[node name="GetMeCommand" type="Button" parent="HBoxContainer/ColorRect/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Get Me"
+
+[node name="Panel" type="Panel" parent="HBoxContainer/ColorRect/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ChatList" type="VBoxContainer" parent="HBoxContainer/ColorRect/MarginContainer/VBoxContainer/Panel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ChatItem" parent="HBoxContainer/ColorRect/MarginContainer/VBoxContainer/Panel/ChatList" instance=ExtResource("2_2c62f")]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+size_flags_vertical = 2
+
+[node name="LogOutCommand" type="Button" parent="HBoxContainer/ColorRect/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Logout
+"
+
+[node name="ColorRect2" type="ColorRect" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.10629738, 0.18442085, 0.2540739, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/ColorRect2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/ColorRect2/MarginContainer"]
+layout_mode = 2
+
+[node name="Output" type="CodeEdit" parent="HBoxContainer/ColorRect2/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = SubResource("SystemFont_0f027")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/ColorRect2/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="LineRequest" type="LineEdit" parent="HBoxContainer/ColorRect2/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="RequestSend" type="Button" parent="HBoxContainer/ColorRect2/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+text = "Send"

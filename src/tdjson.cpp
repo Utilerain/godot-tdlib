@@ -49,6 +49,7 @@ Dictionary TdJson::receive(double timeout)
     return Dictionary();
 }
 
+// log message output for godot console
 void TdJson::set_log_message_callback() 
 {
     td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message) {

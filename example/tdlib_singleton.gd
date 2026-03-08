@@ -12,18 +12,26 @@ var running = true
 #endregion
 var USR_PATH = OS.get_user_data_dir()
 
+var user = {}
+
 signal wait_for_phone_number
 signal phone_number_received(phone_number: String)
 signal wait_for_auth_code
 signal auth_code_received(auth_code: String)
 signal wait_for_password
 signal password_received(password: String)
+signal login_completed
+signal state_changed
+
 
 func _ready() -> void:
 	client = TdJson.new()
 	client.set_max_verbosity_level(2)
 	client.send(reqversion)
 	client.request_received.connect(receive_signal)
+	phone_number_received.connect(_phone_number_received)
+	auth_code_received.connect(_code_received)
+	password_received.connect(_pass_received)
 	thrd.start(_wait_response)
 
 func _wait_response():
@@ -39,6 +47,7 @@ func _handle_update(data):
 	
 func update_state():
 	var event_type = response["@type"]
+	state_changed.emit()
 	
 	if event_type == "updateAuthorizationState":
 		var auth_state = response["authorization_state"]
@@ -56,42 +65,57 @@ func update_state():
 				"use_secret_chats": true,
 				"api_id": self.api_id,
 				"api_hash": self.api_hash,
-				"system_language_code": "en",
-				"device_model": "Godot TDLib Client",
-				"application_version": "0.0.1",
+				"system_language_code": "ru",
+				"device_model": "Desktop",
+				"application_version": "1.0",
 			}
 		)
 		
 		elif auth_type == "authorizationStateWaitPhoneNumber":
 			wait_for_phone_number.emit()
-			var phone_number = await phone_number_received
-			client.send(
-				{
-					"@type": "setAuthenticationPhoneNumber",
-					"phone_number": phone_number
-				}
-			)
+			await phone_number_received
 		
 		elif auth_type == "authorizationStateWaitCode":
 			wait_for_auth_code.emit()
-			var auth_code = await auth_code_received
-			client.send(
-				{
-					"@type": "checkAuthenticationCode",
-					"code": auth_code
-				}
-			)
+			await auth_code_received
 		
 		elif auth_type == "authorizationStateWaitPassword":
 			wait_for_password.emit()
-			var password = await password_received
-			client.send(
-				{
-					"@type": "checkAuthenticationPassword", "password": password
-				}
-			)
-			
+			await password_received
+		
+		elif auth_type == "authorizationStateReady":
+			login_completed.emit()
+	
+	if event_type == "user":
+		user = response
+
+func _phone_number_received(phone):
+	client.send(
+		{
+			"@type": "setAuthenticationPhoneNumber",
+			"phone_number": phone
+		}
+	)
+
+func _code_received(code):
+	client.send(
+		{
+			"@type": "checkAuthenticationCode",
+			"code": code
+		}
+	)
+
+func _pass_received(password):
+	client.send(
+		{
+			"@type": "checkAuthenticationPassword", 
+			"password": password
+		}
+	)
 
 func _exit_tree() -> void:
 	running = false
 	thrd.wait_to_finish.call_deferred()
+
+func print_json(data):
+	print(JSON.stringify(data, "\t"))
