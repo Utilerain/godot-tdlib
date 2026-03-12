@@ -19,15 +19,10 @@ func _ready() -> void:
 	pass_btn.pressed.connect(_pass_receive)
 
 func _login_completed():
-	TdlibSingleton.client.send(
-		{
-			"@type": "getMe"
-		}
-	)
 	login_label.show()
 	login_label.text = "Login completed!"
 	get_tree().change_scene_to_file("res://main_scene.tscn")
-	await TdlibSingleton.client.request_received
+	
 
 func _phone_number_receive():
 	TdlibSingleton.phone_number_received.emit(_phone.text)

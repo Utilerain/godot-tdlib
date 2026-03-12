@@ -7,13 +7,12 @@ var thrd = Thread.new()
 #	You should obtain your own api_id and api_hash at https://my.telegram.org
 var api_hash := "a3406de8d171bb422bb6ddf3bbd800e2"
 var api_id := 94575 
+#endregion
+
 var response: Dictionary
 var running = true
-#endregion
+
 var USR_PATH = OS.get_user_data_dir()
-
-var user = {}
-
 signal wait_for_phone_number
 signal phone_number_received(phone_number: String)
 signal wait_for_auth_code
@@ -85,9 +84,6 @@ func update_state():
 		
 		elif auth_type == "authorizationStateReady":
 			login_completed.emit()
-	
-	if event_type == "user":
-		user = response
 
 func _phone_number_received(phone):
 	client.send(
@@ -119,3 +115,12 @@ func _exit_tree() -> void:
 
 func print_json(data):
 	print(JSON.stringify(data, "\t"))
+
+func search_for_state(event_type: String, attempts: int = 10) -> Dictionary:
+	while TdlibSingleton.response["@type"] != event_type and attempts > 0:
+		await TdlibSingleton.state_changed
+		attempts -= 1
+		
+	if attempts == 0:
+		return {}
+	return TdlibSingleton.response
