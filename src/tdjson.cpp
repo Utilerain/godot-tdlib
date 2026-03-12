@@ -36,7 +36,7 @@ Dictionary TdJson::execute(Dictionary request)
  * The returned pointer can be used until the next call to td_receive or td_execute, after which it will be deallocated by TDLib.
  * \param[in] timeout The maximum number of seconds allowed for this function to wait for new data.
  * \return JSON-serialized null-terminated incoming update or request response. May be NULL if the timeout expires.
- * \attention This function will crash your project without creating thread 
+ * \attention This function will crash your program without creating thread. So you should using function Thread.start()
  */
 Dictionary TdJson::receive(double timeout) 
 {
