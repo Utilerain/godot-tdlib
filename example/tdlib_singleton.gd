@@ -25,7 +25,8 @@ signal state_changed
 
 func _ready() -> void:
 	client = TdJson.new()
-	client.set_max_verbosity_level(2)
+	client.set_max_verbosity_level(4)
+	client.set_verbosity_level(2)
 	client.send(reqversion)
 	client.request_received.connect(receive_signal)
 	phone_number_received.connect(_phone_number_received)
