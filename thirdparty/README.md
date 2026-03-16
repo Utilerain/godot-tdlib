@@ -2,22 +2,18 @@
 
 Pre-built packages for working with the TdLib library. The build is performed in a standard way.
 
-## Installation
+## Build
 
-1. Download the pre-built package for your platform
-2. Extract the contents to your project directory
-3. Link against the TdLib library in your build configuration
+### Windows-x86-64
 
-## Building from Source
+Here is complete instruction for TDLib binaries building:
 
-```bash
-git clone https://github.com/tdlib/td.git
-cd td
-mkdir build
-cd build
-cmake ..
-cmake --build .
-```
+* Note that Windows Subsystem for Linux (WSL) and Cygwin are not Windows environments, so you need to use instructions for Linux for them instead.
+* Download and install [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs/community/). Enable C++ support while installing.
+* Download and install [CMake](https://cmake.org/download/); choose "Add CMake to the system PATH" option while installing.
+* Download and install [Git](https://git-scm.com/install/windows).
+* Download and unpack [PHP](https://windows.php.net/download). Add the path to php.exe to the PATH environment variable.
+* Close and re-open PowerShell if the PATH environment variable was changed.
 
 ## Documentation
 
