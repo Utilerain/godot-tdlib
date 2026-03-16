@@ -9,13 +9,13 @@ TdJson = "icons/telegram.png"
 
 [libraries]
 
-windows.x86_64 = "bin/godot_tdlib.dll"
+windows.x86_64 = "bin/godot_tdlib_win_x86_64/godot_tdlib.dll"
 
 [dependencies]
 
 windows.x86_64 = {
-    "bin/libcrypto-3-x64.dll": "",
-    "bin/libssl-3-x64.dll": "",
-    "bin/tdjson.dll": "",
-    "bin/zlib1.dll": ""
+    "bin/godot_tdlib_win_x86_64/libcrypto-3-x64.dll": "",
+    "bin/godot_tdlib_win_x86_64/libssl-3-x64.dll": "",
+    "bin/godot_tdlib_win_x86_64/tdjson.dll": "",
+    "bin/godot_tdlib_win_x86_64/zlib1.dll": ""
 }
