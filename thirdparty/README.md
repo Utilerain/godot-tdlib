@@ -13,7 +13,12 @@ Here is complete instruction for TDLib binaries building:
 * Download and install [CMake](https://cmake.org/download/); choose "Add CMake to the system PATH" option while installing.
 * Download and install [Git](https://git-scm.com/install/windows).
 * Download and unpack [PHP](https://windows.php.net/download). Add the path to php.exe to the PATH environment variable.
-* Close and re-open PowerShell if the PATH environment variable was changed.
+* Close and re-open **PowerShell** if the PATH environment variable was changed.
+
+After that you can start building with script:
+```powershell
+.\build_win.bat
+```
 
 ## Documentation
 
