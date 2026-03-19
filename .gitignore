@@ -108,4 +108,7 @@ ehthumbs.db
 # User-specific files
 *.log
 
+# linux files
+*.os
+
 # End of file
