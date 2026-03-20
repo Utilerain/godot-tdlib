@@ -18,8 +18,8 @@ Follow the instructions for complete build:
 * Install **scons** with pip (you can install for this repository using **requirements.txt**)
 * Build TdLib packages (check [README.md](./thirdparty/README.md))
 
-After that, open Powershell (or other terminal) and write this:
-```powershell
+After that, open terminal and write this:
+```
 scons -j XXX
 ```
 Where XXX - CPU cores for build parallelism.

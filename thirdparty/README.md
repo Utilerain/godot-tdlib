@@ -20,6 +20,16 @@ After that you can start building with script:
 .\build.ps1
 ```
 
+### Linux-x86-64
+
+Here is complete instruction for TDLib binaries building:
+
+* Install Git, g++ >= 4.9.2, make, CMake >= 3.10, OpenSSL-dev, zlib-dev, gperf, PHP using your package manager.
+* Start this script:
+```
+sh ./build.sh
+```
+
 ## Documentation
 
 For more information, visit the [TdLib GitHub repository](https://github.com/tdlib/td).
