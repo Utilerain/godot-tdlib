@@ -1,5 +1,5 @@
 # Godot-tdlib
-GDExtension C++ library for working with TdLib (JSON interface) on Godot Engine.
+GDExtension C++ library for working with [TdLib](https://github.com/tdlib/td) (JSON interface) on Godot Engine.
 
 ### Realized Functions
 1. `TdJson.send` (td_send from [td_json_client.h](https://core.telegram.org/tdlib/docs/td__json__client_8h.html))

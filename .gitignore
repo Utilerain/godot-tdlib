@@ -46,6 +46,7 @@ env/
 *.out
 *.app
 *.pdb
+*.os
 
 # Godot
 .import/
@@ -107,8 +108,5 @@ ehthumbs.db
 
 # User-specific files
 *.log
-
-# linux files
-*.os
 
 # End of file

@@ -31,17 +31,16 @@ library = env.SharedLibrary(
     source=sources,
 )
 
+# Installing libraries and dependencies
+
 if env["platform"] == "windows":
     runtime_bin = "thirdparty/tdlib_win_x86_64/bin"
     runtime_dlls = Glob(runtime_bin + '/*.dll')
 
     inst_addon = env.Install('addons/godot-tdlib/bin', runtime_dlls)
 
-    # Ensure DLLs are installed after building the library
     env.Depends(inst_addon, library)
 
-    # As a fallback, also perform an explicit copy of the runtime DLLs so they
-    # are present next to the built library (helps avoid Windows Error 126).
     for node in runtime_dlls:
         src_path = str(node)
         dest_path = os.path.join(dest_dir, os.path.basename(src_path))

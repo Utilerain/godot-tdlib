@@ -17,7 +17,7 @@ Here is complete instruction for TDLib binaries building:
 
 After that you can start building with script:
 ```powershell
-.\build_win.bat
+.\build.ps1
 ```
 
 ## Documentation
