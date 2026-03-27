@@ -8,17 +8,12 @@ tdlib_lib_path = ""
 target_lib = ""
 dest_dir = ""
 
-if env["platform"] == "windows":
-    tdlib_include = "thirdparty/tdlib_win_x86_64/include"
-    tdlib_lib_path = "thirdparty/tdlib_win_x86_64/lib"
-    target_lib = "addons/godot-tdlib/bin/godot_tdlib_win_x86_64/godot_tdlib"
-    dest_dir = "addons/godot-tdlib/bin/godot_tdlib_win_x86_64"
-
-elif env["platform"] == "linux":
-    tdlib_include = "thirdparty/tdlib_linux_x86_64/include"
-    tdlib_lib_path = "thirdparty/tdlib_linux_x86_64/lib"
-    target_lib = "addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/godot_tdlib"
-    dest_dir = "addons/godot-tdlib/bin/godot_tdlib_linux_x86_64"
+target_os = env["platform"].replace("dows", "")
+target_template = env["target"].replace("template_", "")
+tdlib_include = "thirdparty/tdlib_{}_{}/include".format(target_os,env["arch"])
+tdlib_lib_path = "thirdparty/tdlib_{}_{}/lib".format(target_os,env["arch"])
+target_lib = "addons/godot-tdlib/bin/godot_tdlib_{}_{}/godot_tdlib_{}".format(target_os,env["arch"],target_template)
+dest_dir = "addons/godot-tdlib/bin/godot_tdlib_{}_{}".format(target_os,env["arch"])
 
 
 env.Append(CPPPATH=["src/", tdlib_include])
@@ -44,6 +39,8 @@ if env["platform"] == "windows":
     for node in runtime_dlls:
         src_path = str(node)
         dest_path = os.path.join(dest_dir, os.path.basename(src_path))
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
         try:
             shutil.copy2(src_path, dest_path)
         except Exception as e:
