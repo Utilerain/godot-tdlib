@@ -9,9 +9,9 @@ TdJson = "icons/telegram.png"
 
 [libraries]
 
-windows.release.x86_64 = "bin/godot_tdlib_win_x86_64/godot_tdlib_release.dll"
+windows.release.x86_64 = "bin/godot_tdlib_win_x86_64/godot_tdlib.dll"
 windows.debug.x86_64 = "bin/godot_tdlib_win_x86_64/godot_tdlib_debug.dll"
-linux.release.x86_64 = "bin/godot_tdlib_linux_x86_64/libgodot_tdlib_release.so"
+linux.release.x86_64 = "bin/godot_tdlib_linux_x86_64/libgodot_tdlib.so"
 linux.debug.x86_64 = "bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so"
 
 

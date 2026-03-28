@@ -9,12 +9,14 @@ target_lib = ""
 dest_dir = ""
 
 target_os = env["platform"].replace("dows", "")
-target_template = env["target"].replace("template_", "")
+target_template = env["target"]
 tdlib_include = "thirdparty/tdlib_{}_{}/include".format(target_os,env["arch"])
 tdlib_lib_path = "thirdparty/tdlib_{}_{}/lib".format(target_os,env["arch"])
-target_lib = "addons/godot-tdlib/bin/godot_tdlib_{}_{}/godot_tdlib_{}".format(target_os,env["arch"],target_template)
+target_lib = "addons/godot-tdlib/bin/godot_tdlib_{}_{}/godot_tdlib".format(target_os,env["arch"])
 dest_dir = "addons/godot-tdlib/bin/godot_tdlib_{}_{}".format(target_os,env["arch"])
 
+if target_template == "template_debug":
+    target_lib += "_debug"
 
 env.Append(CPPPATH=["src/", tdlib_include])
 env.Append(LIBPATH=[tdlib_lib_path])
