@@ -65,7 +65,7 @@ func update_state():
 				"use_secret_chats": true,
 				"api_id": self.api_id,
 				"api_hash": self.api_hash,
-				"system_language_code": "ru",
+				"system_language_code": OS.get_locale_language(),
 				"device_model": "Desktop",
 				"application_version": "1.0",
 			}
@@ -112,7 +112,8 @@ func _pass_received(password):
 
 func _exit_tree() -> void:
 	running = false
-	thrd.wait_to_finish.call_deferred()
+	client.send(reqversion)
+	thrd.wait_to_finish()
 
 func print_json(data):
 	print(JSON.stringify(data, "\t"))
