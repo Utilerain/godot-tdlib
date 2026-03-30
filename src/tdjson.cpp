@@ -96,7 +96,6 @@ void TdJson::set_verbosity_level(int new_verbosity_level)
 TdJson::TdJson() 
 {
     client_id = td_create_client_id();
-    td_send(client_id, "{\"@type\":\"setLogStream\", \"log_stream\": {\"@type\": \"logStreamEmpty\"}}");
     set_log_message_callback();
 }
 
