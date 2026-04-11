@@ -3,10 +3,6 @@ import sys
 import shutil
 
 env = SConscript("godot-cpp/SConstruct")
-tdlib_include = ""
-tdlib_lib_path = ""
-target_lib = ""
-dest_dir = ""
 
 target_os = env["platform"].replace("dows", "")
 target_template = env["target"]
