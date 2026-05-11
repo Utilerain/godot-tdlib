@@ -45,7 +45,7 @@ if env["platform"] == "windows":
             print('Warning: could not copy', src_path, '->', dest_path, '-', e)
 
 elif env["platform"] == "linux":
-    source_lib = "thirdparty/tdlib_linux_x86_64/lib/libtdjson.so.1.8.63"
+    source_lib = "thirdparty/tdlib_linux_x86_64/lib/libtdjson.so.1.8.64"
 
     env.Append(CPPPATH=[tdlib_include])
 
@@ -57,7 +57,7 @@ elif env["platform"] == "linux":
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
         
-    dest_path = os.path.join(dest_dir, "libtdjson.so.1.8.63")
+    dest_path = os.path.join(dest_dir, "libtdjson.so.1.8.64")
     try:
         shutil.copy2(source_lib, dest_path)
     except Exception as e:
