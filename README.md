@@ -12,7 +12,7 @@ GDExtension C++ library for working with [TdLib](https://github.com/tdlib/td) (J
 
 ## Usage
 
-This library can be used to create games or applications for integration or create alternative Telegram clients through Telegram Database Api.
+This library can be used to create games or applications for integration or create alternative Telegram clients through Telegram Database Api. Look **[example](https://github.com/Utilerain/godot-tdlib/tree/master/example)** for discover.
 
 ## Build
 
