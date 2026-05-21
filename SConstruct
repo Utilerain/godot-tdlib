@@ -19,13 +19,16 @@ env.Append(LIBPATH=[tdlib_lib_path])
 env.Append(LIBS=["tdjson"])
 sources = Glob("src/*.cpp")
 
+if env["target"] in ["editor", "template_debug"]:
+    doc_data = env.GodotCPPDocData("src/gen/doc_data.gen.cpp", source=Glob("doc_classes/*.xml"))
+    sources.append(doc_data)
+
 library = env.SharedLibrary(
     target=target_lib,
     source=sources,
 )
 
 # Installing libraries and dependencies
-
 if env["platform"] == "windows":
     runtime_bin = "thirdparty/tdlib_win_x86_64/bin"
     runtime_dlls = Glob(runtime_bin + '/*.dll')

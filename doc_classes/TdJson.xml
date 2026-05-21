@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TdJson" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="execute">
+			<return type="Dictionary" />
+			<param index="0" name="request" type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_client_id">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="receive">
+			<return type="Dictionary" />
+			<param index="0" name="timeout" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="send">
+			<return type="void" />
+			<param index="0" name="request" type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="set_log_callback">
+			<return type="void" />
+			<param index="0" name="callback" type="Callable" />
+			<description>
+			</description>
+		</method>
+		<method name="set_max_verbosity_level">
+			<return type="void" />
+			<param index="0" name="verbosity_level" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_verbosity_level">
+			<return type="void" />
+			<param index="0" name="new_verbosity_level" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="request_received">
+			<param index="0" name="response" type="Dictionary" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

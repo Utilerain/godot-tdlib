@@ -49,7 +49,7 @@ Dictionary TdJson::receive(double timeout)
     return Dictionary();
 }
 
-// log message output for godot console
+// Logs message output for godot console
 void TdJson::set_log_message_callback() 
 {
     td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message) {
@@ -64,7 +64,7 @@ void TdJson::set_log_message_callback()
 }
 
 Callable *TdJson::log_callback;
-// You can add your own callback using this function
+// Sets your own callback using this function
 void TdJson::set_log_callback(Callable p_callback)
 {
     if (!log_callback) {
@@ -79,14 +79,14 @@ void TdJson::set_log_callback(Callable p_callback)
     });
 }
 
-// Set the maximum verbosity level for TDLib log messages. Can be called from any thread.
+// Sets the maximum verbosity level for TDLib log messages. Can be called from any thread.
 void TdJson::set_max_verbosity_level(int verbosity_level)
 {
     max_verbosity_level = verbosity_level;
     set_log_message_callback();
 }
 
-// Set the verbosity level for TDLib log messages. Can be called from any thread.
+// Sets the verbosity level for TDLib log messages. Can be called from any thread.
 void TdJson::set_verbosity_level(int new_verbosity_level)
 {
     String _req = UtilityFunctions::str("{ \"@type\":\"setLogVerbosityLevel\", \"new_verbosity_level\": ", new_verbosity_level, " }");
