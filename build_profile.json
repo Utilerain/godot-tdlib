@@ -1,0 +1,10 @@
+{
+	"_": "Build profile for TdJson",
+	"type": "feature_profile",
+	"enabled_classes": [
+		"RefCounted",
+		"UtilityFunctions",
+		"JSON",
+        "OS"
+	]
+}
