@@ -17,7 +17,7 @@ This library can be used to create games or applications for integration or crea
 ## Build
 
 Follow the instructions for complete build:
-* Download and install [python 3.7+](https://www.python.org/)
+* Download and install [python 3.9+](https://www.python.org/)
 * Install **scons** with pip or other package manager (you can install for this repository using **requirements.txt**)
 * Build TdLib packages and its dependencies (check [README.md](./thirdparty/README.md))
 
