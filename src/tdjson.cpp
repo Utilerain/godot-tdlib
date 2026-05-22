@@ -10,7 +10,7 @@ using namespace godot;
  * Sends request to the TDLib client. May be called from any thread.
  * \param[in] request JSON-serialized null-terminated request to TDLib.
  */
-void TdJson::send(Dictionary request) 
+void TdJson::send(Dictionary request)
 {
     String _req = JSON::stringify(request);
     td_send(client_id, _req.utf8().get_data());
@@ -26,8 +26,8 @@ void TdJson::send(Dictionary request)
 Dictionary TdJson::execute(Dictionary request)
 {
     String _req = JSON::stringify(request);
-    const char* response = td_execute(_req.utf8().get_data());
-    
+    const char *response = td_execute(_req.utf8().get_data());
+
     return Dictionary(JSON::parse_string(String(response != nullptr ? response : "")));
 }
 
@@ -38,11 +38,12 @@ Dictionary TdJson::execute(Dictionary request)
  * \return JSON-serialized null-terminated incoming update or request response. May be NULL if the timeout expires.
  * \attention This function will crash your program without creating thread. So you should use function Thread.start()
  */
-Dictionary TdJson::receive(double timeout) 
+Dictionary TdJson::receive(double timeout)
 {
-    const char* response = td_receive(timeout);
+    const char *response = td_receive(timeout);
 
-    if (response != nullptr) {
+    if (response != nullptr)
+    {
         emit_signal("request_received", Dictionary(JSON::parse_string(String(response))));
         return Dictionary(JSON::parse_string(String(response)));
     }
@@ -50,33 +51,34 @@ Dictionary TdJson::receive(double timeout)
 }
 
 // Logs message output for godot console
-void TdJson::set_log_message_callback() 
+void TdJson::set_log_message_callback()
 {
-    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message) {
+    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message)
+                                {
     
     if (verbosity_level > 0) {
         print_line(String("[TDLib] ") + String(message));
     }
     else {
         print_error(String("[TDLib] [FATAL!!!] ") + String(message), __FILE__, __LINE__);
-    }
-    });
+    } });
 }
 
 Callable *TdJson::log_callback;
 // Sets the callback that will be called when a message is added to the internal TDLib log. None of the TDLib methods can be called from the callback. By default the callback is set in set_log_message_callback
 void TdJson::set_log_callback(Callable p_callback)
 {
-    if (!log_callback) {
+    if (!log_callback)
+    {
         log_callback = memnew(Callable);
     }
     *log_callback = p_callback;
 
-    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message) {
+    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message)
+                                {
         if (log_callback && log_callback->is_valid()) {
             log_callback->call_deferred(Variant(verbosity_level), Variant(String(message)));
-        }
-    });
+        } });
 }
 
 // Sets the maximum verbosity level for TDLib log messages. Can be called from any thread.
@@ -93,19 +95,19 @@ void TdJson::set_verbosity_level(int new_verbosity_level)
     td_send(client_id, _req.utf8().get_data());
 }
 
-TdJson::TdJson() 
+TdJson::TdJson()
 {
     client_id = td_create_client_id();
     set_log_message_callback();
 }
 
-int TdJson::get_client_id() 
+int TdJson::get_client_id()
 {
     return client_id;
 }
 
 // Bindings for godot
-void TdJson::_bind_methods() 
+void TdJson::_bind_methods()
 {
     ClassDB::bind_method(D_METHOD("send", "request"), &TdJson::send);
     ClassDB::bind_method(D_METHOD("receive", "timeout"), &TdJson::receive);
