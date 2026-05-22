@@ -14,11 +14,8 @@ var running = true
 
 var USR_PATH = OS.get_user_data_dir()
 signal wait_for_phone_number
-signal phone_number_received(phone_number: String)
 signal wait_for_auth_code
-signal auth_code_received(auth_code: String)
 signal wait_for_password
-signal password_received(password: String)
 signal login_completed
 signal state_changed
 
@@ -29,9 +26,6 @@ func _ready() -> void:
 	client.set_verbosity_level(2)
 	client.send(reqversion)
 	client.request_received.connect(receive_signal)
-	phone_number_received.connect(_phone_number_received)
-	auth_code_received.connect(_code_received)
-	password_received.connect(_pass_received)
 	thrd.start(_wait_response)
 
 func _wait_response():
@@ -73,20 +67,17 @@ func update_state():
 		
 		elif auth_type == "authorizationStateWaitPhoneNumber":
 			wait_for_phone_number.emit()
-			await phone_number_received
 		
 		elif auth_type == "authorizationStateWaitCode":
 			wait_for_auth_code.emit()
-			await auth_code_received
 		
 		elif auth_type == "authorizationStateWaitPassword":
 			wait_for_password.emit()
-			await password_received
 		
 		elif auth_type == "authorizationStateReady":
 			login_completed.emit()
 
-func _phone_number_received(phone):
+func send_phone_number(phone):
 	client.send(
 		{
 			"@type": "setAuthenticationPhoneNumber",
@@ -94,7 +85,7 @@ func _phone_number_received(phone):
 		}
 	)
 
-func _code_received(code):
+func send_code(code):
 	client.send(
 		{
 			"@type": "checkAuthenticationCode",
@@ -102,7 +93,7 @@ func _code_received(code):
 		}
 	)
 
-func _pass_received(password):
+func send_password(password):
 	client.send(
 		{
 			"@type": "checkAuthenticationPassword", 

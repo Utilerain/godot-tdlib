@@ -25,13 +25,13 @@ func _login_completed():
 	
 
 func _phone_number_receive():
-	TdlibSingleton.phone_number_received.emit(_phone.text)
+	TdlibSingleton.send_phone_number(_phone.text)
 
 func _code_receive():
-	TdlibSingleton.auth_code_received.emit(_code.text)
+	TdlibSingleton.send_code(_code.text)
 
 func _pass_receive():
-	TdlibSingleton.password_received.emit(_passw.text)
+	TdlibSingleton.send_password(_passw.text)
 
 func _phone_number_wait():
 	$LoginContainer/PhoneContainer.show()
