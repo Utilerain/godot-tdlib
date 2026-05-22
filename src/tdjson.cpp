@@ -64,7 +64,7 @@ void TdJson::set_log_message_callback()
 }
 
 Callable *TdJson::log_callback;
-// Sets the callback that will be called when a message is added to the internal TDLib log. None of the TDLib methods can be called from the callback. By default the callback is not set
+// Sets the callback that will be called when a message is added to the internal TDLib log. None of the TDLib methods can be called from the callback. By default the callback is set in set_log_message_callback
 void TdJson::set_log_callback(Callable p_callback)
 {
     if (!log_callback) {
