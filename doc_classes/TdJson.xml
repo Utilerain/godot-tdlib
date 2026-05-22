@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="TdJson" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
+		JSON interface of Tdlib
 	</brief_description>
 	<description>
+		Can be used to easily integrate TDLib with any programming language which supports calling C functions and is able to work with JSON.
+		The JSON serialization of TDLib API objects is straightforward: all API objects are represented as JSON objects with the same keys as the API object field names. The object type name is stored in the special field "@type" which is optional in places where type is uniquely determined by the context. 
+		The main TDLib interface is asynchronous. To match requests with a corresponding response, the field "@extra" can be added to the request object. The corresponding response will have an "@extra" field with exactly the same value. Each returned object will have an "@client_id" field, containing the identifier of the client for which a response or an update was received.
+		A TDLib client instance can be created through [code]TdJson.new()[/code]. Requests can be sent using [code]send[/code] and the received client identifier. New updates and responses to requests can be received through [code]receive[/code] from any thread after the first request has been sent to the client instance. This function must not be called simultaneously from two different threads. Also, note that all updates and responses to requests must be applied in the order they were received for consistency. Some TDLib requests can be executed synchronously from any thread using [code]execute[/code]. TDLib client instances are destroyed automatically after they are closed. All TDLib client instances must be closed before application termination to ensure data consistency.
+		General pattern of usage:
+		[codeblocks]
+		[gdscript]
+		var client := TdJson.new()
+		while true:
+			var result = client.receive(10.0)
+			if result:
+				# parse the result as a JSON object and process it as an incoming update or the answer to a previously sent request
+				pass
+		[/gdscript]
+		[/codeblocks]
 	</description>
 	<tutorials>
 	</tutorials>
@@ -11,41 +27,61 @@
 			<return type="Dictionary" />
 			<param index="0" name="request" type="Dictionary" />
 			<description>
+				Synchronously executes a TDLib request. A request can be executed synchronously, only if it is documented with "Can be called synchronously". The returned pointer can be used until the next call to [code]receive[/code] or [code]execute[/code], after which it will be deallocated by TDLib.
 			</description>
 		</method>
 		<method name="get_client_id">
 			<return type="int" />
 			<description>
+				Returns client id of the session
 			</description>
 		</method>
 		<method name="receive">
 			<return type="Dictionary" />
 			<param index="0" name="timeout" type="float" />
 			<description>
+				Receives incoming updates and request responses. Must not be called simultaneously from two different threads. The returned pointer can be used until the next call to [code]receive[/code] or [code]execute[/code], after which it will be deallocated by TDLib.
 			</description>
 		</method>
 		<method name="send">
 			<return type="void" />
 			<param index="0" name="request" type="Dictionary" />
 			<description>
+				Sends request to the TDLib client. May be called from any thread.
 			</description>
 		</method>
 		<method name="set_log_callback">
 			<return type="void" />
 			<param index="0" name="callback" type="Callable" />
 			<description>
+				Sets the callback that will be called when a message is added to the internal TDLib log. None of the TDLib methods can be called from the callback. 
+				By default the callback is set in private [code]set_log_message_callback[/code] function (look [url=https://github.com/Utilerain/godot-tdlib/blob/master/src/tdjson.cpp]tdjson.cpp[/url])
 			</description>
 		</method>
 		<method name="set_max_verbosity_level">
 			<return type="void" />
 			<param index="0" name="verbosity_level" type="int" />
 			<description>
+				Sets the max verbosity level for log callbacks
 			</description>
 		</method>
 		<method name="set_verbosity_level">
 			<return type="void" />
 			<param index="0" name="new_verbosity_level" type="int" />
 			<description>
+				Sets the verbosity level for Tdlib logs. Works as same as this code:
+				[codeblocks]
+				[gdscript]
+				var client := TdJson.new()
+				var new_verbosity_level = 2
+				client.send(
+					{
+						"@type": "setLogVerbosityLevel",
+						"new_verbosity_level": 2
+					}
+				)
+				[/gdscript]
+				[/codeblocks]
 			</description>
 		</method>
 	</methods>
