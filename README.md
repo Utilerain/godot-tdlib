@@ -13,12 +13,22 @@ GDExtension C++ library for working with [TdLib](https://github.com/tdlib/td) (J
 ## Usage
 
 This library can be used to create games or applications for integration or create alternative Telegram clients through Telegram Database Api. Look **[example](https://github.com/Utilerain/godot-tdlib/tree/master/example)** for discover.
+General pattern of usage:
+```gdscript
+var client := TdJson.new()
+while true:
+	var result = client.receive(10.0)
+	if result:
+		# parse the result as a JSON object and process it as an incoming update or the answer to a previously sent request
+		pass
+```
+
 
 ## Build
 
 Follow the instructions for complete build:
 * Download and install [python 3.9+](https://www.python.org/)
-* Install **scons** with pip or other package manager (you can install for this repository using **requirements.txt**)
+* Install **scons** with pip or other package manager
 * Build TdLib packages and its dependencies (check [README.md](./thirdparty/README.md))
 
 After that, open terminal and write this:
