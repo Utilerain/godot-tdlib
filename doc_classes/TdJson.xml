@@ -54,15 +54,34 @@
 			<return type="void" />
 			<param index="0" name="callback" type="Callable" />
 			<description>
-				Sets the callback that will be called when a message is added to the internal TDLib log. None of the TDLib methods can be called from the callback. 
+				Sets the callback that will be called when a message is added to the internal TDLib log. None of the TDLib methods can be called from the callback. Callback must contain 2 arguments: [code]verbosity_level[/code] and [code]message[/code].
 				By default the callback is set in private [code]set_log_message_callback[/code] function (look [url=https://github.com/Utilerain/godot-tdlib/blob/master/src/tdjson.cpp]tdjson.cpp[/url])
+				Pattern in usage:
+				[codeblocks]
+				[gdscript]
+				func _ready():
+					var client := TdJson.new()
+					client.set_log_callback(_callback)
+
+				func _callback(verbosity_level, message):
+					# Log tracking
+					pass
+				[/gdscript]
+				[/codeblocks]
 			</description>
 		</method>
 		<method name="set_max_verbosity_level">
 			<return type="void" />
 			<param index="0" name="verbosity_level" type="int" />
 			<description>
-				Sets the max verbosity level for log callbacks
+				Sets the max verbosity level for log callbacks:
+				- Level 0 = fatal errors
+				- Level 1 = errors
+				- Level 2 = warnings and debug warnings
+				- Level 3 = informational
+				- Level 4 = debug
+				- Level 5 = verbose debug
+				- Level 6+ = even more detailed logging (your own verbosity)
 			</description>
 		</method>
 		<method name="set_verbosity_level">
@@ -89,6 +108,7 @@
 		<signal name="request_received">
 			<param index="0" name="response" type="Dictionary" />
 			<description>
+				Will be emitted when the [code]receive[/code] function will receive a response
 			</description>
 		</signal>
 	</signals>

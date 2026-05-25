@@ -9,7 +9,7 @@ func _ready() -> void:
 			"@type": "getMe"
 		}
 	)
-	user = await TdlibSingleton.search_for_state("user", 100)
+	user = await TdlibSingleton.search_for_state("user", 1000)
 	%GetMeCommand.pressed.connect(_get_me)
 	%Output.text += "Hello, %s! \n" % user["first_name"]
 	%LogOutCommand.pressed.connect(_logout)
@@ -32,7 +32,7 @@ func get_chats_list(limit):
 	)
 	for i in range(limit):
 		await TdlibSingleton.state_changed
-		chats.append(await TdlibSingleton.search_for_state("updateNewChat", 50))
+		chats.append(await TdlibSingleton.search_for_state("updateNewChat", 1000))
 	
 	for chat in chats:
 		
