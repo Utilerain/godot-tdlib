@@ -42,7 +42,7 @@ Where XXX - CPU cores for build parallelism.
 |-----------|:------------:|
 |   Windows     | ✅ supported
 |   Linux       | ✅ supported
-|   Android     | 📝 planned
+|   Android     | 🚧 under construction
 |   macOS       | ❌ not supported
 |   iOS       | ❌ not supported
 
