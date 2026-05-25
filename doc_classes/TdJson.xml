@@ -108,7 +108,7 @@
 		<signal name="request_received">
 			<param index="0" name="response" type="Dictionary" />
 			<description>
-				Will be emitted when the [code]receive[/code] function will receive a response
+				Emits when the [code]receive[/code] function will receive a response
 			</description>
 		</signal>
 	</signals>
