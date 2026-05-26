@@ -17,6 +17,10 @@ android.debug.arm64 = "bin/godot_tdlib_android_arm64/libgodot_tdlib_debug.so"
 android.release.arm64 = "bin/godot_tdlib_android_arm64/libgodot_tdlib.so"
 android.debug.x86_64 = "bin/godot_tdlib_android_x86_64/libgodot_tdlib_debug.so"
 android.release.x86_64 = "bin/godot_tdlib_android_x86_64/libgodot_tdlib.so"
+android.debug.x86_32 = "bin/godot_tdlib_android_x86_32/libgodot_tdlib_debug.so"
+android.release.x86_32 = "bin/godot_tdlib_android_x86_32/libgodot_tdlib.so"
+android.debug.arm32 = "bin/godot_tdlib_android_arm32/libgodot_tdlib_debug.so"
+android.release.arm32 = "bin/godot_tdlib_android_arm32/libgodot_tdlib.so"
 
 
 [dependencies]
