@@ -24,7 +24,7 @@ while true:
 ```
 
 
-## Build
+## Build (Linux, Windows)
 
 Follow the instructions for complete build:
 * Download and install [python 3.9+](https://www.python.org/)
@@ -36,6 +36,14 @@ After that, open terminal and write this:
 scons -j XXX
 ```
 Where XXX - CPU cores for build parallelism.
+
+## Build (Android)
+
+The easiest way for build is using Docker:
+* Install [Docker](https://www.docker.com/products/docker-desktop/)
+* Build TdLib packages and its dependencies (check [README.md](./thirdparty/README.md))
+* Build [Dockerfile](./Dockerfile) image
+* Run image (check [Dockerfile](./Dockerfile) instruction)
 
 ## Supported platforms
 | Platform | Support |
