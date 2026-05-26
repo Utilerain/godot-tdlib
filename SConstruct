@@ -5,6 +5,13 @@ import shutil
 localEnv = Environment(tools=["default"])
 localEnv["build_profile"] = "build_profile.json"
 
+android_archs = {
+    "arm64": "arm64-v8a",
+    "arm32": "armeabi-v7a",
+    "x86_64": "x86_64",
+    "x86_32": "x86_32"
+}
+
 env = localEnv.Clone()
 if not (os.path.isdir("godot-cpp") and os.listdir("godot-cpp")):
     print_error("""godot-cpp is not available within this folder, as Git submodules haven't been initialized.
@@ -17,8 +24,14 @@ env = SConscript("godot-cpp/SConstruct", {"env": env})
 
 target_os = env["platform"].replace("dows", "")
 target_template = env["target"]
-tdlib_include = "thirdparty/tdlib_{}_{}/include".format(target_os,env["arch"])
-tdlib_lib_path = "thirdparty/tdlib_{}_{}/lib".format(target_os,env["arch"])
+if target_os == "android":
+    tdlib_include = "thirdparty/tdlib_android/include"
+    if env["arch"] in android_archs:
+        tdlib_lib_path = "thirdparty/tdlib_android/builds/tdlib/libs/{}".format(android_archs[env["arch"]])
+else:
+    tdlib_include = "thirdparty/tdlib_{}_{}/include".format(target_os,env["arch"])
+    tdlib_lib_path = "thirdparty/tdlib_{}_{}/lib".format(target_os,env["arch"])
+
 target_lib = "addons/godot-tdlib/bin/godot_tdlib_{}_{}/godot_tdlib".format(target_os,env["arch"])
 dest_dir = "addons/godot-tdlib/bin/godot_tdlib_{}_{}".format(target_os,env["arch"])
 
@@ -76,5 +89,25 @@ elif env["platform"] == "linux":
         shutil.copy2(source_lib, dest_path)
     except Exception as e:
         print(f'Warning: could not copy {source_lib} -> {dest_path}: {e}')
+
+elif env["platform"] == "android":
+    source_lib = "thirdparty/tdlib_android/builds/tdlib/libs/{}/libtdjson.so".format(android_archs[env["arch"]])
+
+    env.Append(CPPPATH=[tdlib_include])
+
+    env.Append(LINKFLAGS=["-Wl,-rpath,'$$ORIGIN'"])
+
+    inst_lib = env.Install(dest_dir, source_lib)
+    env.Depends(library, inst_lib)
+
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+        
+    dest_path = os.path.join(dest_dir, "libtdjson.so")
+    try:
+        shutil.copy2(source_lib, dest_path)
+    except Exception as e:
+        print(f'Warning: could not copy {source_lib} -> {dest_path}: {e}')
+
 
 Default(library)
