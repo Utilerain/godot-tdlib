@@ -30,6 +30,15 @@ Here is complete instruction for TDLib binaries building:
 sh ./build.sh
 ```
 
+### Android
+
+Here is complete instruction for TDLib binaries building:
+* Recommended install and use Docker for complete build. Or check [README.md](./tdlib_android/README.md) for build this manually
+* Start this script:
+```
+sh ./build_android.sh
+```
+
 ## Documentation
 
 For more information, visit the [TdLib GitHub repository](https://github.com/tdlib/td).
