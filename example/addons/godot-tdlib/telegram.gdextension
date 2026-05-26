@@ -14,7 +14,13 @@ windows.debug.x86_64 = "bin/godot_tdlib_win_x86_64/godot_tdlib_debug.dll"
 linux.release.x86_64 = "bin/godot_tdlib_linux_x86_64/libgodot_tdlib.so"
 linux.debug.x86_64 = "bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so"
 android.debug.arm64 = "bin/godot_tdlib_android_arm64/libgodot_tdlib_debug.so"
-android.release.arm64 = "bin/godot_tdlib_android_arm64/libgodot_tdlib_debug.so"
+android.release.arm64 = "bin/godot_tdlib_android_arm64/libgodot_tdlib.so"
+android.debug.x86_64 = "bin/godot_tdlib_android_x86_64/libgodot_tdlib_debug.so"
+android.release.x86_64 = "bin/godot_tdlib_android_x86_64/libgodot_tdlib.so"
+android.debug.x86_32 = "bin/godot_tdlib_android_x86_32/libgodot_tdlib_debug.so"
+android.release.x86_32 = "bin/godot_tdlib_android_x86_32/libgodot_tdlib.so"
+android.debug.arm32 = "bin/godot_tdlib_android_arm32/libgodot_tdlib_debug.so"
+android.release.arm32 = "bin/godot_tdlib_android_arm32/libgodot_tdlib.so"
 
 
 [dependencies]
@@ -29,5 +35,8 @@ linux.x86_64 = {
     "bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.64": ""
 }
 android.arm64 = {
-    "bin/godot_tdlib_android_arm64/libtdjson.so": "",
+    "bin/godot_tdlib_android_arm64/libtdjson.so": ""
+}
+android.x86_64 = {
+    "bin/godot_tdlib_android_x86_64/libtdjson.so": ""
 }
