@@ -9,7 +9,7 @@ android_archs = {
     "arm64": "arm64-v8a",
     "arm32": "armeabi-v7a",
     "x86_64": "x86_64",
-    "x86_32": "x86_32"
+    "x86_32": "x86"
 }
 
 env = localEnv.Clone()
@@ -74,8 +74,6 @@ if env["platform"] == "windows":
 elif env["platform"] == "linux":
     source_lib = "thirdparty/tdlib_linux_x86_64/lib/libtdjson.so.1.8.64"
 
-    env.Append(CPPPATH=[tdlib_include])
-
     env.Append(LINKFLAGS=["-Wl,-rpath,'$$ORIGIN'"])
 
     inst_lib = env.Install(dest_dir, source_lib)
@@ -91,23 +89,24 @@ elif env["platform"] == "linux":
         print(f'Warning: could not copy {source_lib} -> {dest_path}: {e}')
 
 elif env["platform"] == "android":
-    source_lib = "thirdparty/tdlib_android/builds/tdlib/libs/{}/libtdjson.so".format(android_archs[env["arch"]])
-
-    env.Append(CPPPATH=[tdlib_include])
+    source_lib = "thirdparty/tdlib_android/builds/tdlib/libs/{}".format(android_archs[env["arch"]])
+    source_bins = [source_lib + "/libtdjson.so",
+                   source_lib + "/libc++_shared.so"]
 
     env.Append(LINKFLAGS=["-Wl,-rpath,'$$ORIGIN'"])
 
-    inst_lib = env.Install(dest_dir, source_lib)
-    env.Depends(library, inst_lib)
+    for i in range(len(source_bins)):
+        inst_bin = env.Install(dest_dir, source_bins[i])
+        env.Depends(library, inst_bin)
 
-    if not os.path.exists(dest_dir):
-        os.makedirs(dest_dir)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
         
-    dest_path = os.path.join(dest_dir, "libtdjson.so")
-    try:
-        shutil.copy2(source_lib, dest_path)
-    except Exception as e:
-        print(f'Warning: could not copy {source_lib} -> {dest_path}: {e}')
+        dest_path = os.path.join(dest_dir, os.path.basename(source_bins[i]))
+        try:
+            shutil.copy2(source_bins[i], dest_path)
+        except Exception as e:
+            print(f'Warning: could not copy {source_bins[i]} -> {dest_path}: {e}')
 
 
 Default(library)
