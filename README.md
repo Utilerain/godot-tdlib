@@ -64,7 +64,7 @@ scons platform=android ANDROID_HOME=/opt/android
 |-----------|:------------:|
 |   Windows     | ✅ supported
 |   Linux       | ✅ supported
-|   Android     | 🚧 under construction
+|   Android     | ✅ supported
 |   macOS       | ❌ not supported
 |   iOS       | ❌ not supported
 
