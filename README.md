@@ -45,6 +45,20 @@ The easiest way for build is using Docker:
 * Build [Dockerfile](./Dockerfile) image
 * Run image (check [Dockerfile](./Dockerfile) instruction)
 
+Otherwise, if you want to do it manually, do this (linux):
+
+* Download and install build-essential, python3, scons, unzip, wget, git using your package manager
+* Build TdLib packages and its dependencies (check [README.md](./thirdparty/README.md))
+* Write this on your terminal:
+```
+mkdir -p /opt/android/ndk/28.1.13356709
+wget -q https://dl.google.com/android/repository/android-ndk-r28-linux.zip -O /tmp/ndk.zip
+unzip -q /tmp/ndk.zip -d /tmp
+cp -r /tmp/android-ndk-r28/. /opt/android/ndk/28.1.13356709/
+rm -rf /tmp/ndk.zip /tmp/android-ndk-r28
+scons platform=android ANDROID_HOME=/opt/android
+```
+
 ## Supported platforms
 | Platform | Support |
 |-----------|:------------:|
