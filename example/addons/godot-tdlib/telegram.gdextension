@@ -43,6 +43,6 @@ android.x86_64 = {
 android.arm32 = {
     "bin/godot_tdlib_android_arm32/libtdjson.so": ""
 }
-android.x86_64 = {
+android.x86_32 = {
     "bin/godot_tdlib_android_x86_32/libtdjson.so": ""
 }
