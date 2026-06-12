@@ -2539,7 +2539,7 @@ class authorizationStateWaitTdlibParameters final : public AuthorizationState {
 };
 
 /**
- * TDLib needs the user's phone number to authorize. Call setAuthenticationPhoneNumber to provide the phone number, or use requestQrCodeAuthentication, getAuthenticationPasskeyParameters, or checkAuthenticationBotToken for other authentication options.
+ * TDLib needs the user's phone number to authorize. Call setAuthenticationPhoneNumber to provide the phone number, or use requestQrCodeAuthentication, getAuthenticationPasskeyParameters, checkAuthenticationWebToken, or checkAuthenticationBotToken for other authentication options.
  */
 class authorizationStateWaitPhoneNumber final : public AuthorizationState {
   /**
@@ -2553,7 +2553,7 @@ class authorizationStateWaitPhoneNumber final : public AuthorizationState {
  public:
 
   /**
-   * TDLib needs the user's phone number to authorize. Call setAuthenticationPhoneNumber to provide the phone number, or use requestQrCodeAuthentication, getAuthenticationPasskeyParameters, or checkAuthenticationBotToken for other authentication options.
+   * TDLib needs the user's phone number to authorize. Call setAuthenticationPhoneNumber to provide the phone number, or use requestQrCodeAuthentication, getAuthenticationPasskeyParameters, checkAuthenticationWebToken, or checkAuthenticationBotToken for other authentication options.
    */
   authorizationStateWaitPhoneNumber();
 
@@ -5754,7 +5754,7 @@ class businessBotRights;
 class businessRecipients;
 
 /**
- * Describes a bot connected to a business account.
+ * Describes a business bot connected to an account.
  */
 class businessConnectedBot final : public Object {
   /**
@@ -5774,12 +5774,12 @@ class businessConnectedBot final : public Object {
   object_ptr<businessBotRights> rights_;
 
   /**
-   * Describes a bot connected to a business account.
+   * Describes a business bot connected to an account.
    */
   businessConnectedBot();
 
   /**
-   * Describes a bot connected to a business account.
+   * Describes a business bot connected to an account.
    *
    * \param[in] bot_user_id_ User identifier of the bot.
    * \param[in] recipients_ Private chats that will be accessible to the bot.
@@ -5789,6 +5789,56 @@ class businessConnectedBot final : public Object {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -1815439021;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class businessConnectedBot;
+
+/**
+ * Describes a connection of a bot to an account.
+ */
+class businessConnectedBotInfo final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Information about the bot.
+  object_ptr<businessConnectedBot> bot_;
+  /// Point in time (Unix timestamp) when the bot was added; may be 0 if unknown.
+  int32 connection_date_;
+  /// Model of the device that was used for the bot connection, as provided by the application; may be empty if unknown.
+  string device_model_;
+  /// A human-readable description of the location from which the bot was connected, based on the IP address; may be empty if unknown.
+  string location_;
+
+  /**
+   * Describes a connection of a bot to an account.
+   */
+  businessConnectedBotInfo();
+
+  /**
+   * Describes a connection of a bot to an account.
+   *
+   * \param[in] bot_ Information about the bot.
+   * \param[in] connection_date_ Point in time (Unix timestamp) when the bot was added; may be 0 if unknown.
+   * \param[in] device_model_ Model of the device that was used for the bot connection, as provided by the application; may be empty if unknown.
+   * \param[in] location_ A human-readable description of the location from which the bot was connected, based on the IP address; may be empty if unknown.
+   */
+  businessConnectedBotInfo(object_ptr<businessConnectedBot> &&bot_, int32 connection_date_, string const &device_model_, string const &location_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 350476653;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -13771,6 +13821,104 @@ class chatJoinRequest final : public Object {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+/**
+ * This class is an abstract base class.
+ * Describes result of a chat join request.
+ */
+class ChatJoinRequestResult: public Object {
+ public:
+};
+
+/**
+ * The request was approved.
+ */
+class chatJoinRequestResultApproved final : public ChatJoinRequestResult {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The request was approved.
+   */
+  chatJoinRequestResultApproved();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 971177342;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The request was decline.
+ */
+class chatJoinRequestResultDeclined final : public ChatJoinRequestResult {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The request was decline.
+   */
+  chatJoinRequestResultDeclined();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1992742606;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The request was postponed without a decision.
+ */
+class chatJoinRequestResultQueued final : public ChatJoinRequestResult {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The request was postponed without a decision.
+   */
+  chatJoinRequestResultQueued();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 377575913;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class chatJoinRequest;
 
 /**
@@ -13848,6 +13996,160 @@ class chatJoinRequestsInfo final : public Object {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = 888534463;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class webAppUrl;
+
+/**
+ * This class is an abstract base class.
+ * Describes result of join of a chat by the current user.
+ */
+class ChatJoinResult: public Object {
+ public:
+};
+
+/**
+ * The chat was joined successfully.
+ */
+class chatJoinResultSuccess final : public ChatJoinResult {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the chat.
+  int53 chat_id_;
+
+  /**
+   * The chat was joined successfully.
+   */
+  chatJoinResultSuccess();
+
+  /**
+   * The chat was joined successfully.
+   *
+   * \param[in] chat_id_ Identifier of the chat.
+   */
+  explicit chatJoinResultSuccess(int53 chat_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -862593906;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The join request was sent and have to be approved by administrators of the chat.
+ */
+class chatJoinResultRequestSent final : public ChatJoinResult {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The join request was sent and have to be approved by administrators of the chat.
+   */
+  chatJoinResultRequestSent();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1357596814;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * An approval from a guard bot through a Web App is required to join the chat.
+ */
+class chatJoinResultGuardBotApprovalRequired final : public ChatJoinResult {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the guard bot.
+  int53 bot_user_id_;
+  /// The URL of the Web App to open.
+  object_ptr<webAppUrl> url_;
+  /// Unique identifier of the join request, which will be used in updateChatJoinResult.
+  int53 query_id_;
+
+  /**
+   * An approval from a guard bot through a Web App is required to join the chat.
+   */
+  chatJoinResultGuardBotApprovalRequired();
+
+  /**
+   * An approval from a guard bot through a Web App is required to join the chat.
+   *
+   * \param[in] bot_user_id_ Identifier of the guard bot.
+   * \param[in] url_ The URL of the Web App to open.
+   * \param[in] query_id_ Unique identifier of the join request, which will be used in updateChatJoinResult.
+   */
+  chatJoinResultGuardBotApprovalRequired(int53 bot_user_id_, object_ptr<webAppUrl> &&url_, int53 query_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1110742849;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The join was declined by the guard bot.
+ */
+class chatJoinResultDeclined final : public ChatJoinResult {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The join was declined by the guard bot.
+   */
+  chatJoinResultDeclined();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -396868532;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -14808,7 +15110,7 @@ class chatPermissions final : public Object {
   }
 
  public:
-  /// True, if the user can send text messages, contacts, giveaways, giveaway winners, invoices, locations, and venues.
+  /// True, if the user can send text messages, rich messages, contacts, giveaways, giveaway winners, invoices, locations, and venues.
   bool can_send_basic_messages_;
   /// True, if the user can send music files.
   bool can_send_audios_;
@@ -14849,7 +15151,7 @@ class chatPermissions final : public Object {
   /**
    * Describes actions that a user is allowed to take in a chat.
    *
-   * \param[in] can_send_basic_messages_ True, if the user can send text messages, contacts, giveaways, giveaway winners, invoices, locations, and venues.
+   * \param[in] can_send_basic_messages_ True, if the user can send text messages, rich messages, contacts, giveaways, giveaway winners, invoices, locations, and venues.
    * \param[in] can_send_audios_ True, if the user can send music files.
    * \param[in] can_send_documents_ True, if the user can send documents.
    * \param[in] can_send_photos_ True, if the user can send photos.
@@ -19346,7 +19648,7 @@ class downloadedFileCounts final : public Object {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class InputMessageContent;
+class DraftMessageContent;
 
 class InputMessageReplyTo;
 
@@ -19369,8 +19671,8 @@ class draftMessage final : public Object {
   object_ptr<InputMessageReplyTo> reply_to_;
   /// Point in time (Unix timestamp) when the draft was created.
   int32 date_;
-  /// Content of the message draft; must be of the type inputMessageText, inputMessageVideoNote, or inputMessageVoiceNote.
-  object_ptr<InputMessageContent> input_message_text_;
+  /// Content of the message draft.
+  object_ptr<DraftMessageContent> content_;
   /// Identifier of the effect to apply to the message when it is sent; 0 if none.
   int64 effect_id_;
   /// Information about the suggested post; may be null if none.
@@ -19386,14 +19688,207 @@ class draftMessage final : public Object {
    *
    * \param[in] reply_to_ Information about the message to be replied; inputMessageReplyToStory is unsupported; may be null if none.
    * \param[in] date_ Point in time (Unix timestamp) when the draft was created.
-   * \param[in] input_message_text_ Content of the message draft; must be of the type inputMessageText, inputMessageVideoNote, or inputMessageVoiceNote.
+   * \param[in] content_ Content of the message draft.
    * \param[in] effect_id_ Identifier of the effect to apply to the message when it is sent; 0 if none.
    * \param[in] suggested_post_info_ Information about the suggested post; may be null if none.
    */
-  draftMessage(object_ptr<InputMessageReplyTo> &&reply_to_, int32 date_, object_ptr<InputMessageContent> &&input_message_text_, int64 effect_id_, object_ptr<inputSuggestedPostInfo> &&suggested_post_info_);
+  draftMessage(object_ptr<InputMessageReplyTo> &&reply_to_, int32 date_, object_ptr<DraftMessageContent> &&content_, int64 effect_id_, object_ptr<inputSuggestedPostInfo> &&suggested_post_info_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1165040650;
+  static const std::int32_t ID = -210592303;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class MessageSelfDestructType;
+
+class formattedText;
+
+class linkPreviewOptions;
+
+class richMessage;
+
+/**
+ * This class is an abstract base class.
+ * Content of the message draft.
+ */
+class DraftMessageContent: public Object {
+ public:
+};
+
+/**
+ * A text message draft.
+ */
+class draftMessageContentText final : public DraftMessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Formatted text to be saved as a draft; 0-getOption(&quot;message_text_length_max&quot;) characters.
+  object_ptr<formattedText> text_;
+  /// Options to be used for generation of a link preview; may be null if none; pass null to use default link preview options.
+  object_ptr<linkPreviewOptions> link_preview_options_;
+
+  /**
+   * A text message draft.
+   */
+  draftMessageContentText();
+
+  /**
+   * A text message draft.
+   *
+   * \param[in] text_ Formatted text to be saved as a draft; 0-getOption(&quot;message_text_length_max&quot;) characters.
+   * \param[in] link_preview_options_ Options to be used for generation of a link preview; may be null if none; pass null to use default link preview options.
+   */
+  draftMessageContentText(object_ptr<formattedText> &&text_, object_ptr<linkPreviewOptions> &&link_preview_options_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -190258892;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A rich message draft; not supported in setChatDraftMessage.
+ */
+class draftMessageContentRichMessage final : public DraftMessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The rich message; the message must not have not yet uploaded media.
+  object_ptr<richMessage> message_;
+
+  /**
+   * A rich message draft; not supported in setChatDraftMessage.
+   */
+  draftMessageContentRichMessage();
+
+  /**
+   * A rich message draft; not supported in setChatDraftMessage.
+   *
+   * \param[in] message_ The rich message; the message must not have not yet uploaded media.
+   */
+  explicit draftMessageContentRichMessage(object_ptr<richMessage> &&message_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 600501905;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A video note message draft.
+ */
+class draftMessageContentVideoNote final : public DraftMessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Path to the file with the video note.
+  string file_path_;
+  /// Duration of the video, in seconds; 0-60.
+  int32 duration_;
+  /// Video width and height; must be positive and not greater than 640.
+  int32 length_;
+  /// Video note self-destruct type; may be null if none; pass null if none; private chats only.
+  object_ptr<MessageSelfDestructType> self_destruct_type_;
+
+  /**
+   * A video note message draft.
+   */
+  draftMessageContentVideoNote();
+
+  /**
+   * A video note message draft.
+   *
+   * \param[in] file_path_ Path to the file with the video note.
+   * \param[in] duration_ Duration of the video, in seconds; 0-60.
+   * \param[in] length_ Video width and height; must be positive and not greater than 640.
+   * \param[in] self_destruct_type_ Video note self-destruct type; may be null if none; pass null if none; private chats only.
+   */
+  draftMessageContentVideoNote(string const &file_path_, int32 duration_, int32 length_, object_ptr<MessageSelfDestructType> &&self_destruct_type_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 338124851;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A voice note message draft.
+ */
+class draftMessageContentVoiceNote final : public DraftMessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Path to the file with the voice note.
+  string file_path_;
+  /// Duration of the voice note, in seconds.
+  int32 duration_;
+  /// Waveform representation of the voice note in 5-bit format.
+  bytes waveform_;
+  /// Voice note self-destruct type; may be null if none; pass null if none; private chats only.
+  object_ptr<MessageSelfDestructType> self_destruct_type_;
+
+  /**
+   * A voice note message draft.
+   */
+  draftMessageContentVoiceNote();
+
+  /**
+   * A voice note message draft.
+   *
+   * \param[in] file_path_ Path to the file with the voice note.
+   * \param[in] duration_ Duration of the voice note, in seconds.
+   * \param[in] waveform_ Waveform representation of the voice note in 5-bit format.
+   * \param[in] self_destruct_type_ Voice note self-destruct type; may be null if none; pass null if none; private chats only.
+   */
+  draftMessageContentVoiceNote(string const &file_path_, int32 duration_, bytes const &waveform_, object_ptr<MessageSelfDestructType> &&self_destruct_type_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1075540207;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -27024,6 +27519,119 @@ class inlineQueryResultsButtonTypeWebApp final : public InlineQueryResultsButton
 
 class InputFile;
 
+class inputThumbnail;
+
+/**
+ * An animation to be sent.
+ */
+class inputAnimation final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Animation file to be sent.
+  object_ptr<InputFile> animation_;
+  /// Animation thumbnail; pass null to skip thumbnail uploading.
+  object_ptr<inputThumbnail> thumbnail_;
+  /// File identifiers of the stickers added to the animation, if applicable.
+  array<int32> added_sticker_file_ids_;
+  /// Duration of the animation, in seconds; may be replaced by the server.
+  int32 duration_;
+  /// Width of the animation; may be replaced by the server.
+  int32 width_;
+  /// Height of the animation; may be replaced by the server.
+  int32 height_;
+
+  /**
+   * An animation to be sent.
+   */
+  inputAnimation();
+
+  /**
+   * An animation to be sent.
+   *
+   * \param[in] animation_ Animation file to be sent.
+   * \param[in] thumbnail_ Animation thumbnail; pass null to skip thumbnail uploading.
+   * \param[in] added_sticker_file_ids_ File identifiers of the stickers added to the animation, if applicable.
+   * \param[in] duration_ Duration of the animation, in seconds; may be replaced by the server.
+   * \param[in] width_ Width of the animation; may be replaced by the server.
+   * \param[in] height_ Height of the animation; may be replaced by the server.
+   */
+  inputAnimation(object_ptr<InputFile> &&animation_, object_ptr<inputThumbnail> &&thumbnail_, array<int32> &&added_sticker_file_ids_, int32 duration_, int32 width_, int32 height_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1927212171;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class InputFile;
+
+class inputThumbnail;
+
+/**
+ * An audio to be sent.
+ */
+class inputAudio final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Audio file to be sent.
+  object_ptr<InputFile> audio_;
+  /// Thumbnail of the cover for the album; pass null to skip thumbnail uploading.
+  object_ptr<inputThumbnail> album_cover_thumbnail_;
+  /// Duration of the audio, in seconds; may be replaced by the server.
+  int32 duration_;
+  /// Title of the audio; 0-64 characters; may be replaced by the server.
+  string title_;
+  /// Performer of the audio; 0-64 characters, may be replaced by the server.
+  string performer_;
+
+  /**
+   * An audio to be sent.
+   */
+  inputAudio();
+
+  /**
+   * An audio to be sent.
+   *
+   * \param[in] audio_ Audio file to be sent.
+   * \param[in] album_cover_thumbnail_ Thumbnail of the cover for the album; pass null to skip thumbnail uploading.
+   * \param[in] duration_ Duration of the audio, in seconds; may be replaced by the server.
+   * \param[in] title_ Title of the audio; 0-64 characters; may be replaced by the server.
+   * \param[in] performer_ Performer of the audio; 0-64 characters, may be replaced by the server.
+   */
+  inputAudio(object_ptr<InputFile> &&audio_, object_ptr<inputThumbnail> &&album_cover_thumbnail_, int32 duration_, string const &title_, string const &performer_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 198787278;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class InputFile;
+
 /**
  * This class is an abstract base class.
  * Contains information about background to set.
@@ -27849,6 +28457,55 @@ class inputCredentialsGooglePay final : public InputCredentials {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class InputFile;
+
+class inputThumbnail;
+
+/**
+ * A document (general file) to be sent.
+ */
+class inputDocument final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// File to be sent.
+  object_ptr<InputFile> document_;
+  /// Document thumbnail; pass null to skip thumbnail uploading.
+  object_ptr<inputThumbnail> thumbnail_;
+  /// Pass true to disable automatic file type detection and send the document as a file. Always true for files sent to secret chats.
+  bool disable_content_type_detection_;
+
+  /**
+   * A document (general file) to be sent.
+   */
+  inputDocument();
+
+  /**
+   * A document (general file) to be sent.
+   *
+   * \param[in] document_ File to be sent.
+   * \param[in] thumbnail_ Document thumbnail; pass null to skip thumbnail uploading.
+   * \param[in] disable_content_type_detection_ Pass true to disable automatic file type detection and send the document as a file. Always true for files sent to secret chats.
+   */
+  inputDocument(object_ptr<InputFile> &&document_, object_ptr<inputThumbnail> &&thumbnail_, bool disable_content_type_detection_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -2054130470;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 /**
  * This class is an abstract base class.
  * Points to a file.
@@ -28217,7 +28874,7 @@ class inputInlineQueryResultAnimation final : public InputInlineQueryResult {
   int32 video_height_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageAnimation, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageAnimation, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28238,7 +28895,7 @@ class inputInlineQueryResultAnimation final : public InputInlineQueryResult {
    * \param[in] video_width_ Width of the video.
    * \param[in] video_height_ Height of the video.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageAnimation, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageAnimation, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultAnimation(string const &id_, string const &title_, string const &thumbnail_url_, string const &thumbnail_mime_type_, string const &video_url_, string const &video_mime_type_, int32 video_duration_, int32 video_width_, int32 video_height_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28282,7 +28939,7 @@ class inputInlineQueryResultArticle final : public InputInlineQueryResult {
   int32 thumbnail_height_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28301,7 +28958,7 @@ class inputInlineQueryResultArticle final : public InputInlineQueryResult {
    * \param[in] thumbnail_width_ Thumbnail width, if known.
    * \param[in] thumbnail_height_ Thumbnail height, if known.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultArticle(string const &id_, string const &url_, string const &title_, string const &description_, string const &thumbnail_url_, int32 thumbnail_width_, int32 thumbnail_height_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28341,7 +28998,7 @@ class inputInlineQueryResultAudio final : public InputInlineQueryResult {
   int32 audio_duration_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageAudio, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageAudio, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28358,7 +29015,7 @@ class inputInlineQueryResultAudio final : public InputInlineQueryResult {
    * \param[in] audio_url_ The URL of the audio file.
    * \param[in] audio_duration_ Audio file duration, in seconds.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageAudio, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageAudio, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultAudio(string const &id_, string const &title_, string const &performer_, string const &audio_url_, int32 audio_duration_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28398,7 +29055,7 @@ class inputInlineQueryResultContact final : public InputInlineQueryResult {
   int32 thumbnail_height_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28415,7 +29072,7 @@ class inputInlineQueryResultContact final : public InputInlineQueryResult {
    * \param[in] thumbnail_width_ Thumbnail width, if known.
    * \param[in] thumbnail_height_ Thumbnail height, if known.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultContact(string const &id_, object_ptr<contact> &&contact_, string const &thumbnail_url_, int32 thumbnail_width_, int32 thumbnail_height_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28461,7 +29118,7 @@ class inputInlineQueryResultDocument final : public InputInlineQueryResult {
   int32 thumbnail_height_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageDocument, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageDocument, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28481,7 +29138,7 @@ class inputInlineQueryResultDocument final : public InputInlineQueryResult {
    * \param[in] thumbnail_width_ Width of the thumbnail.
    * \param[in] thumbnail_height_ Height of the thumbnail.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageDocument, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageDocument, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultDocument(string const &id_, string const &title_, string const &description_, string const &document_url_, string const &mime_type_, string const &thumbnail_url_, int32 thumbnail_width_, int32 thumbnail_height_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28570,7 +29227,7 @@ class inputInlineQueryResultLocation final : public InputInlineQueryResult {
   int32 thumbnail_height_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28589,7 +29246,7 @@ class inputInlineQueryResultLocation final : public InputInlineQueryResult {
    * \param[in] thumbnail_width_ Thumbnail width, if known.
    * \param[in] thumbnail_height_ Thumbnail height, if known.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultLocation(string const &id_, object_ptr<location> &&location_, int32 live_period_, string const &title_, string const &thumbnail_url_, int32 thumbnail_width_, int32 thumbnail_height_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28633,7 +29290,7 @@ class inputInlineQueryResultPhoto final : public InputInlineQueryResult {
   int32 photo_height_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessagePhoto, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessagePhoto, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28652,7 +29309,7 @@ class inputInlineQueryResultPhoto final : public InputInlineQueryResult {
    * \param[in] photo_width_ Width of the photo.
    * \param[in] photo_height_ Height of the photo.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessagePhoto, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessagePhoto, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultPhoto(string const &id_, string const &title_, string const &description_, string const &thumbnail_url_, string const &photo_url_, int32 photo_width_, int32 photo_height_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28692,7 +29349,7 @@ class inputInlineQueryResultSticker final : public InputInlineQueryResult {
   int32 sticker_height_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageSticker, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageSticker, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28709,7 +29366,7 @@ class inputInlineQueryResultSticker final : public InputInlineQueryResult {
    * \param[in] sticker_width_ Width of the sticker.
    * \param[in] sticker_height_ Height of the sticker.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageSticker, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageSticker, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultSticker(string const &id_, string const &thumbnail_url_, string const &sticker_url_, int32 sticker_width_, int32 sticker_height_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28749,7 +29406,7 @@ class inputInlineQueryResultVenue final : public InputInlineQueryResult {
   int32 thumbnail_height_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28766,7 +29423,7 @@ class inputInlineQueryResultVenue final : public InputInlineQueryResult {
    * \param[in] thumbnail_width_ Thumbnail width, if known.
    * \param[in] thumbnail_height_ Thumbnail height, if known.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultVenue(string const &id_, object_ptr<venue> &&venue_, string const &thumbnail_url_, int32 thumbnail_width_, int32 thumbnail_height_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28814,7 +29471,7 @@ class inputInlineQueryResultVideo final : public InputInlineQueryResult {
   int32 video_duration_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageVideo, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageVideo, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28835,7 +29492,7 @@ class inputInlineQueryResultVideo final : public InputInlineQueryResult {
    * \param[in] video_height_ Height of the video.
    * \param[in] video_duration_ Video duration, in seconds.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageVideo, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageVideo, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultVideo(string const &id_, string const &title_, string const &description_, string const &thumbnail_url_, string const &video_url_, string const &mime_type_, int32 video_width_, int32 video_height_, int32 video_duration_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -28873,7 +29530,7 @@ class inputInlineQueryResultVoiceNote final : public InputInlineQueryResult {
   int32 voice_note_duration_;
   /// The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageVoiceNote, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+  /// The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageVoiceNote, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -28889,7 +29546,7 @@ class inputInlineQueryResultVoiceNote final : public InputInlineQueryResult {
    * \param[in] voice_note_url_ The URL of the voice note file.
    * \param[in] voice_note_duration_ Duration of the voice note, in seconds.
    * \param[in] reply_markup_ The message reply markup; pass null if none. Must be of type replyMarkupInlineKeyboard or null.
-   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageVoiceNote, inputMessageInvoice, inputMessageLocation, inputMessageVenue or inputMessageContact.
+   * \param[in] input_message_content_ The content of the message to be sent. Must be one of the following types: inputMessageText, inputMessageRichMessage, inputMessageVoiceNote, inputMessageInvoice, inputMessageLiveLocation, inputMessageLocation, inputMessageVenue or inputMessageContact.
    */
   inputInlineQueryResultVoiceNote(string const &id_, string const &title_, string const &voice_note_url_, int32 voice_note_duration_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -29036,7 +29693,7 @@ class inputInvoiceTelegram final : public InputInvoice {
 
 class InputFile;
 
-class InputMessageContent;
+class InputPollMedia;
 
 class InputPollType;
 
@@ -29046,17 +29703,31 @@ class contact;
 
 class formattedText;
 
+class inputAnimation;
+
+class inputAudio;
+
 class inputChecklist;
+
+class inputDocument;
 
 class inputPaidMedia;
 
+class inputPhoto;
+
 class inputPollOption;
 
+class inputRichMessage;
+
 class inputThumbnail;
+
+class inputVideo;
 
 class invoice;
 
 class linkPreviewOptions;
+
+class liveLocation;
 
 class location;
 
@@ -29089,7 +29760,7 @@ class inputMessageText final : public InputMessageContent {
   object_ptr<formattedText> text_;
   /// Options to be used for generation of a link preview; may be null if none; pass null to use default link preview options.
   object_ptr<linkPreviewOptions> link_preview_options_;
-  /// True, if the chat message draft must be deleted.
+  /// Pass true to delete message draft in the chat.
   bool clear_draft_;
 
   /**
@@ -29102,12 +29773,54 @@ class inputMessageText final : public InputMessageContent {
    *
    * \param[in] text_ Formatted text to be sent; 0-getOption(&quot;message_text_length_max&quot;) characters. Only Bold, Italic, Underline, Strikethrough, Spoiler, CustomEmoji, BlockQuote, ExpandableBlockQuote, Code, Pre, PreCode, TextUrl, MentionName, and DateTime entities are allowed to be specified manually.
    * \param[in] link_preview_options_ Options to be used for generation of a link preview; may be null if none; pass null to use default link preview options.
-   * \param[in] clear_draft_ True, if the chat message draft must be deleted.
+   * \param[in] clear_draft_ Pass true to delete message draft in the chat.
    */
   inputMessageText(object_ptr<formattedText> &&text_, object_ptr<linkPreviewOptions> &&link_preview_options_, bool clear_draft_);
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -212805484;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A rich message.
+ */
+class inputMessageRichMessage final : public InputMessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The rich message to send.
+  object_ptr<inputRichMessage> message_;
+  /// Pass true to delete message draft in the chat.
+  bool clear_draft_;
+
+  /**
+   * A rich message.
+   */
+  inputMessageRichMessage();
+
+  /**
+   * A rich message.
+   *
+   * \param[in] message_ The rich message to send.
+   * \param[in] clear_draft_ Pass true to delete message draft in the chat.
+   */
+  inputMessageRichMessage(object_ptr<inputRichMessage> &&message_, bool clear_draft_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1998462906;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -29130,18 +29843,8 @@ class inputMessageAnimation final : public InputMessageContent {
   }
 
  public:
-  /// Animation file to be sent.
-  object_ptr<InputFile> animation_;
-  /// Animation thumbnail; pass null to skip thumbnail uploading.
-  object_ptr<inputThumbnail> thumbnail_;
-  /// File identifiers of the stickers added to the animation, if applicable.
-  array<int32> added_sticker_file_ids_;
-  /// Duration of the animation, in seconds.
-  int32 duration_;
-  /// Width of the animation; may be replaced by the server.
-  int32 width_;
-  /// Height of the animation; may be replaced by the server.
-  int32 height_;
+  /// The animation to be sent.
+  object_ptr<inputAnimation> animation_;
   /// Animation caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
   object_ptr<formattedText> caption_;
   /// True, if the caption must be shown above the animation; otherwise, the caption must be shown below the animation; not supported in secret chats.
@@ -29157,20 +29860,15 @@ class inputMessageAnimation final : public InputMessageContent {
   /**
    * An animation message (GIF-style).
    *
-   * \param[in] animation_ Animation file to be sent.
-   * \param[in] thumbnail_ Animation thumbnail; pass null to skip thumbnail uploading.
-   * \param[in] added_sticker_file_ids_ File identifiers of the stickers added to the animation, if applicable.
-   * \param[in] duration_ Duration of the animation, in seconds.
-   * \param[in] width_ Width of the animation; may be replaced by the server.
-   * \param[in] height_ Height of the animation; may be replaced by the server.
+   * \param[in] animation_ The animation to be sent.
    * \param[in] caption_ Animation caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
    * \param[in] show_caption_above_media_ True, if the caption must be shown above the animation; otherwise, the caption must be shown below the animation; not supported in secret chats.
    * \param[in] has_spoiler_ True, if the animation preview must be covered by a spoiler animation; not supported in secret chats.
    */
-  inputMessageAnimation(object_ptr<InputFile> &&animation_, object_ptr<inputThumbnail> &&thumbnail_, array<int32> &&added_sticker_file_ids_, int32 duration_, int32 width_, int32 height_, object_ptr<formattedText> &&caption_, bool show_caption_above_media_, bool has_spoiler_);
+  inputMessageAnimation(object_ptr<inputAnimation> &&animation_, object_ptr<formattedText> &&caption_, bool show_caption_above_media_, bool has_spoiler_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -210404059;
+  static const std::int32_t ID = 1830315584;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -29193,16 +29891,8 @@ class inputMessageAudio final : public InputMessageContent {
   }
 
  public:
-  /// Audio file to be sent.
-  object_ptr<InputFile> audio_;
-  /// Thumbnail of the cover for the album; pass null to skip thumbnail uploading.
-  object_ptr<inputThumbnail> album_cover_thumbnail_;
-  /// Duration of the audio, in seconds; may be replaced by the server.
-  int32 duration_;
-  /// Title of the audio; 0-64 characters; may be replaced by the server.
-  string title_;
-  /// Performer of the audio; 0-64 characters, may be replaced by the server.
-  string performer_;
+  /// Audio to be sent.
+  object_ptr<inputAudio> audio_;
   /// Audio caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
   object_ptr<formattedText> caption_;
 
@@ -29214,17 +29904,13 @@ class inputMessageAudio final : public InputMessageContent {
   /**
    * An audio message.
    *
-   * \param[in] audio_ Audio file to be sent.
-   * \param[in] album_cover_thumbnail_ Thumbnail of the cover for the album; pass null to skip thumbnail uploading.
-   * \param[in] duration_ Duration of the audio, in seconds; may be replaced by the server.
-   * \param[in] title_ Title of the audio; 0-64 characters; may be replaced by the server.
-   * \param[in] performer_ Performer of the audio; 0-64 characters, may be replaced by the server.
+   * \param[in] audio_ Audio to be sent.
    * \param[in] caption_ Audio caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
    */
-  inputMessageAudio(object_ptr<InputFile> &&audio_, object_ptr<inputThumbnail> &&album_cover_thumbnail_, int32 duration_, string const &title_, string const &performer_, object_ptr<formattedText> &&caption_);
+  inputMessageAudio(object_ptr<inputAudio> &&audio_, object_ptr<formattedText> &&caption_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -626786126;
+  static const std::int32_t ID = -1247880389;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -29248,11 +29934,7 @@ class inputMessageDocument final : public InputMessageContent {
 
  public:
   /// Document to be sent.
-  object_ptr<InputFile> document_;
-  /// Document thumbnail; pass null to skip thumbnail uploading.
-  object_ptr<inputThumbnail> thumbnail_;
-  /// Pass true to disable automatic file type detection and send the document as a file. Always true for files sent to secret chats.
-  bool disable_content_type_detection_;
+  object_ptr<inputDocument> document_;
   /// Document caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
   object_ptr<formattedText> caption_;
 
@@ -29265,14 +29947,12 @@ class inputMessageDocument final : public InputMessageContent {
    * A document message (general file).
    *
    * \param[in] document_ Document to be sent.
-   * \param[in] thumbnail_ Document thumbnail; pass null to skip thumbnail uploading.
-   * \param[in] disable_content_type_detection_ Pass true to disable automatic file type detection and send the document as a file. Always true for files sent to secret chats.
    * \param[in] caption_ Document caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
    */
-  inputMessageDocument(object_ptr<InputFile> &&document_, object_ptr<inputThumbnail> &&thumbnail_, bool disable_content_type_detection_, object_ptr<formattedText> &&caption_);
+  inputMessageDocument(object_ptr<inputDocument> &&document_, object_ptr<formattedText> &&caption_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1633383097;
+  static const std::int32_t ID = 853098705;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -29346,18 +30026,8 @@ class inputMessagePhoto final : public InputMessageContent {
   }
 
  public:
-  /// Photo to send. The photo must be at most 10 MB in size. The photo's width and height must not exceed 10000 in total. Width and height ratio must be at most 20.
-  object_ptr<InputFile> photo_;
-  /// Photo thumbnail to be sent; pass null to skip thumbnail uploading. The thumbnail is sent to the other party only in secret chats.
-  object_ptr<inputThumbnail> thumbnail_;
-  /// Video of the live photo; not supported in secret chats; pass null if the photo isn't a live photo.
-  object_ptr<InputFile> video_;
-  /// File identifiers of the stickers added to the photo, if applicable.
-  array<int32> added_sticker_file_ids_;
-  /// Photo width.
-  int32 width_;
-  /// Photo height.
-  int32 height_;
+  /// Photo to be sent.
+  object_ptr<inputPhoto> photo_;
   /// Photo caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
   object_ptr<formattedText> caption_;
   /// True, if the caption must be shown above the photo; otherwise, the caption must be shown below the photo; not supported in secret chats.
@@ -29375,21 +30045,16 @@ class inputMessagePhoto final : public InputMessageContent {
   /**
    * A photo message.
    *
-   * \param[in] photo_ Photo to send. The photo must be at most 10 MB in size. The photo's width and height must not exceed 10000 in total. Width and height ratio must be at most 20.
-   * \param[in] thumbnail_ Photo thumbnail to be sent; pass null to skip thumbnail uploading. The thumbnail is sent to the other party only in secret chats.
-   * \param[in] video_ Video of the live photo; not supported in secret chats; pass null if the photo isn't a live photo.
-   * \param[in] added_sticker_file_ids_ File identifiers of the stickers added to the photo, if applicable.
-   * \param[in] width_ Photo width.
-   * \param[in] height_ Photo height.
+   * \param[in] photo_ Photo to be sent.
    * \param[in] caption_ Photo caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
    * \param[in] show_caption_above_media_ True, if the caption must be shown above the photo; otherwise, the caption must be shown below the photo; not supported in secret chats.
    * \param[in] self_destruct_type_ Photo self-destruct type; pass null if none; private chats only.
    * \param[in] has_spoiler_ True, if the photo preview must be covered by a spoiler animation; not supported in secret chats.
    */
-  inputMessagePhoto(object_ptr<InputFile> &&photo_, object_ptr<inputThumbnail> &&thumbnail_, object_ptr<InputFile> &&video_, array<int32> &&added_sticker_file_ids_, int32 width_, int32 height_, object_ptr<formattedText> &&caption_, bool show_caption_above_media_, object_ptr<MessageSelfDestructType> &&self_destruct_type_, bool has_spoiler_);
+  inputMessagePhoto(object_ptr<inputPhoto> &&photo_, object_ptr<formattedText> &&caption_, bool show_caption_above_media_, object_ptr<MessageSelfDestructType> &&self_destruct_type_, bool has_spoiler_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 163591772;
+  static const std::int32_t ID = -588660097;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -29463,24 +30128,8 @@ class inputMessageVideo final : public InputMessageContent {
   }
 
  public:
-  /// Video to be sent. The video is expected to be re-encoded to MPEG4 format with H.264 codec by the sender.
-  object_ptr<InputFile> video_;
-  /// Video thumbnail; pass null to skip thumbnail uploading.
-  object_ptr<inputThumbnail> thumbnail_;
-  /// Cover of the video; pass null to skip cover uploading; not supported in secret chats and for self-destructing messages.
-  object_ptr<InputFile> cover_;
-  /// Timestamp from which the video playing must start, in seconds.
-  int32 start_timestamp_;
-  /// File identifiers of the stickers added to the video, if applicable.
-  array<int32> added_sticker_file_ids_;
-  /// Duration of the video, in seconds.
-  int32 duration_;
-  /// Video width.
-  int32 width_;
-  /// Video height.
-  int32 height_;
-  /// True, if the video is expected to be streamed.
-  bool supports_streaming_;
+  /// Video to be sent.
+  object_ptr<inputVideo> video_;
   /// Video caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
   object_ptr<formattedText> caption_;
   /// True, if the caption must be shown above the video; otherwise, the caption must be shown below the video; not supported in secret chats.
@@ -29498,24 +30147,16 @@ class inputMessageVideo final : public InputMessageContent {
   /**
    * A video message.
    *
-   * \param[in] video_ Video to be sent. The video is expected to be re-encoded to MPEG4 format with H.264 codec by the sender.
-   * \param[in] thumbnail_ Video thumbnail; pass null to skip thumbnail uploading.
-   * \param[in] cover_ Cover of the video; pass null to skip cover uploading; not supported in secret chats and for self-destructing messages.
-   * \param[in] start_timestamp_ Timestamp from which the video playing must start, in seconds.
-   * \param[in] added_sticker_file_ids_ File identifiers of the stickers added to the video, if applicable.
-   * \param[in] duration_ Duration of the video, in seconds.
-   * \param[in] width_ Video width.
-   * \param[in] height_ Video height.
-   * \param[in] supports_streaming_ True, if the video is expected to be streamed.
+   * \param[in] video_ Video to be sent.
    * \param[in] caption_ Video caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
    * \param[in] show_caption_above_media_ True, if the caption must be shown above the video; otherwise, the caption must be shown below the video; not supported in secret chats.
    * \param[in] self_destruct_type_ Video self-destruct type; pass null if none; private chats only.
    * \param[in] has_spoiler_ True, if the video preview must be covered by a spoiler animation; not supported in secret chats.
    */
-  inputMessageVideo(object_ptr<InputFile> &&video_, object_ptr<inputThumbnail> &&thumbnail_, object_ptr<InputFile> &&cover_, int32 start_timestamp_, array<int32> &&added_sticker_file_ids_, int32 duration_, int32 width_, int32 height_, bool supports_streaming_, object_ptr<formattedText> &&caption_, bool show_caption_above_media_, object_ptr<MessageSelfDestructType> &&self_destruct_type_, bool has_spoiler_);
+  inputMessageVideo(object_ptr<inputVideo> &&video_, object_ptr<formattedText> &&caption_, bool show_caption_above_media_, object_ptr<MessageSelfDestructType> &&self_destruct_type_, bool has_spoiler_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -605958271;
+  static const std::int32_t ID = 1049973413;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -29595,7 +30236,7 @@ class inputMessageVoiceNote final : public InputMessageContent {
   int32 duration_;
   /// Waveform representation of the voice note in 5-bit format.
   bytes waveform_;
-  /// Voice note caption; may be null if empty; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
+  /// Voice note caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
   object_ptr<formattedText> caption_;
   /// Voice note self-destruct type; may be null if none; pass null if none; private chats only.
   object_ptr<MessageSelfDestructType> self_destruct_type_;
@@ -29611,13 +30252,52 @@ class inputMessageVoiceNote final : public InputMessageContent {
    * \param[in] voice_note_ Voice note to be sent. The voice note must be encoded with the Opus codec and stored inside an OGG container with a single audio channel, or be in MP3 or M4A format as regular audio.
    * \param[in] duration_ Duration of the voice note, in seconds.
    * \param[in] waveform_ Waveform representation of the voice note in 5-bit format.
-   * \param[in] caption_ Voice note caption; may be null if empty; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
+   * \param[in] caption_ Voice note caption; pass null to use an empty caption; 0-getOption(&quot;message_caption_length_max&quot;) characters.
    * \param[in] self_destruct_type_ Voice note self-destruct type; may be null if none; pass null if none; private chats only.
    */
   inputMessageVoiceNote(object_ptr<InputFile> &&voice_note_, int32 duration_, bytes const &waveform_, object_ptr<formattedText> &&caption_, object_ptr<MessageSelfDestructType> &&self_destruct_type_);
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = 1461977004;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A message with a live location.
+ */
+class inputMessageLiveLocation final : public InputMessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Initial state of the live location to be sent. Live period must be equal to 0x7FFFFFFF for permanent live locations, or between 60 and 86400.
+  object_ptr<liveLocation> location_;
+
+  /**
+   * A message with a live location.
+   */
+  inputMessageLiveLocation();
+
+  /**
+   * A message with a live location.
+   *
+   * \param[in] location_ Initial state of the live location to be sent. Live period must be equal to 0x7FFFFFFF for permanent live locations, or between 60 and 86400.
+   */
+  explicit inputMessageLiveLocation(object_ptr<liveLocation> &&location_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1929380406;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -29642,12 +30322,6 @@ class inputMessageLocation final : public InputMessageContent {
  public:
   /// Location to be sent.
   object_ptr<location> location_;
-  /// Period for which the location can be updated, in seconds; must be between 60 and 86400 for a temporary live location, 0x7FFFFFFF for permanent live location, and 0 otherwise.
-  int32 live_period_;
-  /// For live locations, a direction in which the location moves, in degrees; 1-360. Pass 0 if unknown.
-  int32 heading_;
-  /// For live locations, a maximum distance to another chat member for proximity alerts, in meters (0-100000). Pass 0 if the notification is disabled. Can't be enabled in channels and Saved Messages.
-  int32 proximity_alert_radius_;
 
   /**
    * A message with a location.
@@ -29658,14 +30332,11 @@ class inputMessageLocation final : public InputMessageContent {
    * A message with a location.
    *
    * \param[in] location_ Location to be sent.
-   * \param[in] live_period_ Period for which the location can be updated, in seconds; must be between 60 and 86400 for a temporary live location, 0x7FFFFFFF for permanent live location, and 0 otherwise.
-   * \param[in] heading_ For live locations, a direction in which the location moves, in degrees; 1-360. Pass 0 if unknown.
-   * \param[in] proximity_alert_radius_ For live locations, a maximum distance to another chat member for proximity alerts, in meters (0-100000). Pass 0 if the notification is disabled. Can't be enabled in channels and Saved Messages.
    */
-  inputMessageLocation(object_ptr<location> &&location_, int32 live_period_, int32 heading_, int32 proximity_alert_radius_);
+  explicit inputMessageLocation(object_ptr<location> &&location_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 648735088;
+  static const std::int32_t ID = 2121763042;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -29768,7 +30439,7 @@ class inputMessageDice final : public InputMessageContent {
  public:
   /// Emoji on which the dice throw animation is based.
   string emoji_;
-  /// True, if the chat message draft must be deleted.
+  /// Pass true to delete message draft in the chat.
   bool clear_draft_;
 
   /**
@@ -29780,7 +30451,7 @@ class inputMessageDice final : public InputMessageContent {
    * A dice message.
    *
    * \param[in] emoji_ Emoji on which the dice throw animation is based.
-   * \param[in] clear_draft_ True, if the chat message draft must be deleted.
+   * \param[in] clear_draft_ Pass true to delete message draft in the chat.
    */
   inputMessageDice(string const &emoji_, bool clear_draft_);
 
@@ -29931,8 +30602,8 @@ class inputMessagePoll final : public InputMessageContent {
   array<object_ptr<inputPollOption>> options_;
   /// Poll description; pass null to use an empty description; 0-getOption(&quot;message_caption_length_max&quot;) characters.
   object_ptr<formattedText> description_;
-  /// Media attached to the poll; pass null if none. Must be one of the following types: inputMessageAnimation, inputMessageAudio, inputMessageDocument, non-live inputMessageLocation, inputMessagePhoto, inputMessageVenue, or inputMessageVideo without caption.
-  object_ptr<InputMessageContent> media_;
+  /// Media attached to the poll; pass null if none. Must be one of the following types: inputPollMediaAnimation, inputPollMediaAudio, inputPollMediaDocument, inputPollMediaLocation, inputPollMediaPhoto, inputPollMediaVenue, or inputPollMediaVideo without caption.
+  object_ptr<InputPollMedia> media_;
   /// True, if the poll voters are anonymous. Non-anonymous polls can't be sent or forwarded to channels.
   bool is_anonymous_;
   /// True, if multiple answer options can be chosen simultaneously.
@@ -29967,7 +30638,7 @@ class inputMessagePoll final : public InputMessageContent {
    * \param[in] question_ Poll question; 1-255 characters (up to 300 characters for bots). Only custom emoji entities are allowed to be added and only by Premium users.
    * \param[in] options_ List of poll answer options; 1-getOption(&quot;poll_answer_count_max&quot;) options.
    * \param[in] description_ Poll description; pass null to use an empty description; 0-getOption(&quot;message_caption_length_max&quot;) characters.
-   * \param[in] media_ Media attached to the poll; pass null if none. Must be one of the following types: inputMessageAnimation, inputMessageAudio, inputMessageDocument, non-live inputMessageLocation, inputMessagePhoto, inputMessageVenue, or inputMessageVideo without caption.
+   * \param[in] media_ Media attached to the poll; pass null if none. Must be one of the following types: inputPollMediaAnimation, inputPollMediaAudio, inputPollMediaDocument, inputPollMediaLocation, inputPollMediaPhoto, inputPollMediaVenue, or inputPollMediaVideo without caption.
    * \param[in] is_anonymous_ True, if the poll voters are anonymous. Non-anonymous polls can't be sent or forwarded to channels.
    * \param[in] allows_multiple_answers_ True, if multiple answer options can be chosen simultaneously.
    * \param[in] allows_revoting_ True, if the poll can be answered multiple times.
@@ -29980,10 +30651,10 @@ class inputMessagePoll final : public InputMessageContent {
    * \param[in] close_date_ Point in time (Unix timestamp) when the poll will automatically be closed; must be 0-getOption(&quot;poll_open_period_max&quot;) seconds in the future; pass 0 if not specified.
    * \param[in] is_closed_ True, if the poll needs to be sent already closed; for bots only.
    */
-  inputMessagePoll(object_ptr<formattedText> &&question_, array<object_ptr<inputPollOption>> &&options_, object_ptr<formattedText> &&description_, object_ptr<InputMessageContent> &&media_, bool is_anonymous_, bool allows_multiple_answers_, bool allows_revoting_, bool members_only_, array<string> &&country_codes_, bool shuffle_options_, bool hide_results_until_closes_, object_ptr<InputPollType> &&type_, int32 open_period_, int32 close_date_, bool is_closed_);
+  inputMessagePoll(object_ptr<formattedText> &&question_, array<object_ptr<inputPollOption>> &&options_, object_ptr<formattedText> &&description_, object_ptr<InputPollMedia> &&media_, bool is_anonymous_, bool allows_multiple_answers_, bool allows_revoting_, bool members_only_, array<string> &&country_codes_, bool shuffle_options_, bool hide_results_until_closes_, object_ptr<InputPollType> &&type_, int32 open_period_, int32 close_date_, bool is_closed_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -808965345;
+  static const std::int32_t ID = 2087555482;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -30010,7 +30681,7 @@ class inputMessageStakeDice final : public InputMessageContent {
   string state_hash_;
   /// The Toncoin amount that will be staked; in the smallest units of the currency. Must be in the range getOption(&quot;stake_dice_stake_amount_min&quot;)-getOption(&quot;stake_dice_stake_amount_max&quot;).
   int53 stake_toncoin_amount_;
-  /// True, if the chat message draft must be deleted.
+  /// Pass true to delete message draft in the chat.
   bool clear_draft_;
 
   /**
@@ -30023,7 +30694,7 @@ class inputMessageStakeDice final : public InputMessageContent {
    *
    * \param[in] state_hash_ Hash of the stake dice state. The state hash can be used only if it was received recently enough. Otherwise, a new state must be requested using getStakeDiceState.
    * \param[in] stake_toncoin_amount_ The Toncoin amount that will be staked; in the smallest units of the currency. Must be in the range getOption(&quot;stake_dice_stake_amount_min&quot;)-getOption(&quot;stake_dice_stake_amount_max&quot;).
-   * \param[in] clear_draft_ True, if the chat message draft must be deleted.
+   * \param[in] clear_draft_ Pass true to delete message draft in the chat.
    */
   inputMessageStakeDice(string const &state_hash_, int53 stake_toncoin_amount_, bool clear_draft_);
 
@@ -31459,7 +32130,451 @@ class inputPersonalDocument final : public Object {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class InputMessageContent;
+class InputFile;
+
+class inputThumbnail;
+
+/**
+ * A photo to be sent.
+ */
+class inputPhoto final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Photo to be sent. The photo must be at most 10 MB in size. The photo's width and height must not exceed 10000 in total. Width and height ratio must be at most 20.
+  object_ptr<InputFile> photo_;
+  /// Photo thumbnail; pass null to skip thumbnail uploading. The thumbnail is sent to the other party only in secret chats.
+  object_ptr<inputThumbnail> thumbnail_;
+  /// Video of the live photo; not supported in secret chats; pass null if the photo isn't a live photo.
+  object_ptr<InputFile> video_;
+  /// File identifiers of the stickers added to the photo, if applicable.
+  array<int32> added_sticker_file_ids_;
+  /// Photo width; may be replaced by the server.
+  int32 width_;
+  /// Photo height; may be replaced by the server.
+  int32 height_;
+
+  /**
+   * A photo to be sent.
+   */
+  inputPhoto();
+
+  /**
+   * A photo to be sent.
+   *
+   * \param[in] photo_ Photo to be sent. The photo must be at most 10 MB in size. The photo's width and height must not exceed 10000 in total. Width and height ratio must be at most 20.
+   * \param[in] thumbnail_ Photo thumbnail; pass null to skip thumbnail uploading. The thumbnail is sent to the other party only in secret chats.
+   * \param[in] video_ Video of the live photo; not supported in secret chats; pass null if the photo isn't a live photo.
+   * \param[in] added_sticker_file_ids_ File identifiers of the stickers added to the photo, if applicable.
+   * \param[in] width_ Photo width; may be replaced by the server.
+   * \param[in] height_ Photo height; may be replaced by the server.
+   */
+  inputPhoto(object_ptr<InputFile> &&photo_, object_ptr<inputThumbnail> &&thumbnail_, object_ptr<InputFile> &&video_, array<int32> &&added_sticker_file_ids_, int32 width_, int32 height_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1695176164;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class InputFile;
+
+class inputAnimation;
+
+class inputAudio;
+
+class inputDocument;
+
+class inputPhoto;
+
+class inputThumbnail;
+
+class inputVideo;
+
+class location;
+
+class venue;
+
+/**
+ * This class is an abstract base class.
+ * The content of a poll media to send.
+ */
+class InputPollMedia: public Object {
+ public:
+};
+
+/**
+ * An animation.
+ */
+class inputPollMediaAnimation final : public InputPollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The animation to be sent.
+  object_ptr<inputAnimation> animation_;
+
+  /**
+   * An animation.
+   */
+  inputPollMediaAnimation();
+
+  /**
+   * An animation.
+   *
+   * \param[in] animation_ The animation to be sent.
+   */
+  explicit inputPollMediaAnimation(object_ptr<inputAnimation> &&animation_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 963542242;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * An audio.
+ */
+class inputPollMediaAudio final : public InputPollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The audio to be sent.
+  object_ptr<inputAudio> audio_;
+
+  /**
+   * An audio.
+   */
+  inputPollMediaAudio();
+
+  /**
+   * An audio.
+   *
+   * \param[in] audio_ The audio to be sent.
+   */
+  explicit inputPollMediaAudio(object_ptr<inputAudio> &&audio_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -54153106;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A document (general file).
+ */
+class inputPollMediaDocument final : public InputPollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The document to be sent.
+  object_ptr<inputDocument> document_;
+
+  /**
+   * A document (general file).
+   */
+  inputPollMediaDocument();
+
+  /**
+   * A document (general file).
+   *
+   * \param[in] document_ The document to be sent.
+   */
+  explicit inputPollMediaDocument(object_ptr<inputDocument> &&document_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1887620291;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A link.
+ */
+class inputPollMediaLink final : public InputPollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// URL of the link.
+  string url_;
+
+  /**
+   * A link.
+   */
+  inputPollMediaLink();
+
+  /**
+   * A link.
+   *
+   * \param[in] url_ URL of the link.
+   */
+  explicit inputPollMediaLink(string const &url_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1243145728;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A location.
+ */
+class inputPollMediaLocation final : public InputPollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Location to be sent.
+  object_ptr<location> location_;
+
+  /**
+   * A location.
+   */
+  inputPollMediaLocation();
+
+  /**
+   * A location.
+   *
+   * \param[in] location_ Location to be sent.
+   */
+  explicit inputPollMediaLocation(object_ptr<location> &&location_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -661054197;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A photo.
+ */
+class inputPollMediaPhoto final : public InputPollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Photo to be sent.
+  object_ptr<inputPhoto> photo_;
+
+  /**
+   * A photo.
+   */
+  inputPollMediaPhoto();
+
+  /**
+   * A photo.
+   *
+   * \param[in] photo_ Photo to be sent.
+   */
+  explicit inputPollMediaPhoto(object_ptr<inputPhoto> &&photo_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -726878670;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A sticker.
+ */
+class inputPollMediaSticker final : public InputPollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Sticker to be sent.
+  object_ptr<InputFile> sticker_;
+  /// Sticker thumbnail; pass null to skip thumbnail uploading.
+  object_ptr<inputThumbnail> thumbnail_;
+  /// Sticker width.
+  int32 width_;
+  /// Sticker height.
+  int32 height_;
+
+  /**
+   * A sticker.
+   */
+  inputPollMediaSticker();
+
+  /**
+   * A sticker.
+   *
+   * \param[in] sticker_ Sticker to be sent.
+   * \param[in] thumbnail_ Sticker thumbnail; pass null to skip thumbnail uploading.
+   * \param[in] width_ Sticker width.
+   * \param[in] height_ Sticker height.
+   */
+  inputPollMediaSticker(object_ptr<InputFile> &&sticker_, object_ptr<inputThumbnail> &&thumbnail_, int32 width_, int32 height_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1948870442;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A venue.
+ */
+class inputPollMediaVenue final : public InputPollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Venue to send.
+  object_ptr<venue> venue_;
+
+  /**
+   * A venue.
+   */
+  inputPollMediaVenue();
+
+  /**
+   * A venue.
+   *
+   * \param[in] venue_ Venue to send.
+   */
+  explicit inputPollMediaVenue(object_ptr<venue> &&venue_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1680398200;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A video.
+ */
+class inputPollMediaVideo final : public InputPollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The video to be sent.
+  object_ptr<inputVideo> video_;
+
+  /**
+   * A video.
+   */
+  inputPollMediaVideo();
+
+  /**
+   * A video.
+   *
+   * \param[in] video_ The video to be sent.
+   */
+  explicit inputPollMediaVideo(object_ptr<inputVideo> &&video_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1560121611;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class InputPollMedia;
 
 class formattedText;
 
@@ -31478,8 +32593,8 @@ class inputPollOption final : public Object {
  public:
   /// Option text; 1-100 characters. Only custom emoji entities are allowed to be added and only by Premium users.
   object_ptr<formattedText> text_;
-  /// Option media; pass null if none; ignored in addPollOption. Must be one of the following types: inputMessageAnimation, non-live inputMessageLocation, inputMessagePhoto, inputMessageSticker, inputMessageVenue, or inputMessageVideo without caption.
-  object_ptr<InputMessageContent> media_;
+  /// Option media; pass null if none; ignored in addPollOption. Must be one of the following types: inputPollMediaAnimation, inputPollMediaLink, inputPollMediaLocation, inputPollMediaPhoto, inputPollMediaSticker, inputPollMediaVenue, or inputPollMediaVideo without caption.
+  object_ptr<InputPollMedia> media_;
 
   /**
    * Describes one answer option of a poll to be created.
@@ -31490,12 +32605,12 @@ class inputPollOption final : public Object {
    * Describes one answer option of a poll to be created.
    *
    * \param[in] text_ Option text; 1-100 characters. Only custom emoji entities are allowed to be added and only by Premium users.
-   * \param[in] media_ Option media; pass null if none; ignored in addPollOption. Must be one of the following types: inputMessageAnimation, non-live inputMessageLocation, inputMessagePhoto, inputMessageSticker, inputMessageVenue, or inputMessageVideo without caption.
+   * \param[in] media_ Option media; pass null if none; ignored in addPollOption. Must be one of the following types: inputPollMediaAnimation, inputPollMediaLink, inputPollMediaLocation, inputPollMediaPhoto, inputPollMediaSticker, inputPollMediaVenue, or inputPollMediaVideo without caption.
    */
-  inputPollOption(object_ptr<formattedText> &&text_, object_ptr<InputMessageContent> &&media_);
+  inputPollOption(object_ptr<formattedText> &&text_, object_ptr<InputPollMedia> &&media_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -559227307;
+  static const std::int32_t ID = -1181830826;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -31505,7 +32620,7 @@ class inputPollOption final : public Object {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class InputMessageContent;
+class InputPollMedia;
 
 class formattedText;
 
@@ -31573,8 +32688,8 @@ class inputPollTypeQuiz final : public InputPollType {
   array<int32> correct_option_ids_;
   /// Text that is shown when the user chooses an incorrect answer or taps on the lamp icon; 0-200 characters with at most 2 line feeds.
   object_ptr<formattedText> explanation_;
-  /// Media that is shown when the user chooses an incorrect answer or taps on the lamp icon; pass null if none. Must be one of the following types: inputMessageAnimation, inputMessageAudio, inputMessageDocument, non-live inputMessageLocation, inputMessagePhoto, inputMessageVenue, or inputMessageVideo without caption.
-  object_ptr<InputMessageContent> explanation_media_;
+  /// Media that is shown when the user chooses an incorrect answer or taps on the lamp icon; pass null if none. Must be one of the following types: inputPollMediaAnimation, inputPollMediaAudio, inputPollMediaDocument, inputPollMediaLocation, inputPollMediaPhoto, inputPollMediaVenue, or inputPollMediaVideo without caption.
+  object_ptr<InputPollMedia> explanation_media_;
 
   /**
    * A poll in quiz mode, which has predefined correct answers.
@@ -31586,12 +32701,59 @@ class inputPollTypeQuiz final : public InputPollType {
    *
    * \param[in] correct_option_ids_ Increasing list of 0-based identifiers of the correct answer options; must be non-empty.
    * \param[in] explanation_ Text that is shown when the user chooses an incorrect answer or taps on the lamp icon; 0-200 characters with at most 2 line feeds.
-   * \param[in] explanation_media_ Media that is shown when the user chooses an incorrect answer or taps on the lamp icon; pass null if none. Must be one of the following types: inputMessageAnimation, inputMessageAudio, inputMessageDocument, non-live inputMessageLocation, inputMessagePhoto, inputMessageVenue, or inputMessageVideo without caption.
+   * \param[in] explanation_media_ Media that is shown when the user chooses an incorrect answer or taps on the lamp icon; pass null if none. Must be one of the following types: inputPollMediaAnimation, inputPollMediaAudio, inputPollMediaDocument, inputPollMediaLocation, inputPollMediaPhoto, inputPollMediaVenue, or inputPollMediaVideo without caption.
    */
-  inputPollTypeQuiz(array<int32> &&correct_option_ids_, object_ptr<formattedText> &&explanation_, object_ptr<InputMessageContent> &&explanation_media_);
+  inputPollTypeQuiz(array<int32> &&correct_option_ids_, object_ptr<formattedText> &&explanation_, object_ptr<InputPollMedia> &&explanation_media_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 880659994;
+  static const std::int32_t ID = -747018378;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class RichMessageSource;
+
+/**
+ * A rich message to send.
+ */
+class inputRichMessage final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Source of the rich message.
+  object_ptr<RichMessageSource> source_;
+  /// Pass true if the message must be shown from right to left.
+  bool is_rtl_;
+  /// Pass true to enable detection of URLs, email addresses and other automatic blocks.
+  bool detect_automatic_blocks_;
+
+  /**
+   * A rich message to send.
+   */
+  inputRichMessage();
+
+  /**
+   * A rich message to send.
+   *
+   * \param[in] source_ Source of the rich message.
+   * \param[in] is_rtl_ Pass true if the message must be shown from right to left.
+   * \param[in] detect_automatic_blocks_ Pass true to enable detection of URLs, email addresses and other automatic blocks.
+   */
+  inputRichMessage(object_ptr<RichMessageSource> &&source_, bool is_rtl_, bool detect_automatic_blocks_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1759178993;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -32324,6 +33486,73 @@ class inputThumbnail final : public Object {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = 1582387236;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class InputFile;
+
+class inputThumbnail;
+
+/**
+ * A video to be sent.
+ */
+class inputVideo final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Video file to be sent. The video is expected to be re-encoded to MPEG4 format with H.264 codec by the sender.
+  object_ptr<InputFile> video_;
+  /// Video thumbnail; pass null to skip thumbnail uploading.
+  object_ptr<inputThumbnail> thumbnail_;
+  /// Cover of the video; pass null to skip cover uploading; not supported in secret chats and for self-destructing messages.
+  object_ptr<InputFile> cover_;
+  /// Timestamp from which the video playing must start, in seconds.
+  int32 start_timestamp_;
+  /// File identifiers of the stickers added to the video, if applicable.
+  array<int32> added_sticker_file_ids_;
+  /// Duration of the video, in seconds.
+  int32 duration_;
+  /// Video width.
+  int32 width_;
+  /// Video height.
+  int32 height_;
+  /// True, if the video is expected to be streamed.
+  bool supports_streaming_;
+
+  /**
+   * A video to be sent.
+   */
+  inputVideo();
+
+  /**
+   * A video to be sent.
+   *
+   * \param[in] video_ Video file to be sent. The video is expected to be re-encoded to MPEG4 format with H.264 codec by the sender.
+   * \param[in] thumbnail_ Video thumbnail; pass null to skip thumbnail uploading.
+   * \param[in] cover_ Cover of the video; pass null to skip cover uploading; not supported in secret chats and for self-destructing messages.
+   * \param[in] start_timestamp_ Timestamp from which the video playing must start, in seconds.
+   * \param[in] added_sticker_file_ids_ File identifiers of the stickers added to the video, if applicable.
+   * \param[in] duration_ Duration of the video, in seconds.
+   * \param[in] width_ Video width.
+   * \param[in] height_ Video height.
+   * \param[in] supports_streaming_ True, if the video is expected to be streamed.
+   */
+  inputVideo(object_ptr<InputFile> &&video_, object_ptr<inputThumbnail> &&thumbnail_, object_ptr<InputFile> &&cover_, int32 start_timestamp_, array<int32> &&added_sticker_file_ids_, int32 duration_, int32 width_, int32 height_, bool supports_streaming_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -102022197;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -36072,7 +37301,7 @@ class linkPreview final : public Object {
   string url_;
   /// URL to display.
   string display_url_;
-  /// Short name of the site (e.g., Google Docs, App Store).
+  /// Short name of the website (e.g., Google Docs, App Store).
   string site_name_;
   /// Title of the content.
   string title_;
@@ -36105,7 +37334,7 @@ class linkPreview final : public Object {
    *
    * \param[in] url_ Original URL of the link.
    * \param[in] display_url_ URL to display.
-   * \param[in] site_name_ Short name of the site (e.g., Google Docs, App Store).
+   * \param[in] site_name_ Short name of the website (e.g., Google Docs, App Store).
    * \param[in] title_ Title of the content.
    * \param[in] description_ Description of the content.
    * \param[in] author_ Author of the content.
@@ -36430,7 +37659,7 @@ class linkPreviewTypeApp final : public LinkPreviewType {
 };
 
 /**
- * The link is a link to a web site.
+ * The link is a link to a website.
  */
 class linkPreviewTypeArticle final : public LinkPreviewType {
   /**
@@ -36446,12 +37675,12 @@ class linkPreviewTypeArticle final : public LinkPreviewType {
   object_ptr<photo> photo_;
 
   /**
-   * The link is a link to a web site.
+   * The link is a link to a website.
    */
   linkPreviewTypeArticle();
 
   /**
-   * The link is a link to a web site.
+   * The link is a link to a website.
    *
    * \param[in] photo_ Article's main photo; may be null.
    */
@@ -37911,6 +39140,56 @@ class linkPreviewTypeWebApp final : public LinkPreviewType {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class location;
+
+/**
+ * A live location.
+ */
+class liveLocation final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The current location.
+  object_ptr<location> location_;
+  /// Time relative to the message send date, for which the location can be updated, in seconds; if 0x7FFFFFFF, then location can be updated forever.
+  int32 live_period_;
+  /// The direction in which the location moves, in degrees; 1-360; 0 if unknown.
+  int32 heading_;
+  /// The maximum distance to another chat member for proximity alerts, in meters (0-100000). 0 if the notification is disabled. Can't be enabled in direct messages chats, channels and Saved Messages. Available only to the message sender.
+  int32 proximity_alert_radius_;
+
+  /**
+   * A live location.
+   */
+  liveLocation();
+
+  /**
+   * A live location.
+   *
+   * \param[in] location_ The current location.
+   * \param[in] live_period_ Time relative to the message send date, for which the location can be updated, in seconds; if 0x7FFFFFFF, then location can be updated forever.
+   * \param[in] heading_ The direction in which the location moves, in degrees; 1-360; 0 if unknown.
+   * \param[in] proximity_alert_radius_ The maximum distance to another chat member for proximity alerts, in meters (0-100000). 0 if the notification is disabled. Can't be enabled in direct messages chats, channels and Saved Messages. Available only to the message sender.
+   */
+  liveLocation(object_ptr<location> &&location_, int32 live_period_, int32 heading_, int32 proximity_alert_radius_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 417851690;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class paidReactor;
 
 /**
@@ -38440,6 +39719,8 @@ class loginUrlInfoRequestConfirmation final : public LoginUrlInfo {
 
 class WebAppOpenMode;
 
+class webAppUrl;
+
 /**
  * Contains information about the main Web App of a bot.
  */
@@ -38454,7 +39735,7 @@ class mainWebApp final : public Object {
 
  public:
   /// URL of the Web App to open.
-  string url_;
+  object_ptr<webAppUrl> url_;
   /// The mode in which the Web App must be opened.
   object_ptr<WebAppOpenMode> mode_;
 
@@ -38469,10 +39750,10 @@ class mainWebApp final : public Object {
    * \param[in] url_ URL of the Web App to open.
    * \param[in] mode_ The mode in which the Web App must be opened.
    */
-  mainWebApp(string const &url_, object_ptr<WebAppOpenMode> &&mode_);
+  mainWebApp(object_ptr<webAppUrl> &&url_, object_ptr<WebAppOpenMode> &&mode_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1940368506;
+  static const std::int32_t ID = 1645674754;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -38990,13 +40271,13 @@ class GiftResalePrice;
 
 class GiveawayPrize;
 
-class MessageContent;
-
 class MessageSender;
 
 class PaidMedia;
 
 class PassportElementType;
+
+class PollMedia;
 
 class SuggestedPostPrice;
 
@@ -39044,6 +40325,8 @@ class linkPreview;
 
 class linkPreviewOptions;
 
+class liveLocation;
+
 class location;
 
 class orderInfo;
@@ -39053,6 +40336,8 @@ class photo;
 class poll;
 
 class productInfo;
+
+class richMessage;
 
 class sharedChat;
 
@@ -39118,6 +40403,45 @@ class messageText final : public MessageContent {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = 1751469188;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A rich message; the message can have multiple media of the same type, all of which must be shown in the corresponding profile tab.
+ */
+class messageRichMessage final : public MessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The rich message.
+  object_ptr<richMessage> message_;
+
+  /**
+   * A rich message; the message can have multiple media of the same type, all of which must be shown in the corresponding profile tab.
+   */
+  messageRichMessage();
+
+  /**
+   * A rich message; the message can have multiple media of the same type, all of which must be shown in the corresponding profile tab.
+   *
+   * \param[in] message_ The rich message.
+   */
+  explicit messageRichMessage(object_ptr<richMessage> &&message_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1243148892;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -39680,6 +41004,48 @@ class messageExpiredVoiceNote final : public MessageContent {
 };
 
 /**
+ * A message with a live location.
+ */
+class messageLiveLocation final : public MessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The current location.
+  object_ptr<liveLocation> location_;
+  /// Left time for which the location can be updated, in seconds. If 0, then the location can't be updated anymore. The update updateMessageContent is not sent when this field changes.
+  int32 expires_in_;
+
+  /**
+   * A message with a live location.
+   */
+  messageLiveLocation();
+
+  /**
+   * A message with a live location.
+   *
+   * \param[in] location_ The current location.
+   * \param[in] expires_in_ Left time for which the location can be updated, in seconds. If 0, then the location can't be updated anymore. The update updateMessageContent is not sent when this field changes.
+   */
+  messageLiveLocation(object_ptr<liveLocation> &&location_, int32 expires_in_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -641984989;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * A message with a location.
  */
 class messageLocation final : public MessageContent {
@@ -39692,16 +41058,8 @@ class messageLocation final : public MessageContent {
   }
 
  public:
-  /// The location description.
+  /// The location.
   object_ptr<location> location_;
-  /// Time relative to the message send date, for which the location can be updated, in seconds; if 0x7FFFFFFF, then location can be updated forever.
-  int32 live_period_;
-  /// Left time for which the location can be updated, in seconds. If 0, then the location can't be updated anymore. The update updateMessageContent is not sent when this field changes.
-  int32 expires_in_;
-  /// For live locations, a direction in which the location moves, in degrees; 1-360. If 0 the direction is unknown.
-  int32 heading_;
-  /// For live locations, a maximum distance to another chat member for proximity alerts, in meters (0-100000). 0 if the notification is disabled. Available only to the message sender.
-  int32 proximity_alert_radius_;
 
   /**
    * A message with a location.
@@ -39711,16 +41069,12 @@ class messageLocation final : public MessageContent {
   /**
    * A message with a location.
    *
-   * \param[in] location_ The location description.
-   * \param[in] live_period_ Time relative to the message send date, for which the location can be updated, in seconds; if 0x7FFFFFFF, then location can be updated forever.
-   * \param[in] expires_in_ Left time for which the location can be updated, in seconds. If 0, then the location can't be updated anymore. The update updateMessageContent is not sent when this field changes.
-   * \param[in] heading_ For live locations, a direction in which the location moves, in degrees; 1-360. If 0 the direction is unknown.
-   * \param[in] proximity_alert_radius_ For live locations, a maximum distance to another chat member for proximity alerts, in meters (0-100000). 0 if the notification is disabled. Available only to the message sender.
+   * \param[in] location_ The location.
    */
-  messageLocation(object_ptr<location> &&location_, int32 live_period_, int32 expires_in_, int32 heading_, int32 proximity_alert_radius_);
+  explicit messageLocation(object_ptr<location> &&location_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 303973492;
+  static const std::int32_t ID = 161545583;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -39957,8 +41311,8 @@ class messagePoll final : public MessageContent {
   object_ptr<poll> poll_;
   /// Description of the poll.
   object_ptr<formattedText> description_;
-  /// Media attached to the poll; may be null if none. If present, currently, can be only of the types messageAnimation, messageAudio, messageDocument, messageLocation, messagePhoto, messageVenue, or messageVideo without caption.
-  object_ptr<MessageContent> media_;
+  /// Media attached to the poll; may be null if none. If present, currently, can be only of the types pollMediaAnimation, pollMediaAudio, pollMediaDocument, pollMediaLocation, pollMediaPhoto, pollMediaVenue, or pollMediaVideo.
+  object_ptr<PollMedia> media_;
   /// True, if an option can be added to the poll using addPollOption.
   bool can_add_option_;
 
@@ -39972,13 +41326,13 @@ class messagePoll final : public MessageContent {
    *
    * \param[in] poll_ Information about the poll.
    * \param[in] description_ Description of the poll.
-   * \param[in] media_ Media attached to the poll; may be null if none. If present, currently, can be only of the types messageAnimation, messageAudio, messageDocument, messageLocation, messagePhoto, messageVenue, or messageVideo without caption.
+   * \param[in] media_ Media attached to the poll; may be null if none. If present, currently, can be only of the types pollMediaAnimation, pollMediaAudio, pollMediaDocument, pollMediaLocation, pollMediaPhoto, pollMediaVenue, or pollMediaVideo.
    * \param[in] can_add_option_ True, if an option can be added to the poll using addPollOption.
    */
-  messagePoll(object_ptr<poll> &&poll_, object_ptr<formattedText> &&description_, object_ptr<MessageContent> &&media_, bool can_add_option_);
+  messagePoll(object_ptr<poll> &&poll_, object_ptr<formattedText> &&description_, object_ptr<PollMedia> &&media_, bool can_add_option_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1644813882;
+  static const std::int32_t ID = 868419197;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -47584,7 +48938,7 @@ class PageBlock: public Object {
 };
 
 /**
- * The title of a page.
+ * The title of a page; instant view only.
  */
 class pageBlockTitle final : public PageBlock {
   /**
@@ -47600,12 +48954,12 @@ class pageBlockTitle final : public PageBlock {
   object_ptr<RichText> title_;
 
   /**
-   * The title of a page.
+   * The title of a page; instant view only.
    */
   pageBlockTitle();
 
   /**
-   * The title of a page.
+   * The title of a page; instant view only.
    *
    * \param[in] title_ Title.
    */
@@ -47623,7 +48977,7 @@ class pageBlockTitle final : public PageBlock {
 };
 
 /**
- * The subtitle of a page.
+ * The subtitle of a page; instant view only.
  */
 class pageBlockSubtitle final : public PageBlock {
   /**
@@ -47639,12 +48993,12 @@ class pageBlockSubtitle final : public PageBlock {
   object_ptr<RichText> subtitle_;
 
   /**
-   * The subtitle of a page.
+   * The subtitle of a page; instant view only.
    */
   pageBlockSubtitle();
 
   /**
-   * The subtitle of a page.
+   * The subtitle of a page; instant view only.
    *
    * \param[in] subtitle_ Subtitle.
    */
@@ -47662,7 +49016,7 @@ class pageBlockSubtitle final : public PageBlock {
 };
 
 /**
- * The author and publishing date of a page.
+ * The author and publishing date of a page; instant view only.
  */
 class pageBlockAuthorDate final : public PageBlock {
   /**
@@ -47680,12 +49034,12 @@ class pageBlockAuthorDate final : public PageBlock {
   int32 publish_date_;
 
   /**
-   * The author and publishing date of a page.
+   * The author and publishing date of a page; instant view only.
    */
   pageBlockAuthorDate();
 
   /**
-   * The author and publishing date of a page.
+   * The author and publishing date of a page; instant view only.
    *
    * \param[in] author_ Author.
    * \param[in] publish_date_ Point in time (Unix timestamp) when the article was published; 0 if unknown.
@@ -47704,7 +49058,7 @@ class pageBlockAuthorDate final : public PageBlock {
 };
 
 /**
- * A header.
+ * A header; instant view only.
  */
 class pageBlockHeader final : public PageBlock {
   /**
@@ -47720,12 +49074,12 @@ class pageBlockHeader final : public PageBlock {
   object_ptr<RichText> header_;
 
   /**
-   * A header.
+   * A header; instant view only.
    */
   pageBlockHeader();
 
   /**
-   * A header.
+   * A header; instant view only.
    *
    * \param[in] header_ Header.
    */
@@ -47743,7 +49097,7 @@ class pageBlockHeader final : public PageBlock {
 };
 
 /**
- * A subheader.
+ * A subheader; instant view only.
  */
 class pageBlockSubheader final : public PageBlock {
   /**
@@ -47759,12 +49113,12 @@ class pageBlockSubheader final : public PageBlock {
   object_ptr<RichText> subheader_;
 
   /**
-   * A subheader.
+   * A subheader; instant view only.
    */
   pageBlockSubheader();
 
   /**
-   * A subheader.
+   * A subheader; instant view only.
    *
    * \param[in] subheader_ Subheader.
    */
@@ -47782,7 +49136,49 @@ class pageBlockSubheader final : public PageBlock {
 };
 
 /**
- * A kicker.
+ * A section heading.
+ */
+class pageBlockSectionHeading final : public PageBlock {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text of the section heading.
+  object_ptr<RichText> text_;
+  /// Relative size of the text font; 1-6, 1 is the largest, 6 is the smallest.
+  int32 size_;
+
+  /**
+   * A section heading.
+   */
+  pageBlockSectionHeading();
+
+  /**
+   * A section heading.
+   *
+   * \param[in] text_ Text of the section heading.
+   * \param[in] size_ Relative size of the text font; 1-6, 1 is the largest, 6 is the smallest.
+   */
+  pageBlockSectionHeading(object_ptr<RichText> &&text_, int32 size_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1393322427;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A kicker; instant view only.
  */
 class pageBlockKicker final : public PageBlock {
   /**
@@ -47798,12 +49194,12 @@ class pageBlockKicker final : public PageBlock {
   object_ptr<RichText> kicker_;
 
   /**
-   * A kicker.
+   * A kicker; instant view only.
    */
   pageBlockKicker();
 
   /**
-   * A kicker.
+   * A kicker; instant view only.
    *
    * \param[in] kicker_ Kicker.
    */
@@ -47941,6 +49337,45 @@ class pageBlockFooter final : public PageBlock {
 };
 
 /**
+ * A &quot;Thinking...&quot; placeholder; for pending rich messages only.
+ */
+class pageBlockThinking final : public PageBlock {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text of the placeholder.
+  object_ptr<RichText> text_;
+
+  /**
+   * A &quot;Thinking...&quot; placeholder; for pending rich messages only.
+   */
+  pageBlockThinking();
+
+  /**
+   * A &quot;Thinking...&quot; placeholder; for pending rich messages only.
+   *
+   * \param[in] text_ Text of the placeholder.
+   */
+  explicit pageBlockThinking(object_ptr<RichText> &&text_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1009361890;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * An empty block separating a page.
  */
 class pageBlockDivider final : public PageBlock {
@@ -47961,6 +49396,45 @@ class pageBlockDivider final : public PageBlock {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -618614392;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A mathematical expression.
+ */
+class pageBlockMathematicalExpression final : public PageBlock {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The expression in LaTeX format.
+  string expression_;
+
+  /**
+   * A mathematical expression.
+   */
+  pageBlockMathematicalExpression();
+
+  /**
+   * A mathematical expression.
+   *
+   * \param[in] expression_ The expression in LaTeX format.
+   */
+  explicit pageBlockMathematicalExpression(string const &expression_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1728454919;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -48061,9 +49535,9 @@ class pageBlockBlockQuote final : public PageBlock {
   }
 
  public:
-  /// Quote text.
-  object_ptr<RichText> text_;
-  /// Quote credit.
+  /// Quote blocks.
+  array<object_ptr<PageBlock>> blocks_;
+  /// Quote credit; may be null if none.
   object_ptr<RichText> credit_;
 
   /**
@@ -48074,13 +49548,13 @@ class pageBlockBlockQuote final : public PageBlock {
   /**
    * A block quote.
    *
-   * \param[in] text_ Quote text.
-   * \param[in] credit_ Quote credit.
+   * \param[in] blocks_ Quote blocks.
+   * \param[in] credit_ Quote credit; may be null if none.
    */
-  pageBlockBlockQuote(object_ptr<RichText> &&text_, object_ptr<RichText> &&credit_);
+  pageBlockBlockQuote(array<object_ptr<PageBlock>> &&blocks_, object_ptr<RichText> &&credit_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1657834142;
+  static const std::int32_t ID = -1349658810;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -48105,7 +49579,7 @@ class pageBlockPullQuote final : public PageBlock {
  public:
   /// Quote text.
   object_ptr<RichText> text_;
-  /// Quote credit.
+  /// Quote credit; may be null if none.
   object_ptr<RichText> credit_;
 
   /**
@@ -48117,7 +49591,7 @@ class pageBlockPullQuote final : public PageBlock {
    * A pull quote.
    *
    * \param[in] text_ Quote text.
-   * \param[in] credit_ Quote credit.
+   * \param[in] credit_ Quote credit; may be null if none.
    */
   pageBlockPullQuote(object_ptr<RichText> &&text_, object_ptr<RichText> &&credit_);
 
@@ -48147,10 +49621,12 @@ class pageBlockAnimation final : public PageBlock {
  public:
   /// Animation file; may be null.
   object_ptr<animation> animation_;
-  /// Animation caption.
+  /// Animation caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
   /// True, if the animation must be played automatically.
   bool need_autoplay_;
+  /// True, if the animation preview must be covered by a spoiler animation.
+  bool has_spoiler_;
 
   /**
    * An animation.
@@ -48161,13 +49637,14 @@ class pageBlockAnimation final : public PageBlock {
    * An animation.
    *
    * \param[in] animation_ Animation file; may be null.
-   * \param[in] caption_ Animation caption.
+   * \param[in] caption_ Animation caption; may be null if none.
    * \param[in] need_autoplay_ True, if the animation must be played automatically.
+   * \param[in] has_spoiler_ True, if the animation preview must be covered by a spoiler animation.
    */
-  pageBlockAnimation(object_ptr<animation> &&animation_, object_ptr<pageBlockCaption> &&caption_, bool need_autoplay_);
+  pageBlockAnimation(object_ptr<animation> &&animation_, object_ptr<pageBlockCaption> &&caption_, bool need_autoplay_, bool has_spoiler_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1355669513;
+  static const std::int32_t ID = -789656326;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -48192,7 +49669,7 @@ class pageBlockAudio final : public PageBlock {
  public:
   /// Audio file; may be null.
   object_ptr<audio> audio_;
-  /// Audio file caption.
+  /// Audio file caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
 
   /**
@@ -48204,7 +49681,7 @@ class pageBlockAudio final : public PageBlock {
    * An audio file.
    *
    * \param[in] audio_ Audio file; may be null.
-   * \param[in] caption_ Audio file caption.
+   * \param[in] caption_ Audio file caption; may be null if none.
    */
   pageBlockAudio(object_ptr<audio> &&audio_, object_ptr<pageBlockCaption> &&caption_);
 
@@ -48234,10 +49711,12 @@ class pageBlockPhoto final : public PageBlock {
  public:
   /// Photo file; may be null.
   object_ptr<photo> photo_;
-  /// Photo caption.
+  /// Photo caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
-  /// URL that needs to be opened when the photo is clicked.
+  /// URL that needs to be opened when the photo is clicked; instant view only.
   string url_;
+  /// True, if the photo preview must be covered by a spoiler animation.
+  bool has_spoiler_;
 
   /**
    * A photo.
@@ -48248,13 +49727,14 @@ class pageBlockPhoto final : public PageBlock {
    * A photo.
    *
    * \param[in] photo_ Photo file; may be null.
-   * \param[in] caption_ Photo caption.
-   * \param[in] url_ URL that needs to be opened when the photo is clicked.
+   * \param[in] caption_ Photo caption; may be null if none.
+   * \param[in] url_ URL that needs to be opened when the photo is clicked; instant view only.
+   * \param[in] has_spoiler_ True, if the photo preview must be covered by a spoiler animation.
    */
-  pageBlockPhoto(object_ptr<photo> &&photo_, object_ptr<pageBlockCaption> &&caption_, string const &url_);
+  pageBlockPhoto(object_ptr<photo> &&photo_, object_ptr<pageBlockCaption> &&caption_, string const &url_, bool has_spoiler_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 417601156;
+  static const std::int32_t ID = 612455231;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -48279,12 +49759,14 @@ class pageBlockVideo final : public PageBlock {
  public:
   /// Video file; may be null.
   object_ptr<video> video_;
-  /// Video caption.
+  /// Video caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
   /// True, if the video must be played automatically.
   bool need_autoplay_;
   /// True, if the video must be looped.
   bool is_looped_;
+  /// True, if the video preview must be covered by a spoiler animation.
+  bool has_spoiler_;
 
   /**
    * A video.
@@ -48295,14 +49777,15 @@ class pageBlockVideo final : public PageBlock {
    * A video.
    *
    * \param[in] video_ Video file; may be null.
-   * \param[in] caption_ Video caption.
+   * \param[in] caption_ Video caption; may be null if none.
    * \param[in] need_autoplay_ True, if the video must be played automatically.
    * \param[in] is_looped_ True, if the video must be looped.
+   * \param[in] has_spoiler_ True, if the video preview must be covered by a spoiler animation.
    */
-  pageBlockVideo(object_ptr<video> &&video_, object_ptr<pageBlockCaption> &&caption_, bool need_autoplay_, bool is_looped_);
+  pageBlockVideo(object_ptr<video> &&video_, object_ptr<pageBlockCaption> &&caption_, bool need_autoplay_, bool is_looped_, bool has_spoiler_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 510041394;
+  static const std::int32_t ID = 405686413;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -48327,7 +49810,7 @@ class pageBlockVoiceNote final : public PageBlock {
  public:
   /// Voice note; may be null.
   object_ptr<voiceNote> voice_note_;
-  /// Voice note caption.
+  /// Voice note caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
 
   /**
@@ -48339,7 +49822,7 @@ class pageBlockVoiceNote final : public PageBlock {
    * A voice note.
    *
    * \param[in] voice_note_ Voice note; may be null.
-   * \param[in] caption_ Voice note caption.
+   * \param[in] caption_ Voice note caption; may be null if none.
    */
   pageBlockVoiceNote(object_ptr<voiceNote> &&voice_note_, object_ptr<pageBlockCaption> &&caption_);
 
@@ -48355,7 +49838,7 @@ class pageBlockVoiceNote final : public PageBlock {
 };
 
 /**
- * A page cover.
+ * A page cover; instant view only.
  */
 class pageBlockCover final : public PageBlock {
   /**
@@ -48371,12 +49854,12 @@ class pageBlockCover final : public PageBlock {
   object_ptr<PageBlock> cover_;
 
   /**
-   * A page cover.
+   * A page cover; instant view only.
    */
   pageBlockCover();
 
   /**
-   * A page cover.
+   * A page cover; instant view only.
    *
    * \param[in] cover_ Cover.
    */
@@ -48394,7 +49877,7 @@ class pageBlockCover final : public PageBlock {
 };
 
 /**
- * An embedded web page.
+ * An embedded web page; instant view only.
  */
 class pageBlockEmbedded final : public PageBlock {
   /**
@@ -48416,7 +49899,7 @@ class pageBlockEmbedded final : public PageBlock {
   int32 width_;
   /// Block height; 0 if unknown.
   int32 height_;
-  /// Block caption.
+  /// Block caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
   /// True, if the block must be full width.
   bool is_full_width_;
@@ -48424,19 +49907,19 @@ class pageBlockEmbedded final : public PageBlock {
   bool allow_scrolling_;
 
   /**
-   * An embedded web page.
+   * An embedded web page; instant view only.
    */
   pageBlockEmbedded();
 
   /**
-   * An embedded web page.
+   * An embedded web page; instant view only.
    *
    * \param[in] url_ URL of the embedded page, if available.
    * \param[in] html_ HTML-markup of the embedded page.
    * \param[in] poster_photo_ Poster photo, if available; may be null.
    * \param[in] width_ Block width; 0 if unknown.
    * \param[in] height_ Block height; 0 if unknown.
-   * \param[in] caption_ Block caption.
+   * \param[in] caption_ Block caption; may be null if none.
    * \param[in] is_full_width_ True, if the block must be full width.
    * \param[in] allow_scrolling_ True, if scrolling needs to be allowed.
    */
@@ -48454,7 +49937,7 @@ class pageBlockEmbedded final : public PageBlock {
 };
 
 /**
- * An embedded post.
+ * An embedded post; instant view only.
  */
 class pageBlockEmbeddedPost final : public PageBlock {
   /**
@@ -48475,29 +49958,29 @@ class pageBlockEmbeddedPost final : public PageBlock {
   /// Point in time (Unix timestamp) when the post was created; 0 if unknown.
   int32 date_;
   /// Post content.
-  array<object_ptr<PageBlock>> page_blocks_;
-  /// Post caption.
+  array<object_ptr<PageBlock>> blocks_;
+  /// Post caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
 
   /**
-   * An embedded post.
+   * An embedded post; instant view only.
    */
   pageBlockEmbeddedPost();
 
   /**
-   * An embedded post.
+   * An embedded post; instant view only.
    *
    * \param[in] url_ URL of the embedded post.
    * \param[in] author_ Post author.
    * \param[in] author_photo_ Post author photo; may be null.
    * \param[in] date_ Point in time (Unix timestamp) when the post was created; 0 if unknown.
-   * \param[in] page_blocks_ Post content.
-   * \param[in] caption_ Post caption.
+   * \param[in] blocks_ Post content.
+   * \param[in] caption_ Post caption; may be null if none.
    */
-  pageBlockEmbeddedPost(string const &url_, string const &author_, object_ptr<photo> &&author_photo_, int32 date_, array<object_ptr<PageBlock>> &&page_blocks_, object_ptr<pageBlockCaption> &&caption_);
+  pageBlockEmbeddedPost(string const &url_, string const &author_, object_ptr<photo> &&author_photo_, int32 date_, array<object_ptr<PageBlock>> &&blocks_, object_ptr<pageBlockCaption> &&caption_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 397600949;
+  static const std::int32_t ID = -1671929344;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -48521,8 +50004,8 @@ class pageBlockCollage final : public PageBlock {
 
  public:
   /// Collage item contents.
-  array<object_ptr<PageBlock>> page_blocks_;
-  /// Block caption.
+  array<object_ptr<PageBlock>> blocks_;
+  /// Block caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
 
   /**
@@ -48533,13 +50016,13 @@ class pageBlockCollage final : public PageBlock {
   /**
    * A collage.
    *
-   * \param[in] page_blocks_ Collage item contents.
-   * \param[in] caption_ Block caption.
+   * \param[in] blocks_ Collage item contents.
+   * \param[in] caption_ Block caption; may be null if none.
    */
-  pageBlockCollage(array<object_ptr<PageBlock>> &&page_blocks_, object_ptr<pageBlockCaption> &&caption_);
+  pageBlockCollage(array<object_ptr<PageBlock>> &&blocks_, object_ptr<pageBlockCaption> &&caption_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1163760110;
+  static const std::int32_t ID = 1361466598;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -48563,8 +50046,8 @@ class pageBlockSlideshow final : public PageBlock {
 
  public:
   /// Slideshow item contents.
-  array<object_ptr<PageBlock>> page_blocks_;
-  /// Block caption.
+  array<object_ptr<PageBlock>> blocks_;
+  /// Block caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
 
   /**
@@ -48575,13 +50058,13 @@ class pageBlockSlideshow final : public PageBlock {
   /**
    * A slideshow.
    *
-   * \param[in] page_blocks_ Slideshow item contents.
-   * \param[in] caption_ Block caption.
+   * \param[in] blocks_ Slideshow item contents.
+   * \param[in] caption_ Block caption; may be null if none.
    */
-  pageBlockSlideshow(array<object_ptr<PageBlock>> &&page_blocks_, object_ptr<pageBlockCaption> &&caption_);
+  pageBlockSlideshow(array<object_ptr<PageBlock>> &&blocks_, object_ptr<pageBlockCaption> &&caption_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 539217375;
+  static const std::int32_t ID = -307277099;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -48592,7 +50075,7 @@ class pageBlockSlideshow final : public PageBlock {
 };
 
 /**
- * A link to a chat.
+ * A link to a chat; instant view only.
  */
 class pageBlockChatLink final : public PageBlock {
   /**
@@ -48614,12 +50097,12 @@ class pageBlockChatLink final : public PageBlock {
   string username_;
 
   /**
-   * A link to a chat.
+   * A link to a chat; instant view only.
    */
   pageBlockChatLink();
 
   /**
-   * A link to a chat.
+   * A link to a chat; instant view only.
    *
    * \param[in] title_ Chat title.
    * \param[in] photo_ Chat photo; may be null.
@@ -48652,7 +50135,7 @@ class pageBlockTable final : public PageBlock {
   }
 
  public:
-  /// Table caption.
+  /// Table caption; may be null if none.
   object_ptr<RichText> caption_;
   /// Table cells.
   array<array<object_ptr<pageBlockTableCell>>> cells_;
@@ -48669,7 +50152,7 @@ class pageBlockTable final : public PageBlock {
   /**
    * A table.
    *
-   * \param[in] caption_ Table caption.
+   * \param[in] caption_ Table caption; may be null if none.
    * \param[in] cells_ Table cells.
    * \param[in] is_bordered_ True, if the table is bordered.
    * \param[in] is_striped_ True, if the table is striped.
@@ -48703,7 +50186,7 @@ class pageBlockDetails final : public PageBlock {
   /// Always visible heading for the block.
   object_ptr<RichText> header_;
   /// Block contents.
-  array<object_ptr<PageBlock>> page_blocks_;
+  array<object_ptr<PageBlock>> blocks_;
   /// True, if the block is open by default.
   bool is_open_;
 
@@ -48716,13 +50199,13 @@ class pageBlockDetails final : public PageBlock {
    * A collapsible block.
    *
    * \param[in] header_ Always visible heading for the block.
-   * \param[in] page_blocks_ Block contents.
+   * \param[in] blocks_ Block contents.
    * \param[in] is_open_ True, if the block is open by default.
    */
-  pageBlockDetails(object_ptr<RichText> &&header_, array<object_ptr<PageBlock>> &&page_blocks_, bool is_open_);
+  pageBlockDetails(object_ptr<RichText> &&header_, array<object_ptr<PageBlock>> &&blocks_, bool is_open_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1599869809;
+  static const std::int32_t ID = -1257552914;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -48733,7 +50216,7 @@ class pageBlockDetails final : public PageBlock {
 };
 
 /**
- * Related articles.
+ * Related articles; instant view only.
  */
 class pageBlockRelatedArticles final : public PageBlock {
   /**
@@ -48751,12 +50234,12 @@ class pageBlockRelatedArticles final : public PageBlock {
   array<object_ptr<pageBlockRelatedArticle>> articles_;
 
   /**
-   * Related articles.
+   * Related articles; instant view only.
    */
   pageBlockRelatedArticles();
 
   /**
-   * Related articles.
+   * Related articles; instant view only.
    *
    * \param[in] header_ Block header.
    * \param[in] articles_ List of related articles.
@@ -48795,7 +50278,7 @@ class pageBlockMap final : public PageBlock {
   int32 width_;
   /// Map height.
   int32 height_;
-  /// Block caption.
+  /// Block caption; may be null if none.
   object_ptr<pageBlockCaption> caption_;
 
   /**
@@ -48810,7 +50293,7 @@ class pageBlockMap final : public PageBlock {
    * \param[in] zoom_ Map zoom level.
    * \param[in] width_ Map width.
    * \param[in] height_ Map height.
-   * \param[in] caption_ Block caption.
+   * \param[in] caption_ Block caption; may be null if none.
    */
   pageBlockMap(object_ptr<location> &&location_, int32 zoom_, int32 width_, int32 height_, object_ptr<pageBlockCaption> &&caption_);
 
@@ -48842,7 +50325,7 @@ class pageBlockCaption final : public Object {
  public:
   /// Content of the caption.
   object_ptr<RichText> text_;
-  /// Block credit (like HTML tag &lt;cite&gt;).
+  /// Block credit (like HTML tag &lt;cite&gt;); may be null if none.
   object_ptr<RichText> credit_;
 
   /**
@@ -48854,7 +50337,7 @@ class pageBlockCaption final : public Object {
    * Contains a caption of another block.
    *
    * \param[in] text_ Content of the caption.
-   * \param[in] credit_ Block credit (like HTML tag &lt;cite&gt;).
+   * \param[in] credit_ Block credit (like HTML tag &lt;cite&gt;); may be null if none.
    */
   pageBlockCaption(object_ptr<RichText> &&text_, object_ptr<RichText> &&credit_);
 
@@ -48985,7 +50468,15 @@ class pageBlockListItem final : public Object {
   /// Item label.
   string label_;
   /// Item blocks.
-  array<object_ptr<PageBlock>> page_blocks_;
+  array<object_ptr<PageBlock>> blocks_;
+  /// True, if the item has a checkbox.
+  bool has_checkbox_;
+  /// True, if the item is checked.
+  bool is_checked_;
+  /// Value of the item; 0 for unordered lists.
+  int32 value_;
+  /// Type of the item numbering type; must be one of &quot;a&quot; for a lowercase letters, &quot;A&quot; for an uppercase letters, &quot;i&quot; for lowercase Roman numerals, &quot;I&quot; for uppercase Roman numerals, &quot;1&quot; for decimal numbers, or empty for unordered lists.
+  string type_;
 
   /**
    * Describes an item of a list page block.
@@ -48996,12 +50487,16 @@ class pageBlockListItem final : public Object {
    * Describes an item of a list page block.
    *
    * \param[in] label_ Item label.
-   * \param[in] page_blocks_ Item blocks.
+   * \param[in] blocks_ Item blocks.
+   * \param[in] has_checkbox_ True, if the item has a checkbox.
+   * \param[in] is_checked_ True, if the item is checked.
+   * \param[in] value_ Value of the item; 0 for unordered lists.
+   * \param[in] type_ Type of the item numbering type; must be one of &quot;a&quot; for a lowercase letters, &quot;A&quot; for an uppercase letters, &quot;i&quot; for lowercase Roman numerals, &quot;I&quot; for uppercase Roman numerals, &quot;1&quot; for decimal numbers, or empty for unordered lists.
    */
-  pageBlockListItem(string const &label_, array<object_ptr<PageBlock>> &&page_blocks_);
+  pageBlockListItem(string const &label_, array<object_ptr<PageBlock>> &&blocks_, bool has_checkbox_, bool is_checked_, int32 value_, string const &type_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 323186259;
+  static const std::int32_t ID = -788302696;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -52315,6 +53810,8 @@ class poll final : public Object {
   array<object_ptr<MessageSender>> recent_voter_ids_;
   /// True, if the current user can get voters in the poll using getPollVoters.
   bool can_get_voters_;
+  /// True, if the current user can see results of the poll.
+  bool can_see_results_;
   /// True, if the poll is anonymous.
   bool is_anonymous_;
   /// True, if multiple answer options can be chosen simultaneously.
@@ -52352,6 +53849,7 @@ class poll final : public Object {
    * \param[in] total_voter_count_ Total number of voters, participating in the poll.
    * \param[in] recent_voter_ids_ Identifiers of recent voters, if the poll is non-anonymous and poll results are available.
    * \param[in] can_get_voters_ True, if the current user can get voters in the poll using getPollVoters.
+   * \param[in] can_see_results_ True, if the current user can see results of the poll.
    * \param[in] is_anonymous_ True, if the poll is anonymous.
    * \param[in] allows_multiple_answers_ True, if multiple answer options can be chosen simultaneously.
    * \param[in] allows_revoting_ True, if the poll can be answered multiple times.
@@ -52364,10 +53862,10 @@ class poll final : public Object {
    * \param[in] is_closed_ True, if the poll is closed.
    * \param[in] vote_restriction_reason_ The reason describing, why the current user can't vote in the poll; may be null if the user can vote in the poll.
    */
-  poll(int64 id_, object_ptr<formattedText> &&question_, array<object_ptr<pollOption>> &&options_, int32 total_voter_count_, array<object_ptr<MessageSender>> &&recent_voter_ids_, bool can_get_voters_, bool is_anonymous_, bool allows_multiple_answers_, bool allows_revoting_, bool members_only_, array<string> &&country_codes_, array<int32> &&option_order_, object_ptr<PollType> &&type_, int32 open_period_, int32 close_date_, bool is_closed_, object_ptr<PollVoteRestrictionReason> &&vote_restriction_reason_);
+  poll(int64 id_, object_ptr<formattedText> &&question_, array<object_ptr<pollOption>> &&options_, int32 total_voter_count_, array<object_ptr<MessageSender>> &&recent_voter_ids_, bool can_get_voters_, bool can_see_results_, bool is_anonymous_, bool allows_multiple_answers_, bool allows_revoting_, bool members_only_, array<string> &&country_codes_, array<int32> &&option_order_, object_ptr<PollType> &&type_, int32 open_period_, int32 close_date_, bool is_closed_, object_ptr<PollVoteRestrictionReason> &&vote_restriction_reason_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 438560099;
+  static const std::int32_t ID = -1926406506;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -52377,9 +53875,408 @@ class poll final : public Object {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class MessageContent;
+class alternativeVideo;
+
+class animation;
+
+class audio;
+
+class document;
+
+class linkPreview;
+
+class location;
+
+class photo;
+
+class sticker;
+
+class venue;
+
+class video;
+
+class videoStoryboard;
+
+/**
+ * This class is an abstract base class.
+ * Contains the media in a poll.
+ */
+class PollMedia: public Object {
+ public:
+};
+
+/**
+ * An animation.
+ */
+class pollMediaAnimation final : public PollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The animation.
+  object_ptr<animation> animation_;
+
+  /**
+   * An animation.
+   */
+  pollMediaAnimation();
+
+  /**
+   * An animation.
+   *
+   * \param[in] animation_ The animation.
+   */
+  explicit pollMediaAnimation(object_ptr<animation> &&animation_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1004361993;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * An audio.
+ */
+class pollMediaAudio final : public PollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The audio.
+  object_ptr<audio> audio_;
+
+  /**
+   * An audio.
+   */
+  pollMediaAudio();
+
+  /**
+   * An audio.
+   *
+   * \param[in] audio_ The audio.
+   */
+  explicit pollMediaAudio(object_ptr<audio> &&audio_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 280680667;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A document (general file).
+ */
+class pollMediaDocument final : public PollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The document.
+  object_ptr<document> document_;
+
+  /**
+   * A document (general file).
+   */
+  pollMediaDocument();
+
+  /**
+   * A document (general file).
+   *
+   * \param[in] document_ The document.
+   */
+  explicit pollMediaDocument(object_ptr<document> &&document_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1388165428;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A link.
+ */
+class pollMediaLink final : public PollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// URL of the link.
+  string url_;
+  /// Preview of the link; may be null if unknown.
+  object_ptr<linkPreview> link_preview_;
+
+  /**
+   * A link.
+   */
+  pollMediaLink();
+
+  /**
+   * A link.
+   *
+   * \param[in] url_ URL of the link.
+   * \param[in] link_preview_ Preview of the link; may be null if unknown.
+   */
+  pollMediaLink(string const &url_, object_ptr<linkPreview> &&link_preview_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1953812980;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A location.
+ */
+class pollMediaLocation final : public PollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The location.
+  object_ptr<location> location_;
+
+  /**
+   * A location.
+   */
+  pollMediaLocation();
+
+  /**
+   * A location.
+   *
+   * \param[in] location_ The location.
+   */
+  explicit pollMediaLocation(object_ptr<location> &&location_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1811767203;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A photo.
+ */
+class pollMediaPhoto final : public PollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The photo.
+  object_ptr<photo> photo_;
+  /// The video representing the live photo; may be null if the photo is static.
+  object_ptr<video> video_;
+
+  /**
+   * A photo.
+   */
+  pollMediaPhoto();
+
+  /**
+   * A photo.
+   *
+   * \param[in] photo_ The photo.
+   * \param[in] video_ The video representing the live photo; may be null if the photo is static.
+   */
+  pollMediaPhoto(object_ptr<photo> &&photo_, object_ptr<video> &&video_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1155074428;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A sticker.
+ */
+class pollMediaSticker final : public PollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The sticker.
+  object_ptr<sticker> sticker_;
+
+  /**
+   * A sticker.
+   */
+  pollMediaSticker();
+
+  /**
+   * A sticker.
+   *
+   * \param[in] sticker_ The sticker.
+   */
+  explicit pollMediaSticker(object_ptr<sticker> &&sticker_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 582346011;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A venue.
+ */
+class pollMediaVenue final : public PollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The venue.
+  object_ptr<venue> venue_;
+
+  /**
+   * A venue.
+   */
+  pollMediaVenue();
+
+  /**
+   * A venue.
+   *
+   * \param[in] venue_ The venue.
+   */
+  explicit pollMediaVenue(object_ptr<venue> &&venue_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1739619200;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A video.
+ */
+class pollMediaVideo final : public PollMedia {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The video description.
+  object_ptr<video> video_;
+  /// Alternative qualities of the video.
+  array<object_ptr<alternativeVideo>> alternative_videos_;
+  /// Available storyboards for the video.
+  array<object_ptr<videoStoryboard>> storyboards_;
+  /// Cover of the video; may be null if none.
+  object_ptr<photo> cover_;
+  /// Timestamp from which the video playing must start, in seconds.
+  int32 start_timestamp_;
+
+  /**
+   * A video.
+   */
+  pollMediaVideo();
+
+  /**
+   * A video.
+   *
+   * \param[in] video_ The video description.
+   * \param[in] alternative_videos_ Alternative qualities of the video.
+   * \param[in] storyboards_ Available storyboards for the video.
+   * \param[in] cover_ Cover of the video; may be null if none.
+   * \param[in] start_timestamp_ Timestamp from which the video playing must start, in seconds.
+   */
+  pollMediaVideo(object_ptr<video> &&video_, array<object_ptr<alternativeVideo>> &&alternative_videos_, array<object_ptr<videoStoryboard>> &&storyboards_, object_ptr<photo> &&cover_, int32 start_timestamp_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1141789664;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
 
 class MessageSender;
+
+class PollMedia;
 
 class formattedText;
 
@@ -52400,8 +54297,8 @@ class pollOption final : public Object {
   string id_;
   /// Option text; 1-100 characters; may contain only custom emoji entities.
   object_ptr<formattedText> text_;
-  /// Option media; may be null if none. If present, currently, can be only of the types messageAnimation, messageLocation, messagePhoto, messageSticker, messageVenue, or messageVideo without caption.
-  object_ptr<MessageContent> media_;
+  /// Option media; may be null if none. If present, currently, can be only of the types pollMediaAnimation, pollMediaLink, pollMediaLocation, pollMediaPhoto, pollMediaSticker, pollMediaVenue, or pollMediaVideo.
+  object_ptr<PollMedia> media_;
   /// Number of voters for this option, available only for closed or voted polls, or if the current user is the creator of the poll.
   int32 voter_count_;
   /// The percentage of votes for this option; 0-100.
@@ -52427,7 +54324,7 @@ class pollOption final : public Object {
    *
    * \param[in] id_ Unique identifier of the option in the poll; may be empty if yet unassigned.
    * \param[in] text_ Option text; 1-100 characters; may contain only custom emoji entities.
-   * \param[in] media_ Option media; may be null if none. If present, currently, can be only of the types messageAnimation, messageLocation, messagePhoto, messageSticker, messageVenue, or messageVideo without caption.
+   * \param[in] media_ Option media; may be null if none. If present, currently, can be only of the types pollMediaAnimation, pollMediaLink, pollMediaLocation, pollMediaPhoto, pollMediaSticker, pollMediaVenue, or pollMediaVideo.
    * \param[in] voter_count_ Number of voters for this option, available only for closed or voted polls, or if the current user is the creator of the poll.
    * \param[in] vote_percentage_ The percentage of votes for this option; 0-100.
    * \param[in] recent_voter_ids_ Identifiers of recent voters for the option, if the poll is non-anonymous and poll results are available.
@@ -52436,10 +54333,10 @@ class pollOption final : public Object {
    * \param[in] author_ Identifier of the user or chat who added the option; may be null if the option existed from creation of the poll.
    * \param[in] addition_date_ Point in time (Unix timestamp) when the option was added; 0 if the option existed from creation of the poll.
    */
-  pollOption(string const &id_, object_ptr<formattedText> &&text_, object_ptr<MessageContent> &&media_, int32 voter_count_, int32 vote_percentage_, array<object_ptr<MessageSender>> &&recent_voter_ids_, bool is_chosen_, bool is_being_chosen_, object_ptr<MessageSender> &&author_, int32 addition_date_);
+  pollOption(string const &id_, object_ptr<formattedText> &&text_, object_ptr<PollMedia> &&media_, int32 voter_count_, int32 vote_percentage_, array<object_ptr<MessageSender>> &&recent_voter_ids_, bool is_chosen_, bool is_being_chosen_, object_ptr<MessageSender> &&author_, int32 addition_date_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 94416337;
+  static const std::int32_t ID = 1339400435;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -52497,7 +54394,7 @@ class pollOptionProperties final : public Object {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class MessageContent;
+class PollMedia;
 
 class formattedText;
 
@@ -52556,8 +54453,8 @@ class pollTypeQuiz final : public PollType {
   array<int32> correct_option_ids_;
   /// Text that is shown when the user chooses an incorrect answer or taps on the lamp icon; empty for a yet unanswered poll.
   object_ptr<formattedText> explanation_;
-  /// Media that is shown when the user chooses an incorrect answer or taps on the lamp icon; may be null if none or the poll is unanswered yet. If present, currently, can be only of the types messageAnimation, messageAudio, messageDocument, messageLocation, messagePhoto, messageVenue, or messageVideo without caption.
-  object_ptr<MessageContent> explanation_media_;
+  /// Media that is shown when the user chooses an incorrect answer or taps on the lamp icon; may be null if none or the poll is unanswered yet. If present, currently, can be only of the types pollMediaAnimation, pollMediaAudio, pollMediaDocument, pollMediaLocation, pollMediaPhoto, pollMediaVenue, or pollMediaVideo.
+  object_ptr<PollMedia> explanation_media_;
 
   /**
    * A poll in quiz mode, which has predefined correct answers.
@@ -52569,12 +54466,12 @@ class pollTypeQuiz final : public PollType {
    *
    * \param[in] correct_option_ids_ Increasing list of 0-based identifiers of the correct answer options; empty for a yet unanswered poll.
    * \param[in] explanation_ Text that is shown when the user chooses an incorrect answer or taps on the lamp icon; empty for a yet unanswered poll.
-   * \param[in] explanation_media_ Media that is shown when the user chooses an incorrect answer or taps on the lamp icon; may be null if none or the poll is unanswered yet. If present, currently, can be only of the types messageAnimation, messageAudio, messageDocument, messageLocation, messagePhoto, messageVenue, or messageVideo without caption.
+   * \param[in] explanation_media_ Media that is shown when the user chooses an incorrect answer or taps on the lamp icon; may be null if none or the poll is unanswered yet. If present, currently, can be only of the types pollMediaAnimation, pollMediaAudio, pollMediaDocument, pollMediaLocation, pollMediaPhoto, pollMediaVenue, or pollMediaVideo.
    */
-  pollTypeQuiz(array<int32> &&correct_option_ids_, object_ptr<formattedText> &&explanation_, object_ptr<MessageContent> &&explanation_media_);
+  pollTypeQuiz(array<int32> &&correct_option_ids_, object_ptr<formattedText> &&explanation_, object_ptr<PollMedia> &&explanation_media_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1205882530;
+  static const std::int32_t ID = 1815418234;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -54437,6 +56334,36 @@ class premiumLimitTypePinnedSavedMessagesTopicCount final : public PremiumLimitT
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -1544854305;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The maximum length of text of sent messages.
+ */
+class premiumLimitTypeMessageTextLength final : public PremiumLimitType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The maximum length of text of sent messages.
+   */
+  premiumLimitTypeMessageTextLength();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -498413128;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -60581,6 +62508,141 @@ class revenueWithdrawalStateFailed final : public RevenueWithdrawalState {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class PageBlock;
+
+/**
+ * Describes a message with rich formatting.
+ */
+class richMessage final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Content of the message.
+  array<object_ptr<PageBlock>> blocks_;
+  /// True, if the message must be shown from right to left.
+  bool is_rtl_;
+  /// True, if the object contains the full message. Otherwise, getFullRichMessage must be used to get the full message.
+  bool is_full_;
+
+  /**
+   * Describes a message with rich formatting.
+   */
+  richMessage();
+
+  /**
+   * Describes a message with rich formatting.
+   *
+   * \param[in] blocks_ Content of the message.
+   * \param[in] is_rtl_ True, if the message must be shown from right to left.
+   * \param[in] is_full_ True, if the object contains the full message. Otherwise, getFullRichMessage must be used to get the full message.
+   */
+  richMessage(array<object_ptr<PageBlock>> &&blocks_, bool is_rtl_, bool is_full_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -854290973;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Describes source of a rich message.
+ */
+class RichMessageSource: public Object {
+ public:
+};
+
+/**
+ * A Markdown-formatted rich message; for bots only.
+ */
+class richMessageSourceMarkdown final : public RichMessageSource {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Markdown-formatted text of the message.
+  string text_;
+
+  /**
+   * A Markdown-formatted rich message; for bots only.
+   */
+  richMessageSourceMarkdown();
+
+  /**
+   * A Markdown-formatted rich message; for bots only.
+   *
+   * \param[in] text_ Markdown-formatted text of the message.
+   */
+  explicit richMessageSourceMarkdown(string const &text_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 340844665;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * An HTML-formatted rich message; for bots only.
+ */
+class richMessageSourceHtml final : public RichMessageSource {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// HTML-formatted text of the message.
+  string text_;
+
+  /**
+   * An HTML-formatted rich message; for bots only.
+   */
+  richMessageSourceHtml();
+
+  /**
+   * An HTML-formatted rich message; for bots only.
+   *
+   * \param[in] text_ HTML-formatted text of the message.
+   */
+  explicit richMessageSourceHtml(string const &text_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1851206828;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class DateTimeFormattingType;
+
 class RichText;
 
 class document;
@@ -60789,6 +62851,258 @@ class richTextStrikethrough final : public RichText {
 };
 
 /**
+ * A spoilered rich text.
+ */
+class richTextSpoiler final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text.
+  object_ptr<RichText> text_;
+
+  /**
+   * A spoilered rich text.
+   */
+  richTextSpoiler();
+
+  /**
+   * A spoilered rich text.
+   *
+   * \param[in] text_ Text.
+   */
+  explicit richTextSpoiler(object_ptr<RichText> &&text_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 54708837;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A date and time.
+ */
+class richTextDateTime final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Original text.
+  object_ptr<RichText> text_;
+  /// Point in time (Unix timestamp) representing the date and time.
+  int32 unix_time_;
+  /// Date and time formatting type; may be null if none and the original text must not be changed.
+  object_ptr<DateTimeFormattingType> formatting_type_;
+
+  /**
+   * A date and time.
+   */
+  richTextDateTime();
+
+  /**
+   * A date and time.
+   *
+   * \param[in] text_ Original text.
+   * \param[in] unix_time_ Point in time (Unix timestamp) representing the date and time.
+   * \param[in] formatting_type_ Date and time formatting type; may be null if none and the original text must not be changed.
+   */
+  richTextDateTime(object_ptr<RichText> &&text_, int32 unix_time_, object_ptr<DateTimeFormattingType> &&formatting_type_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 188956850;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A mention of a Telegram user or chat by a username.
+ */
+class richTextMention final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text.
+  object_ptr<RichText> text_;
+  /// The username.
+  string username_;
+
+  /**
+   * A mention of a Telegram user or chat by a username.
+   */
+  richTextMention();
+
+  /**
+   * A mention of a Telegram user or chat by a username.
+   *
+   * \param[in] text_ Text.
+   * \param[in] username_ The username.
+   */
+  richTextMention(object_ptr<RichText> &&text_, string const &username_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1982607169;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A hashtag.
+ */
+class richTextHashtag final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text.
+  object_ptr<RichText> text_;
+  /// The hashtag.
+  string hashtag_;
+
+  /**
+   * A hashtag.
+   */
+  richTextHashtag();
+
+  /**
+   * A hashtag.
+   *
+   * \param[in] text_ Text.
+   * \param[in] hashtag_ The hashtag.
+   */
+  richTextHashtag(object_ptr<RichText> &&text_, string const &hashtag_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -308789407;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A cashtag.
+ */
+class richTextCashtag final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text.
+  object_ptr<RichText> text_;
+  /// The cashtag.
+  string cashtag_;
+
+  /**
+   * A cashtag.
+   */
+  richTextCashtag();
+
+  /**
+   * A cashtag.
+   *
+   * \param[in] text_ Text.
+   * \param[in] cashtag_ The cashtag.
+   */
+  richTextCashtag(object_ptr<RichText> &&text_, string const &cashtag_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1293987712;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A bot command.
+ */
+class richTextBotCommand final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text.
+  object_ptr<RichText> text_;
+  /// The bot command.
+  string bot_command_;
+
+  /**
+   * A bot command.
+   */
+  richTextBotCommand();
+
+  /**
+   * A bot command.
+   *
+   * \param[in] text_ Text.
+   * \param[in] bot_command_ The bot command.
+   */
+  richTextBotCommand(object_ptr<RichText> &&text_, string const &bot_command_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1014029558;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * A fixed-width rich text.
  */
 class richTextFixed final : public RichText {
@@ -60828,6 +63142,48 @@ class richTextFixed final : public RichText {
 };
 
 /**
+ * A rich text that serves as a mention of a user.
+ */
+class richTextMentionName final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text.
+  object_ptr<RichText> text_;
+  /// Identifier of the mentioned user.
+  int53 user_id_;
+
+  /**
+   * A rich text that serves as a mention of a user.
+   */
+  richTextMentionName();
+
+  /**
+   * A rich text that serves as a mention of a user.
+   *
+   * \param[in] text_ Text.
+   * \param[in] user_id_ Identifier of the mentioned user.
+   */
+  richTextMentionName(object_ptr<RichText> &&text_, int53 user_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 120431556;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * A rich text URL link.
  */
 class richTextUrl final : public RichText {
@@ -60844,7 +63200,7 @@ class richTextUrl final : public RichText {
   object_ptr<RichText> text_;
   /// URL.
   string url_;
-  /// True, if the URL has cached instant view server-side.
+  /// True, if the URL has cached instant view server-side; instant view only.
   bool is_cached_;
 
   /**
@@ -60857,7 +63213,7 @@ class richTextUrl final : public RichText {
    *
    * \param[in] text_ Text.
    * \param[in] url_ URL.
-   * \param[in] is_cached_ True, if the URL has cached instant view server-side.
+   * \param[in] is_cached_ True, if the URL has cached instant view server-side; instant view only.
    */
   richTextUrl(object_ptr<RichText> &&text_, string const &url_, bool is_cached_);
 
@@ -60873,7 +63229,7 @@ class richTextUrl final : public RichText {
 };
 
 /**
- * A rich text email link.
+ * A rich text email address.
  */
 class richTextEmailAddress final : public RichText {
   /**
@@ -60891,12 +63247,12 @@ class richTextEmailAddress final : public RichText {
   string email_address_;
 
   /**
-   * A rich text email link.
+   * A rich text email address.
    */
   richTextEmailAddress();
 
   /**
-   * A rich text email link.
+   * A rich text email address.
    *
    * \param[in] text_ Text.
    * \param[in] email_address_ Email address.
@@ -60905,6 +63261,48 @@ class richTextEmailAddress final : public RichText {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = 40018679;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A bank card number.
+ */
+class richTextBankCardNumber final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text.
+  object_ptr<RichText> text_;
+  /// The number of the bank card.
+  string bank_card_number_;
+
+  /**
+   * A bank card number.
+   */
+  richTextBankCardNumber();
+
+  /**
+   * A bank card number.
+   *
+   * \param[in] text_ Text.
+   * \param[in] bank_card_number_ The number of the bank card.
+   */
+  richTextBankCardNumber(object_ptr<RichText> &&text_, string const &bank_card_number_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1587991130;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -61074,7 +63472,49 @@ class richTextPhoneNumber final : public RichText {
 };
 
 /**
- * A small image inside the text.
+ * A custom emoji.
+ */
+class richTextCustomEmoji final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the custom emoji.
+  int64 custom_emoji_id_;
+  /// Alternative text for the custom emoji.
+  string alternative_text_;
+
+  /**
+   * A custom emoji.
+   */
+  richTextCustomEmoji();
+
+  /**
+   * A custom emoji.
+   *
+   * \param[in] custom_emoji_id_ Unique identifier of the custom emoji.
+   * \param[in] alternative_text_ Alternative text for the custom emoji.
+   */
+  richTextCustomEmoji(int64 custom_emoji_id_, string const &alternative_text_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1216055155;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A small image inside the text; instant view only.
  */
 class richTextIcon final : public RichText {
   /**
@@ -61094,12 +63534,12 @@ class richTextIcon final : public RichText {
   int32 height_;
 
   /**
-   * A small image inside the text.
+   * A small image inside the text; instant view only.
    */
   richTextIcon();
 
   /**
-   * A small image inside the text.
+   * A small image inside the text; instant view only.
    *
    * \param[in] document_ The image represented as a document. The image can be in GIF, JPEG or PNG format.
    * \param[in] width_ Width of a bounding box in which the image must be shown; 0 if unknown.
@@ -61119,7 +63559,46 @@ class richTextIcon final : public RichText {
 };
 
 /**
- * A reference to a richTexts object on the same page.
+ * A mathematical expression.
+ */
+class richTextMathematicalExpression final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The expression in LaTeX format.
+  string expression_;
+
+  /**
+   * A mathematical expression.
+   */
+  richTextMathematicalExpression();
+
+  /**
+   * A mathematical expression.
+   *
+   * \param[in] expression_ The expression in LaTeX format.
+   */
+  explicit richTextMathematicalExpression(string const &expression_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1247702820;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A reference.
  */
 class richTextReference final : public RichText {
   /**
@@ -61131,29 +63610,71 @@ class richTextReference final : public RichText {
   }
 
  public:
-  /// The text.
+  /// Reference name.
+  string name_;
+  /// Text of the reference.
   object_ptr<RichText> text_;
-  /// The name of a richTextAnchor object, which is the first element of the target richTexts object.
-  string anchor_name_;
-  /// An HTTP URL, opening the reference.
-  string url_;
 
   /**
-   * A reference to a richTexts object on the same page.
+   * A reference.
    */
   richTextReference();
 
   /**
-   * A reference to a richTexts object on the same page.
+   * A reference.
    *
-   * \param[in] text_ The text.
-   * \param[in] anchor_name_ The name of a richTextAnchor object, which is the first element of the target richTexts object.
-   * \param[in] url_ An HTTP URL, opening the reference.
+   * \param[in] name_ Reference name.
+   * \param[in] text_ Text of the reference.
    */
-  richTextReference(object_ptr<RichText> &&text_, string const &anchor_name_, string const &url_);
+  richTextReference(string const &name_, object_ptr<RichText> &&text_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1147530634;
+  static const std::int32_t ID = -2014423364;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A link to a reference on the same page.
+ */
+class richTextReferenceLink final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The link text.
+  object_ptr<RichText> text_;
+  /// The reference name.
+  string reference_name_;
+  /// An HTTP URL that opens the reference.
+  string url_;
+
+  /**
+   * A link to a reference on the same page.
+   */
+  richTextReferenceLink();
+
+  /**
+   * A link to a reference on the same page.
+   *
+   * \param[in] text_ The link text.
+   * \param[in] reference_name_ The reference name.
+   * \param[in] url_ An HTTP URL that opens the reference.
+   */
+  richTextReferenceLink(object_ptr<RichText> &&text_, string const &reference_name_, string const &url_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1288980228;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -61219,7 +63740,7 @@ class richTextAnchorLink final : public RichText {
   object_ptr<RichText> text_;
   /// The anchor name. If the name is empty, the link must bring back to top.
   string anchor_name_;
-  /// An HTTP URL, opening the anchor.
+  /// An HTTP URL that opens the anchor.
   string url_;
 
   /**
@@ -61232,7 +63753,7 @@ class richTextAnchorLink final : public RichText {
    *
    * \param[in] text_ The link text.
    * \param[in] anchor_name_ The anchor name. If the name is empty, the link must bring back to top.
-   * \param[in] url_ An HTTP URL, opening the anchor.
+   * \param[in] url_ An HTTP URL that opens the anchor.
    */
   richTextAnchorLink(object_ptr<RichText> &&text_, string const &anchor_name_, string const &url_);
 
@@ -61735,7 +64256,75 @@ class scopeNotificationSettings final : public Object {
 
 /**
  * This class is an abstract base class.
- * Represents a filter for type of the chats in which to search messages.
+ * Represents a filter for type of the chats to search for.
+ */
+class SearchChatTypeFilter: public Object {
+ public:
+};
+
+/**
+ * Returns only private chats with bots.
+ */
+class searchChatTypeFilterBot final : public SearchChatTypeFilter {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Returns only private chats with bots.
+   */
+  searchChatTypeFilterBot();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1060187120;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Returns only channel chats.
+ */
+class searchChatTypeFilterChannel final : public SearchChatTypeFilter {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Returns only channel chats.
+   */
+  searchChatTypeFilterChannel();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1328202326;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Represents a filter for type of the chats in which to search for messages.
  */
 class SearchMessagesChatTypeFilter: public Object {
  public:
@@ -62692,7 +65281,7 @@ class sentGiftUpgraded final : public SentGift {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class SessionType;
+class SessionDeviceType;
 
 /**
  * Contains information about one session in a Telegram application used by the current user. Sessions must be shown to the user in the returned order.
@@ -62719,8 +65308,8 @@ class session final : public Object {
   bool can_accept_secret_chats_;
   /// True, if incoming calls can be accepted by the session.
   bool can_accept_calls_;
-  /// Session type based on the system and application version, which can be used to display a corresponding icon.
-  object_ptr<SessionType> type_;
+  /// Session device type based on the system and application version, which can be used to display a corresponding icon.
+  object_ptr<SessionDeviceType> device_type_;
   /// Telegram API identifier, as provided by the application.
   int32 api_id_;
   /// Name of the application, as provided by the application.
@@ -62758,7 +65347,7 @@ class session final : public Object {
    * \param[in] is_unconfirmed_ True, if the session wasn't confirmed from another session.
    * \param[in] can_accept_secret_chats_ True, if incoming secret chats can be accepted by the session.
    * \param[in] can_accept_calls_ True, if incoming calls can be accepted by the session.
-   * \param[in] type_ Session type based on the system and application version, which can be used to display a corresponding icon.
+   * \param[in] device_type_ Session device type based on the system and application version, which can be used to display a corresponding icon.
    * \param[in] api_id_ Telegram API identifier, as provided by the application.
    * \param[in] application_name_ Name of the application, as provided by the application.
    * \param[in] application_version_ The version of the application, as provided by the application.
@@ -62771,10 +65360,10 @@ class session final : public Object {
    * \param[in] ip_address_ IP address from which the session was created, in human-readable format.
    * \param[in] location_ A human-readable description of the location from which the session was created, based on the IP address.
    */
-  session(int64 id_, bool is_current_, bool is_password_pending_, bool is_unconfirmed_, bool can_accept_secret_chats_, bool can_accept_calls_, object_ptr<SessionType> &&type_, int32 api_id_, string const &application_name_, string const &application_version_, bool is_official_application_, string const &device_model_, string const &platform_, string const &system_version_, int32 log_in_date_, int32 last_active_date_, string const &ip_address_, string const &location_);
+  session(int64 id_, bool is_current_, bool is_password_pending_, bool is_unconfirmed_, bool can_accept_secret_chats_, bool can_accept_calls_, object_ptr<SessionDeviceType> &&device_type_, int32 api_id_, string const &application_name_, string const &application_version_, bool is_official_application_, string const &device_model_, string const &platform_, string const &system_version_, int32 log_in_date_, int32 last_active_date_, string const &ip_address_, string const &location_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 158702140;
+  static const std::int32_t ID = -1735799561;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -62786,16 +65375,16 @@ class session final : public Object {
 
 /**
  * This class is an abstract base class.
- * Represents the type of session.
+ * Represents the type of device from which session was created.
  */
-class SessionType: public Object {
+class SessionDeviceType: public Object {
  public:
 };
 
 /**
  * The session is running on an Android device.
  */
-class sessionTypeAndroid final : public SessionType {
+class sessionDeviceTypeAndroid final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -62809,10 +65398,10 @@ class sessionTypeAndroid final : public SessionType {
   /**
    * The session is running on an Android device.
    */
-  sessionTypeAndroid();
+  sessionDeviceTypeAndroid();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -2071764840;
+  static const std::int32_t ID = 1317449657;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -62825,7 +65414,7 @@ class sessionTypeAndroid final : public SessionType {
 /**
  * The session is running on a generic Apple device.
  */
-class sessionTypeApple final : public SessionType {
+class sessionDeviceTypeApple final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -62839,10 +65428,10 @@ class sessionTypeApple final : public SessionType {
   /**
    * The session is running on a generic Apple device.
    */
-  sessionTypeApple();
+  sessionDeviceTypeApple();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1818635701;
+  static const std::int32_t ID = 1408340706;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -62855,7 +65444,7 @@ class sessionTypeApple final : public SessionType {
 /**
  * The session is running on the Brave browser.
  */
-class sessionTypeBrave final : public SessionType {
+class sessionDeviceTypeBrave final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -62869,10 +65458,10 @@ class sessionTypeBrave final : public SessionType {
   /**
    * The session is running on the Brave browser.
    */
-  sessionTypeBrave();
+  sessionDeviceTypeBrave();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1216812563;
+  static const std::int32_t ID = 465707495;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -62885,7 +65474,7 @@ class sessionTypeBrave final : public SessionType {
 /**
  * The session is running on the Chrome browser.
  */
-class sessionTypeChrome final : public SessionType {
+class sessionDeviceTypeChrome final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -62899,10 +65488,10 @@ class sessionTypeChrome final : public SessionType {
   /**
    * The session is running on the Chrome browser.
    */
-  sessionTypeChrome();
+  sessionDeviceTypeChrome();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1573464425;
+  static const std::int32_t ID = 705690232;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -62915,7 +65504,7 @@ class sessionTypeChrome final : public SessionType {
 /**
  * The session is running on the Edge browser.
  */
-class sessionTypeEdge final : public SessionType {
+class sessionDeviceTypeEdge final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -62929,10 +65518,10 @@ class sessionTypeEdge final : public SessionType {
   /**
    * The session is running on the Edge browser.
    */
-  sessionTypeEdge();
+  sessionDeviceTypeEdge();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -538916005;
+  static const std::int32_t ID = -1558972029;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -62945,7 +65534,7 @@ class sessionTypeEdge final : public SessionType {
 /**
  * The session is running on the Firefox browser.
  */
-class sessionTypeFirefox final : public SessionType {
+class sessionDeviceTypeFirefox final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -62959,10 +65548,10 @@ class sessionTypeFirefox final : public SessionType {
   /**
    * The session is running on the Firefox browser.
    */
-  sessionTypeFirefox();
+  sessionDeviceTypeFirefox();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 2122579364;
+  static const std::int32_t ID = -1392804408;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -62975,7 +65564,7 @@ class sessionTypeFirefox final : public SessionType {
 /**
  * The session is running on an iPad device.
  */
-class sessionTypeIpad final : public SessionType {
+class sessionDeviceTypeIpad final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -62989,10 +65578,10 @@ class sessionTypeIpad final : public SessionType {
   /**
    * The session is running on an iPad device.
    */
-  sessionTypeIpad();
+  sessionDeviceTypeIpad();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1294647023;
+  static const std::int32_t ID = -199383645;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63005,7 +65594,7 @@ class sessionTypeIpad final : public SessionType {
 /**
  * The session is running on an iPhone device.
  */
-class sessionTypeIphone final : public SessionType {
+class sessionDeviceTypeIphone final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63019,10 +65608,10 @@ class sessionTypeIphone final : public SessionType {
   /**
    * The session is running on an iPhone device.
    */
-  sessionTypeIphone();
+  sessionDeviceTypeIphone();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 97616573;
+  static const std::int32_t ID = 1398082238;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63035,7 +65624,7 @@ class sessionTypeIphone final : public SessionType {
 /**
  * The session is running on a Linux device.
  */
-class sessionTypeLinux final : public SessionType {
+class sessionDeviceTypeLinux final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63049,10 +65638,10 @@ class sessionTypeLinux final : public SessionType {
   /**
    * The session is running on a Linux device.
    */
-  sessionTypeLinux();
+  sessionDeviceTypeLinux();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1487422871;
+  static const std::int32_t ID = 86498858;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63065,7 +65654,7 @@ class sessionTypeLinux final : public SessionType {
 /**
  * The session is running on a Mac device.
  */
-class sessionTypeMac final : public SessionType {
+class sessionDeviceTypeMac final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63079,10 +65668,10 @@ class sessionTypeMac final : public SessionType {
   /**
    * The session is running on a Mac device.
    */
-  sessionTypeMac();
+  sessionDeviceTypeMac();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -612250975;
+  static const std::int32_t ID = 151792423;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63095,7 +65684,7 @@ class sessionTypeMac final : public SessionType {
 /**
  * The session is running on the Opera browser.
  */
-class sessionTypeOpera final : public SessionType {
+class sessionDeviceTypeOpera final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63109,10 +65698,10 @@ class sessionTypeOpera final : public SessionType {
   /**
    * The session is running on the Opera browser.
    */
-  sessionTypeOpera();
+  sessionDeviceTypeOpera();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1463673734;
+  static const std::int32_t ID = -20934014;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63125,7 +65714,7 @@ class sessionTypeOpera final : public SessionType {
 /**
  * The session is running on the Safari browser.
  */
-class sessionTypeSafari final : public SessionType {
+class sessionDeviceTypeSafari final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63139,10 +65728,10 @@ class sessionTypeSafari final : public SessionType {
   /**
    * The session is running on the Safari browser.
    */
-  sessionTypeSafari();
+  sessionDeviceTypeSafari();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 710646873;
+  static const std::int32_t ID = -1331352245;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63155,7 +65744,7 @@ class sessionTypeSafari final : public SessionType {
 /**
  * The session is running on an Ubuntu device.
  */
-class sessionTypeUbuntu final : public SessionType {
+class sessionDeviceTypeUbuntu final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63169,10 +65758,10 @@ class sessionTypeUbuntu final : public SessionType {
   /**
    * The session is running on an Ubuntu device.
    */
-  sessionTypeUbuntu();
+  sessionDeviceTypeUbuntu();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1569680069;
+  static const std::int32_t ID = -436400491;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63185,7 +65774,7 @@ class sessionTypeUbuntu final : public SessionType {
 /**
  * The session is running on an unknown type of device.
  */
-class sessionTypeUnknown final : public SessionType {
+class sessionDeviceTypeUnknown final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63199,10 +65788,10 @@ class sessionTypeUnknown final : public SessionType {
   /**
    * The session is running on an unknown type of device.
    */
-  sessionTypeUnknown();
+  sessionDeviceTypeUnknown();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 233926704;
+  static const std::int32_t ID = -184818784;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63215,7 +65804,7 @@ class sessionTypeUnknown final : public SessionType {
 /**
  * The session is running on the Vivaldi browser.
  */
-class sessionTypeVivaldi final : public SessionType {
+class sessionDeviceTypeVivaldi final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63229,10 +65818,10 @@ class sessionTypeVivaldi final : public SessionType {
   /**
    * The session is running on the Vivaldi browser.
    */
-  sessionTypeVivaldi();
+  sessionDeviceTypeVivaldi();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1120503279;
+  static const std::int32_t ID = -652310332;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63245,7 +65834,7 @@ class sessionTypeVivaldi final : public SessionType {
 /**
  * The session is running on a Windows device.
  */
-class sessionTypeWindows final : public SessionType {
+class sessionDeviceTypeWindows final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63259,10 +65848,10 @@ class sessionTypeWindows final : public SessionType {
   /**
    * The session is running on a Windows device.
    */
-  sessionTypeWindows();
+  sessionDeviceTypeWindows();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1676512600;
+  static const std::int32_t ID = 1192564991;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -63275,7 +65864,7 @@ class sessionTypeWindows final : public SessionType {
 /**
  * The session is running on an Xbox console.
  */
-class sessionTypeXbox final : public SessionType {
+class sessionDeviceTypeXbox final : public SessionDeviceType {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -63289,10 +65878,96 @@ class sessionTypeXbox final : public SessionType {
   /**
    * The session is running on an Xbox console.
    */
-  sessionTypeXbox();
+  sessionDeviceTypeXbox();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1856216492;
+  static const std::int32_t ID = 1374325181;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Describes type of user session.
+ */
+class SessionType: public Object {
+ public:
+};
+
+/**
+ * A regular session from a device.
+ */
+class sessionTypeDevice final : public SessionType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the session. Use terminateSession to terminate it or confirmSession to confirm it if it isn't confirmed yet.
+  int64 session_id_;
+
+  /**
+   * A regular session from a device.
+   */
+  sessionTypeDevice();
+
+  /**
+   * A regular session from a device.
+   *
+   * \param[in] session_id_ Unique identifier of the session. Use terminateSession to terminate it or confirmSession to confirm it if it isn't confirmed yet.
+   */
+  explicit sessionTypeDevice(int64 session_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -7264397;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A business bot connected to the current user's account.
+ */
+class sessionTypeConnectedBot final : public SessionType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// User identifier of the bot. Use deleteBusinessConnectedBot to remove it or confirmBusinessConnectedBot to confirm it if it isn't confirmed yet.
+  int53 bot_user_id_;
+
+  /**
+   * A business bot connected to the current user's account.
+   */
+  sessionTypeConnectedBot();
+
+  /**
+   * A business bot connected to the current user's account.
+   *
+   * \param[in] bot_user_id_ User identifier of the bot. Use deleteBusinessConnectedBot to remove it or confirmBusinessConnectedBot to confirm it if it isn't confirmed yet.
+   */
+  explicit sessionTypeConnectedBot(int53 bot_user_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1137791775;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -71596,7 +74271,7 @@ class supergroup final : public Object {
   bool show_message_sender_;
   /// True, if users need to join the supergroup before they can send messages. May be false only for discussion supergroups and channel direct messages groups.
   bool join_to_send_messages_;
-  /// True, if all users directly joining the supergroup need to be approved by supergroup administrators. May be true only for non-broadcast supergroups with username, location, or a linked chat.
+  /// True, if all users directly joining the supergroup need to be approved by supergroup administrators.
   bool join_by_request_;
   /// True, if the slow mode is enabled in the supergroup.
   bool is_slow_mode_enabled_;
@@ -71643,7 +74318,7 @@ class supergroup final : public Object {
    * \param[in] sign_messages_ True, if messages sent to the channel contains name of the sender. This field is only applicable to channels.
    * \param[in] show_message_sender_ True, if messages sent to the channel have information about the sender user. This field is only applicable to channels.
    * \param[in] join_to_send_messages_ True, if users need to join the supergroup before they can send messages. May be false only for discussion supergroups and channel direct messages groups.
-   * \param[in] join_by_request_ True, if all users directly joining the supergroup need to be approved by supergroup administrators. May be true only for non-broadcast supergroups with username, location, or a linked chat.
+   * \param[in] join_by_request_ True, if all users directly joining the supergroup need to be approved by supergroup administrators.
    * \param[in] is_slow_mode_enabled_ True, if the slow mode is enabled in the supergroup.
    * \param[in] is_channel_ True, if the supergroup is a channel.
    * \param[in] is_broadcast_group_ True, if the supergroup is a broadcast group, i.e. only administrators can send messages and there is no limit on the number of members.
@@ -71765,6 +74440,8 @@ class supergroupFullInfo final : public Object {
   object_ptr<chatLocation> location_;
   /// Primary invite link for the chat; may be null. For chat administrators with can_invite_users right only.
   object_ptr<chatInviteLink> invite_link_;
+  /// User identifier of the guard bot in the group; for chat administrators only.
+  int53 guard_bot_user_id_;
   /// List of commands of bots in the group.
   array<object_ptr<botCommands>> bot_commands_;
   /// Information about verification status of the supergroup or the channel provided by a bot; may be null if none or unknown.
@@ -71819,16 +74496,17 @@ class supergroupFullInfo final : public Object {
    * \param[in] custom_emoji_sticker_set_id_ Identifier of the custom emoji sticker set that can be used in the supergroup without Telegram Premium subscription; 0 if none.
    * \param[in] location_ Location to which the supergroup is connected; may be null if none.
    * \param[in] invite_link_ Primary invite link for the chat; may be null. For chat administrators with can_invite_users right only.
+   * \param[in] guard_bot_user_id_ User identifier of the guard bot in the group; for chat administrators only.
    * \param[in] bot_commands_ List of commands of bots in the group.
    * \param[in] bot_verification_ Information about verification status of the supergroup or the channel provided by a bot; may be null if none or unknown.
    * \param[in] main_profile_tab_ The main tab chosen by the administrators of the channel; may be null if not chosen manually.
    * \param[in] upgraded_from_basic_group_id_ Identifier of the basic group from which supergroup was upgraded; 0 if none.
    * \param[in] upgraded_from_max_message_id_ Identifier of the last message in the basic group from which supergroup was upgraded; 0 if none.
    */
-  supergroupFullInfo(object_ptr<chatPhoto> &&photo_, string const &description_, int32 member_count_, int32 administrator_count_, int32 restricted_count_, int32 banned_count_, int53 linked_chat_id_, int53 direct_messages_chat_id_, int32 slow_mode_delay_, double slow_mode_delay_expires_in_, bool can_enable_paid_messages_, bool can_enable_paid_reaction_, bool can_get_members_, bool has_hidden_members_, bool can_hide_members_, bool can_set_sticker_set_, bool can_set_location_, bool can_get_statistics_, bool can_get_revenue_statistics_, bool can_get_star_revenue_statistics_, bool can_send_gift_, bool can_toggle_aggressive_anti_spam_, bool is_all_history_available_, bool can_have_sponsored_messages_, bool has_aggressive_anti_spam_enabled_, bool has_paid_media_allowed_, bool has_pinned_stories_, int32 gift_count_, int32 my_boost_count_, int32 unrestrict_boost_count_, int53 outgoing_paid_message_star_count_, int64 sticker_set_id_, int64 custom_emoji_sticker_set_id_, object_ptr<chatLocation> &&location_, object_ptr<chatInviteLink> &&invite_link_, array<object_ptr<botCommands>> &&bot_commands_, object_ptr<botVerification> &&bot_verification_, object_ptr<ProfileTab> &&main_profile_tab_, int53 upgraded_from_basic_group_id_, int53 upgraded_from_max_message_id_);
+  supergroupFullInfo(object_ptr<chatPhoto> &&photo_, string const &description_, int32 member_count_, int32 administrator_count_, int32 restricted_count_, int32 banned_count_, int53 linked_chat_id_, int53 direct_messages_chat_id_, int32 slow_mode_delay_, double slow_mode_delay_expires_in_, bool can_enable_paid_messages_, bool can_enable_paid_reaction_, bool can_get_members_, bool has_hidden_members_, bool can_hide_members_, bool can_set_sticker_set_, bool can_set_location_, bool can_get_statistics_, bool can_get_revenue_statistics_, bool can_get_star_revenue_statistics_, bool can_send_gift_, bool can_toggle_aggressive_anti_spam_, bool is_all_history_available_, bool can_have_sponsored_messages_, bool has_aggressive_anti_spam_enabled_, bool has_paid_media_allowed_, bool has_pinned_stories_, int32 gift_count_, int32 my_boost_count_, int32 unrestrict_boost_count_, int53 outgoing_paid_message_star_count_, int64 sticker_set_id_, int64 custom_emoji_sticker_set_id_, object_ptr<chatLocation> &&location_, object_ptr<chatInviteLink> &&invite_link_, int53 guard_bot_user_id_, array<object_ptr<botCommands>> &&bot_commands_, object_ptr<botVerification> &&bot_verification_, object_ptr<ProfileTab> &&main_profile_tab_, int53 upgraded_from_basic_group_id_, int53 upgraded_from_max_message_id_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -497664769;
+  static const std::int32_t ID = 1087672723;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -73343,7 +76021,7 @@ class textCompositionStyle final : public Object {
   int32 install_count_;
   /// Prompt of the style; for created custom styles only.
   string prompt_;
-  /// User identifier of the creator of the style; 0 if none of unknown.
+  /// User identifier of the creator of the style; 0 if none or unknown.
   int53 creator_user_id_;
   /// Example of the style usage in English; may be null if unknown.
   object_ptr<textCompositionStyleExample> english_example_;
@@ -73363,7 +76041,7 @@ class textCompositionStyle final : public Object {
    * \param[in] is_creator_ True, if the user is creator of the style.
    * \param[in] install_count_ Number of users that installed the style; for created custom styles only; 0 if unknown.
    * \param[in] prompt_ Prompt of the style; for created custom styles only.
-   * \param[in] creator_user_id_ User identifier of the creator of the style; 0 if none of unknown.
+   * \param[in] creator_user_id_ User identifier of the creator of the style; 0 if none or unknown.
    * \param[in] english_example_ Example of the style usage in English; may be null if unknown.
    */
   textCompositionStyle(string const &name_, int64 custom_emoji_id_, string const &title_, bool is_custom_, bool is_creator_, int32 install_count_, string const &prompt_, int53 creator_user_id_, object_ptr<textCompositionStyleExample> &&english_example_);
@@ -75835,6 +78513,8 @@ class trendingStickerSets final : public Object {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class SessionType;
+
 /**
  * Contains information about an unconfirmed session.
  */
@@ -75848,10 +78528,10 @@ class unconfirmedSession final : public Object {
   }
 
  public:
-  /// Session identifier.
-  int64 id_;
-  /// Point in time (Unix timestamp) when the user has logged in.
-  int32 log_in_date_;
+  /// Session type.
+  object_ptr<SessionType> type_;
+  /// Point in time (Unix timestamp) when the user has logged in or the business bot was connected.
+  int32 date_;
   /// Model of the device that was used for the session creation, as provided by the application.
   string device_model_;
   /// A human-readable description of the location from which the session was created, based on the IP address.
@@ -75865,15 +78545,15 @@ class unconfirmedSession final : public Object {
   /**
    * Contains information about an unconfirmed session.
    *
-   * \param[in] id_ Session identifier.
-   * \param[in] log_in_date_ Point in time (Unix timestamp) when the user has logged in.
+   * \param[in] type_ Session type.
+   * \param[in] date_ Point in time (Unix timestamp) when the user has logged in or the business bot was connected.
    * \param[in] device_model_ Model of the device that was used for the session creation, as provided by the application.
    * \param[in] location_ A human-readable description of the location from which the session was created, based on the IP address.
    */
-  unconfirmedSession(int64 id_, int32 log_in_date_, string const &device_model_, string const &location_);
+  unconfirmedSession(object_ptr<SessionType> &&type_, int32 date_, string const &device_model_, string const &location_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -2062726663;
+  static const std::int32_t ID = -2023832763;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -75947,6 +78627,8 @@ class ChatAction;
 class ChatActionBar;
 
 class ChatAvailableReactions;
+
+class ChatJoinRequestResult;
 
 class ChatList;
 
@@ -76054,8 +78736,6 @@ class file;
 
 class fileDownload;
 
-class formattedText;
-
 class forumTopicInfo;
 
 class giftAuctionState;
@@ -76145,6 +78825,8 @@ class userFullInfo;
 class userPrivacySettingRules;
 
 class videoChat;
+
+class webBrowserSettings;
 
 /**
  * This class is an abstract base class.
@@ -79221,9 +81903,9 @@ class updateChatAction final : public Update {
 };
 
 /**
- * A new pending text message was received in a chat with a bot. The message must be shown in the chat for at most getOption(&quot;pending_text_message_period&quot;) seconds, replace any other pending message with the same draft_id, and be deleted whenever any incoming message from the bot in the message thread is received.
+ * A new pending text or rich message was received in a chat with a bot. The message must be shown in the chat for at most getOption(&quot;pending_text_message_period&quot;) seconds, replace any other pending message with the same draft_id, and be deleted whenever any incoming message from the bot in the message thread is received.
  */
-class updatePendingTextMessage final : public Update {
+class updatePendingMessage final : public Update {
   /**
    * Returns identifier uniquely determining a type of the object.
    * \return this->ID.
@@ -79239,26 +81921,26 @@ class updatePendingTextMessage final : public Update {
   int32 forum_topic_id_;
   /// Unique identifier of the message draft within the message thread.
   int64 draft_id_;
-  /// Text of the pending message.
-  object_ptr<formattedText> text_;
+  /// Content of the message; always of the type messageText or messageRichMessage.
+  object_ptr<MessageContent> content_;
 
   /**
-   * A new pending text message was received in a chat with a bot. The message must be shown in the chat for at most getOption(&quot;pending_text_message_period&quot;) seconds, replace any other pending message with the same draft_id, and be deleted whenever any incoming message from the bot in the message thread is received.
+   * A new pending text or rich message was received in a chat with a bot. The message must be shown in the chat for at most getOption(&quot;pending_text_message_period&quot;) seconds, replace any other pending message with the same draft_id, and be deleted whenever any incoming message from the bot in the message thread is received.
    */
-  updatePendingTextMessage();
+  updatePendingMessage();
 
   /**
-   * A new pending text message was received in a chat with a bot. The message must be shown in the chat for at most getOption(&quot;pending_text_message_period&quot;) seconds, replace any other pending message with the same draft_id, and be deleted whenever any incoming message from the bot in the message thread is received.
+   * A new pending text or rich message was received in a chat with a bot. The message must be shown in the chat for at most getOption(&quot;pending_text_message_period&quot;) seconds, replace any other pending message with the same draft_id, and be deleted whenever any incoming message from the bot in the message thread is received.
    *
    * \param[in] chat_id_ Chat identifier.
    * \param[in] forum_topic_id_ The forum topic identifier in which the message will be sent; 0 if none.
    * \param[in] draft_id_ Unique identifier of the message draft within the message thread.
-   * \param[in] text_ Text of the pending message.
+   * \param[in] content_ Content of the message; always of the type messageText or messageRichMessage.
    */
-  updatePendingTextMessage(int53 chat_id_, int32 forum_topic_id_, int64 draft_id_, object_ptr<formattedText> &&text_);
+  updatePendingMessage(int53 chat_id_, int32 forum_topic_id_, int64 draft_id_, object_ptr<MessageContent> &&content_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1076298155;
+  static const std::int32_t ID = 1483889808;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -80757,6 +83439,51 @@ class updateUnreadChatCount final : public Update {
 };
 
 /**
+ * A join request from the user was completed.
+ */
+class updateChatJoinResult final : public Update {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the join request query as received in chatJoinResultGuardBotApprovalRequired. If the corresponding Web App is stiil open, then it must be closed.
+  int64 query_id_;
+  /// Identifier of the joined chat, or 0 if the request wasn't approved.
+  int53 chat_id_;
+  /// Result of the join.
+  object_ptr<ChatJoinRequestResult> result_;
+
+  /**
+   * A join request from the user was completed.
+   */
+  updateChatJoinResult();
+
+  /**
+   * A join request from the user was completed.
+   *
+   * \param[in] query_id_ Identifier of the join request query as received in chatJoinResultGuardBotApprovalRequired. If the corresponding Web App is stiil open, then it must be closed.
+   * \param[in] chat_id_ Identifier of the joined chat, or 0 if the request wasn't approved.
+   * \param[in] result_ Result of the join.
+   */
+  updateChatJoinResult(int64 query_id_, int53 chat_id_, object_ptr<ChatJoinRequestResult> &&result_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -992352251;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * A story was changed.
  */
 class updateStory final : public Update {
@@ -81576,6 +84303,45 @@ class updateProfileAccentColors final : public Update {
 };
 
 /**
+ * Web browser settings have been updated.
+ */
+class updateWebBrowserSettings final : public Update {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// New settings.
+  object_ptr<webBrowserSettings> settings_;
+
+  /**
+   * Web browser settings have been updated.
+   */
+  updateWebBrowserSettings();
+
+  /**
+   * Web browser settings have been updated.
+   *
+   * \param[in] settings_ New settings.
+   */
+  explicit updateWebBrowserSettings(object_ptr<webBrowserSettings> &&settings_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -655961245;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * Some language pack strings have been updated.
  */
 class updateLanguagePackStrings final : public Update {
@@ -81803,6 +84569,8 @@ class updateUnconfirmedSession final : public Update {
  public:
   /// The unconfirmed session; may be null if none.
   object_ptr<unconfirmedSession> session_;
+  /// The total number of unconfirmed sessions.
+  int32 unconfirmed_session_count_;
 
   /**
    * The first unconfirmed session has changed.
@@ -81813,11 +84581,12 @@ class updateUnconfirmedSession final : public Update {
    * The first unconfirmed session has changed.
    *
    * \param[in] session_ The unconfirmed session; may be null if none.
+   * \param[in] unconfirmed_session_count_ The total number of unconfirmed sessions.
    */
-  explicit updateUnconfirmedSession(object_ptr<unconfirmedSession> &&session_);
+  updateUnconfirmedSession(object_ptr<unconfirmedSession> &&session_, int32 unconfirmed_session_count_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -22673268;
+  static const std::int32_t ID = -109640921;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -83675,6 +86444,8 @@ class updateNewChatJoinRequest final : public Update {
   int53 user_chat_id_;
   /// The invite link, which was used to send join request; may be null.
   object_ptr<chatInviteLink> invite_link_;
+  /// Identifier of the join request query, which can be used in answerChatJoinRequestQuery; 0 if none.
+  int64 query_id_;
 
   /**
    * A user sent a join request to a chat; for bots only.
@@ -83688,11 +86459,12 @@ class updateNewChatJoinRequest final : public Update {
    * \param[in] request_ Join request.
    * \param[in] user_chat_id_ Chat identifier of the private chat with the user.
    * \param[in] invite_link_ The invite link, which was used to send join request; may be null.
+   * \param[in] query_id_ Identifier of the join request query, which can be used in answerChatJoinRequestQuery; 0 if none.
    */
-  updateNewChatJoinRequest(int53 chat_id_, object_ptr<chatJoinRequest> &&request_, int53 user_chat_id_, object_ptr<chatInviteLink> &&invite_link_);
+  updateNewChatJoinRequest(int53 chat_id_, object_ptr<chatJoinRequest> &&request_, int53 user_chat_id_, object_ptr<chatInviteLink> &&invite_link_, int64 query_id_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 2118694979;
+  static const std::int32_t ID = 1710582294;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -86846,6 +89618,8 @@ class userTypeBot final : public UserType {
   string inline_query_placeholder_;
   /// True, if the bot can be queried by username from any non-secret chat.
   bool supports_guest_queries_;
+  /// True, if the bot can be set as a guard bot in supergroup chats.
+  bool is_guard_;
   /// True, if the location of the user is expected to be sent with every inline query to this bot.
   bool need_location_;
   /// True, if the bot supports connection to user accounts for chat automation.
@@ -86873,15 +89647,16 @@ class userTypeBot final : public UserType {
    * \param[in] is_inline_ True, if the bot supports inline queries.
    * \param[in] inline_query_placeholder_ Placeholder for inline queries (displayed on the application input field).
    * \param[in] supports_guest_queries_ True, if the bot can be queried by username from any non-secret chat.
+   * \param[in] is_guard_ True, if the bot can be set as a guard bot in supergroup chats.
    * \param[in] need_location_ True, if the location of the user is expected to be sent with every inline query to this bot.
    * \param[in] can_connect_to_business_ True, if the bot supports connection to user accounts for chat automation.
    * \param[in] can_be_added_to_attachment_menu_ True, if the bot can be added to attachment or side menu.
    * \param[in] active_user_count_ The number of recently active users of the bot.
    */
-  userTypeBot(bool can_be_edited_, bool can_join_groups_, bool can_read_all_group_messages_, bool has_main_web_app_, bool has_topics_, bool allows_users_to_create_topics_, bool can_manage_bots_, bool is_inline_, string const &inline_query_placeholder_, bool supports_guest_queries_, bool need_location_, bool can_connect_to_business_, bool can_be_added_to_attachment_menu_, int32 active_user_count_);
+  userTypeBot(bool can_be_edited_, bool can_join_groups_, bool can_read_all_group_messages_, bool has_main_web_app_, bool has_topics_, bool allows_users_to_create_topics_, bool can_manage_bots_, bool is_inline_, string const &inline_query_placeholder_, bool supports_guest_queries_, bool is_guard_, bool need_location_, bool can_connect_to_business_, bool can_be_added_to_attachment_menu_, int32 active_user_count_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1040936013;
+  static const std::int32_t ID = 565626918;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -87706,6 +90481,8 @@ class webApp final : public Object {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class webAppUrl;
+
 /**
  * Contains information about a Web App.
  */
@@ -87721,8 +90498,8 @@ class webAppInfo final : public Object {
  public:
   /// Unique identifier for the Web App launch.
   int64 launch_id_;
-  /// A Web App URL to open in a web view.
-  string url_;
+  /// The Web App URL to open in a web view.
+  object_ptr<webAppUrl> url_;
 
   /**
    * Contains information about a Web App.
@@ -87733,12 +90510,12 @@ class webAppInfo final : public Object {
    * Contains information about a Web App.
    *
    * \param[in] launch_id_ Unique identifier for the Web App launch.
-   * \param[in] url_ A Web App URL to open in a web view.
+   * \param[in] url_ The Web App URL to open in a web view.
    */
-  webAppInfo(int64 launch_id_, string const &url_);
+  webAppInfo(int64 launch_id_, object_ptr<webAppUrl> &&url_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 788378344;
+  static const std::int32_t ID = 402267300;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -87895,6 +90672,214 @@ class webAppOpenParameters final : public Object {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+/**
+ * Contains information about a Web App URL.
+ */
+class webAppUrl final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The Web App URL to open in a web view.
+  string url_;
+  /// True, if events from the Web App must be accepted only from the same origin as the URL.
+  bool require_same_origin_;
+
+  /**
+   * Contains information about a Web App URL.
+   */
+  webAppUrl();
+
+  /**
+   * Contains information about a Web App URL.
+   *
+   * \param[in] url_ The Web App URL to open in a web view.
+   * \param[in] require_same_origin_ True, if events from the Web App must be accepted only from the same origin as the URL.
+   */
+  webAppUrl(string const &url_, bool require_same_origin_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -650832177;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class webDomainException;
+
+/**
+ * Describes web browser settings.
+ */
+class webBrowserSettings final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// True, if links are opened in an external browser by default.
+  bool open_external_browser_;
+  /// The list of websites which must always be opened in an external browser.
+  array<object_ptr<webDomainException>> external_exceptions_;
+  /// The list of websites which must always be opened in the in-app browser.
+  array<object_ptr<webDomainException>> in_app_exceptions_;
+  /// True, if a close button must be shown in the in-app browser; for Android app only.
+  bool display_close_button_;
+
+  /**
+   * Describes web browser settings.
+   */
+  webBrowserSettings();
+
+  /**
+   * Describes web browser settings.
+   *
+   * \param[in] open_external_browser_ True, if links are opened in an external browser by default.
+   * \param[in] external_exceptions_ The list of websites which must always be opened in an external browser.
+   * \param[in] in_app_exceptions_ The list of websites which must always be opened in the in-app browser.
+   * \param[in] display_close_button_ True, if a close button must be shown in the in-app browser; for Android app only.
+   */
+  webBrowserSettings(bool open_external_browser_, array<object_ptr<webDomainException>> &&external_exceptions_, array<object_ptr<webDomainException>> &&in_app_exceptions_, bool display_close_button_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1258203844;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Describes the type of web browser.
+ */
+class WebBrowserType: public Object {
+ public:
+};
+
+/**
+ * An external web browser.
+ */
+class webBrowserTypeExternal final : public WebBrowserType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * An external web browser.
+   */
+  webBrowserTypeExternal();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -157525880;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The in-app browser.
+ */
+class webBrowserTypeInApp final : public WebBrowserType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The in-app browser.
+   */
+  webBrowserTypeInApp();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1548364918;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Describes an exception for built-in browser usage.
+ */
+class webDomainException final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// URL for which the exception is done.
+  string url_;
+  /// Domain of the URL. All URLs on the domain and subdomains of the domain are subject to the exception.
+  string domain_;
+  /// Title of the website.
+  string title_;
+  /// Identifier of the custom emoji with favicon of the website; may be 0 if unknown, in which case the first letter of the domain must be used.
+  int64 favicon_custom_emoji_id_;
+
+  /**
+   * Describes an exception for built-in browser usage.
+   */
+  webDomainException();
+
+  /**
+   * Describes an exception for built-in browser usage.
+   *
+   * \param[in] url_ URL for which the exception is done.
+   * \param[in] domain_ Domain of the URL. All URLs on the domain and subdomains of the domain are subject to the exception.
+   * \param[in] title_ Title of the website.
+   * \param[in] favicon_custom_emoji_id_ Identifier of the custom emoji with favicon of the website; may be 0 if unknown, in which case the first letter of the domain must be used.
+   */
+  webDomainException(string const &url_, string const &domain_, string const &title_, int64 favicon_custom_emoji_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 563468701;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class InternalLinkType;
 
 class PageBlock;
@@ -87913,7 +90898,7 @@ class webPageInstantView final : public Object {
 
  public:
   /// Content of the instant view page.
-  array<object_ptr<PageBlock>> page_blocks_;
+  array<object_ptr<PageBlock>> blocks_;
   /// Number of the instant view views; 0 if unknown.
   int32 view_count_;
   /// Version of the instant view; currently, can be 1 or 2.
@@ -87933,17 +90918,17 @@ class webPageInstantView final : public Object {
   /**
    * Describes an instant view page for a web page.
    *
-   * \param[in] page_blocks_ Content of the instant view page.
+   * \param[in] blocks_ Content of the instant view page.
    * \param[in] view_count_ Number of the instant view views; 0 if unknown.
    * \param[in] version_ Version of the instant view; currently, can be 1 or 2.
    * \param[in] is_rtl_ True, if the instant view must be shown from right to left.
    * \param[in] is_full_ True, if the instant view contains the full page. A network request might be needed to get the full instant view.
    * \param[in] feedback_link_ An internal link to be opened to leave feedback about the instant view.
    */
-  webPageInstantView(array<object_ptr<PageBlock>> &&page_blocks_, int32 view_count_, int32 version_, bool is_rtl_, bool is_full_, object_ptr<InternalLinkType> &&feedback_link_);
+  webPageInstantView(array<object_ptr<PageBlock>> &&blocks_, int32 view_count_, int32 version_, bool is_rtl_, bool is_full_, object_ptr<InternalLinkType> &&feedback_link_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 778202453;
+  static const std::int32_t ID = 1416158291;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -89490,7 +92475,7 @@ class addQuickReplyShortcutMessage final : public Function {
   string shortcut_name_;
   /// Identifier of a quick reply message in the same shortcut to be replied; pass 0 if none.
   int53 reply_to_message_id_;
-  /// The content of the message to be added; inputMessagePaidMedia, inputMessageForwarded and inputMessageLocation with live_period aren't supported.
+  /// The content of the message to be added; inputMessagePaidMedia, inputMessageForwarded and inputMessageLiveLocation.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -89507,7 +92492,7 @@ class addQuickReplyShortcutMessage final : public Function {
    *
    * \param[in] shortcut_name_ Name of the target shortcut.
    * \param[in] reply_to_message_id_ Identifier of a quick reply message in the same shortcut to be replied; pass 0 if none.
-   * \param[in] input_message_content_ The content of the message to be added; inputMessagePaidMedia, inputMessageForwarded and inputMessageLocation with live_period aren't supported.
+   * \param[in] input_message_content_ The content of the message to be added; inputMessagePaidMedia, inputMessageForwarded and inputMessageLiveLocation.
    */
   addQuickReplyShortcutMessage(string const &shortcut_name_, int53 reply_to_message_id_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -89959,6 +92944,59 @@ class addTextCompositionStyle final : public Function {
 class ok;
 
 /**
+ * Adds a special handling for the opening of the specified URL.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class addWebBrowserSettingsException final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Pass true if the specified website must be opened in an external browser; pass false to open it in the in-app browser. There can be at most 100 exceptions in each list of the exceptions.
+  bool open_external_browser_;
+  /// URL of the website.
+  string url_;
+
+  /**
+   * Default constructor for a function, which adds a special handling for the opening of the specified URL.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  addWebBrowserSettingsException();
+
+  /**
+   * Creates a function, which adds a special handling for the opening of the specified URL.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] open_external_browser_ Pass true if the specified website must be opened in an external browser; pass false to open it in the in-app browser. There can be at most 100 exceptions in each list of the exceptions.
+   * \param[in] url_ URL of the website.
+   */
+  addWebBrowserSettingsException(bool open_external_browser_, string const &url_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1890467106;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
  * Allows the specified bot to send messages to the user.
  *
  * Returns object_ptr<Ok>.
@@ -90109,6 +93147,64 @@ class answerCallbackQuery final : public Function {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -1153028490;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ChatJoinRequestResult;
+
+class ok;
+
+/**
+ * Sets the result of a chat join query; for bots only.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class answerChatJoinRequestQuery final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the query.
+  int64 query_id_;
+  /// The result.
+  object_ptr<ChatJoinRequestResult> result_;
+  /// URL of the Web App to open.
+  string url_;
+
+  /**
+   * Default constructor for a function, which sets the result of a chat join query; for bots only.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  answerChatJoinRequestQuery();
+
+  /**
+   * Creates a function, which sets the result of a chat join query; for bots only.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] query_id_ Identifier of the query.
+   * \param[in] result_ The result.
+   * \param[in] url_ URL of the Web App to open.
+   */
+  answerChatJoinRequestQuery(int64 query_id_, object_ptr<ChatJoinRequestResult> &&result_, string const &url_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 219345954;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -91497,6 +94593,59 @@ class changeStickerSet final : public Function {
 class ok;
 
 /**
+ * Changes web browser settings.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class changeWebBrowserSettings final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Pass true if links must be opened in an external browser by default.
+  bool open_external_browser_;
+  /// Pass true if a close button must be shown in the in-app browser; for Android app only.
+  bool display_close_button_;
+
+  /**
+   * Default constructor for a function, which changes web browser settings.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  changeWebBrowserSettings();
+
+  /**
+   * Creates a function, which changes web browser settings.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] open_external_browser_ Pass true if links must be opened in an external browser by default.
+   * \param[in] display_close_button_ Pass true if a close button must be shown in the in-app browser; for Android app only.
+   */
+  changeWebBrowserSettings(bool open_external_browser_, bool display_close_button_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1972325811;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
  * Checks the authentication token of a bot; to log in as a bot. Works only when the current authorization state is authorizationStateWaitPhoneNumber. Can be used instead of setAuthenticationPhoneNumber and checkAuthenticationCode to log in.
  *
  * Returns object_ptr<Ok>.
@@ -91852,6 +95001,59 @@ class checkAuthenticationPremiumPurchase final : public Function {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = 876306570;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Checks a web token to log in to the corresponding account; for official Telegram apps only. Works only when the current authorization state is authorizationStateWaitPhoneNumber or authorizationStateWaitOtherDeviceConfirmation.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class checkAuthenticationWebToken final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The token to check.
+  string token_;
+  /// Identifier of the datacenter of the user.
+  int32 dc_id_;
+
+  /**
+   * Default constructor for a function, which checks a web token to log in to the corresponding account; for official Telegram apps only. Works only when the current authorization state is authorizationStateWaitPhoneNumber or authorizationStateWaitOtherDeviceConfirmation.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  checkAuthenticationWebToken();
+
+  /**
+   * Creates a function, which checks a web token to log in to the corresponding account; for official Telegram apps only. Works only when the current authorization state is authorizationStateWaitPhoneNumber or authorizationStateWaitOtherDeviceConfirmation.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] token_ The token to check.
+   * \param[in] dc_id_ Identifier of the datacenter of the user.
+   */
+  checkAuthenticationWebToken(string const &token_, int32 dc_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1957846722;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -93671,6 +96873,56 @@ class composeTextWithAi final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<formattedText>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Confirms an unconfirmed business connection of the current user from another device.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class confirmBusinessConnectedBot final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// User identifier of the bot.
+  int53 bot_user_id_;
+
+  /**
+   * Default constructor for a function, which confirms an unconfirmed business connection of the current user from another device.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  confirmBusinessConnectedBot();
+
+  /**
+   * Creates a function, which confirms an unconfirmed business connection of the current user from another device.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] bot_user_id_ User identifier of the bot.
+   */
+  explicit confirmBusinessConnectedBot(int53 bot_user_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1301613953;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -98383,7 +101635,7 @@ class ReplyMarkup;
 
 class businessMessage;
 
-class location;
+class liveLocation;
 
 /**
  * Edits the content of a live location in a message sent on behalf of a business account; for bots only.
@@ -98408,14 +101660,8 @@ class editBusinessMessageLiveLocation final : public Function {
   int53 message_id_;
   /// The new message reply markup; pass null if none.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// New location content of the message; pass null to stop sharing the live location.
-  object_ptr<location> location_;
-  /// New time relative to the message send date, for which the location can be updated, in seconds. If 0x7FFFFFFF specified, then the location can be updated forever. Otherwise, must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days. Pass 0 to keep the current live_period.
-  int32 live_period_;
-  /// The new direction in which the location moves, in degrees; 1-360. Pass 0 if unknown.
-  int32 heading_;
-  /// The new maximum distance for proximity alerts, in meters (0-100000). Pass 0 if the notification is disabled.
-  int32 proximity_alert_radius_;
+  /// New live location of the message; pass null to stop sharing the live location. If the new live_period isn't set to 0x7FFFFFFF, then it must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days.
+  object_ptr<liveLocation> location_;
 
   /**
    * Default constructor for a function, which edits the content of a live location in a message sent on behalf of a business account; for bots only.
@@ -98433,15 +101679,12 @@ class editBusinessMessageLiveLocation final : public Function {
    * \param[in] chat_id_ The chat the message belongs to.
    * \param[in] message_id_ Identifier of the message.
    * \param[in] reply_markup_ The new message reply markup; pass null if none.
-   * \param[in] location_ New location content of the message; pass null to stop sharing the live location.
-   * \param[in] live_period_ New time relative to the message send date, for which the location can be updated, in seconds. If 0x7FFFFFFF specified, then the location can be updated forever. Otherwise, must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days. Pass 0 to keep the current live_period.
-   * \param[in] heading_ The new direction in which the location moves, in degrees; 1-360. Pass 0 if unknown.
-   * \param[in] proximity_alert_radius_ The new maximum distance for proximity alerts, in meters (0-100000). Pass 0 if the notification is disabled.
+   * \param[in] location_ New live location of the message; pass null to stop sharing the live location. If the new live_period isn't set to 0x7FFFFFFF, then it must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days.
    */
-  editBusinessMessageLiveLocation(string const &business_connection_id_, int53 chat_id_, int53 message_id_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<location> &&location_, int32 live_period_, int32 heading_, int32 proximity_alert_radius_);
+  editBusinessMessageLiveLocation(string const &business_connection_id_, int53 chat_id_, int53 message_id_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<liveLocation> &&location_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 494972447;
+  static const std::int32_t ID = 390194248;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<businessMessage>;
@@ -98610,7 +101853,7 @@ class editBusinessMessageText final : public Function {
   int53 message_id_;
   /// The new message reply markup; pass null if none.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// New text content of the message. Must be of type inputMessageText.
+  /// New text content of the message. Must be of type inputMessageText or inputMessageRichMessage.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -98629,7 +101872,7 @@ class editBusinessMessageText final : public Function {
    * \param[in] chat_id_ The chat the message belongs to.
    * \param[in] message_id_ Identifier of the message.
    * \param[in] reply_markup_ The new message reply markup; pass null if none.
-   * \param[in] input_message_content_ New text content of the message. Must be of type inputMessageText.
+   * \param[in] input_message_content_ New text content of the message. Must be of type inputMessageText or inputMessageRichMessage.
    */
   editBusinessMessageText(string const &business_connection_id_, int53 chat_id_, int53 message_id_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -99134,7 +102377,7 @@ class editInlineMessageCaption final : public Function {
 
 class ReplyMarkup;
 
-class location;
+class liveLocation;
 
 class ok;
 
@@ -99157,14 +102400,8 @@ class editInlineMessageLiveLocation final : public Function {
   string inline_message_id_;
   /// The new message reply markup; pass null if none.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// New location content of the message; pass null to stop sharing the live location.
-  object_ptr<location> location_;
-  /// New time relative to the message send date, for which the location can be updated, in seconds. If 0x7FFFFFFF specified, then the location can be updated forever. Otherwise, must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days. Pass 0 to keep the current live_period.
-  int32 live_period_;
-  /// The new direction in which the location moves, in degrees; 1-360. Pass 0 if unknown.
-  int32 heading_;
-  /// The new maximum distance for proximity alerts, in meters (0-100000). Pass 0 if the notification is disabled.
-  int32 proximity_alert_radius_;
+  /// New live location of the message; pass null to stop sharing the live location. If the new live_period isn't set to 0x7FFFFFFF, then it must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days.
+  object_ptr<liveLocation> location_;
 
   /**
    * Default constructor for a function, which edits the content of a live location in an inline message sent via a bot; for bots only.
@@ -99180,15 +102417,12 @@ class editInlineMessageLiveLocation final : public Function {
    *
    * \param[in] inline_message_id_ Inline message identifier.
    * \param[in] reply_markup_ The new message reply markup; pass null if none.
-   * \param[in] location_ New location content of the message; pass null to stop sharing the live location.
-   * \param[in] live_period_ New time relative to the message send date, for which the location can be updated, in seconds. If 0x7FFFFFFF specified, then the location can be updated forever. Otherwise, must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days. Pass 0 to keep the current live_period.
-   * \param[in] heading_ The new direction in which the location moves, in degrees; 1-360. Pass 0 if unknown.
-   * \param[in] proximity_alert_radius_ The new maximum distance for proximity alerts, in meters (0-100000). Pass 0 if the notification is disabled.
+   * \param[in] location_ New live location of the message; pass null to stop sharing the live location. If the new live_period isn't set to 0x7FFFFFFF, then it must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days.
    */
-  editInlineMessageLiveLocation(string const &inline_message_id_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<location> &&location_, int32 live_period_, int32 heading_, int32 proximity_alert_radius_);
+  editInlineMessageLiveLocation(string const &inline_message_id_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<liveLocation> &&location_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 2134352044;
+  static const std::int32_t ID = 211862379;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -99341,7 +102575,7 @@ class editInlineMessageText final : public Function {
   string inline_message_id_;
   /// The new message reply markup; pass null if none.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// New text content of the message. Must be of type inputMessageText.
+  /// New text content of the message. Must be of type inputMessageText or inputMessageRichMessage.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -99358,7 +102592,7 @@ class editInlineMessageText final : public Function {
    *
    * \param[in] inline_message_id_ Inline message identifier.
    * \param[in] reply_markup_ The new message reply markup; pass null if none.
-   * \param[in] input_message_content_ New text content of the message. Must be of type inputMessageText.
+   * \param[in] input_message_content_ New text content of the message. Must be of type inputMessageText or inputMessageRichMessage.
    */
   editInlineMessageText(string const &inline_message_id_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -99507,7 +102741,7 @@ class editMessageChecklist final : public Function {
 
 class ReplyMarkup;
 
-class location;
+class liveLocation;
 
 class message;
 
@@ -99532,14 +102766,8 @@ class editMessageLiveLocation final : public Function {
   int53 message_id_;
   /// The new message reply markup; pass null if none; for bots only.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// New location content of the message; pass null to stop sharing the live location.
-  object_ptr<location> location_;
-  /// New time relative to the message send date, for which the location can be updated, in seconds. If 0x7FFFFFFF specified, then the location can be updated forever. Otherwise, must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days. Pass 0 to keep the current live_period.
-  int32 live_period_;
-  /// The new direction in which the location moves, in degrees; 1-360. Pass 0 if unknown.
-  int32 heading_;
-  /// The new maximum distance for proximity alerts, in meters (0-100000). Pass 0 if the notification is disabled.
-  int32 proximity_alert_radius_;
+  /// New live location of the message; pass null to stop sharing the live location. If the new live_period isn't set to 0x7FFFFFFF, then it must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days.
+  object_ptr<liveLocation> location_;
 
   /**
    * Default constructor for a function, which edits the message content of a live location. Messages can be edited for a limited period of time specified in the live location. Returns the edited message after the edit is completed on the server side.
@@ -99556,15 +102784,12 @@ class editMessageLiveLocation final : public Function {
    * \param[in] chat_id_ The chat the message belongs to.
    * \param[in] message_id_ Identifier of the message. Use messageProperties.can_be_edited to check whether the message can be edited.
    * \param[in] reply_markup_ The new message reply markup; pass null if none; for bots only.
-   * \param[in] location_ New location content of the message; pass null to stop sharing the live location.
-   * \param[in] live_period_ New time relative to the message send date, for which the location can be updated, in seconds. If 0x7FFFFFFF specified, then the location can be updated forever. Otherwise, must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days. Pass 0 to keep the current live_period.
-   * \param[in] heading_ The new direction in which the location moves, in degrees; 1-360. Pass 0 if unknown.
-   * \param[in] proximity_alert_radius_ The new maximum distance for proximity alerts, in meters (0-100000). Pass 0 if the notification is disabled.
+   * \param[in] location_ New live location of the message; pass null to stop sharing the live location. If the new live_period isn't set to 0x7FFFFFFF, then it must not exceed the current live_period by more than a day, and the live location expiration date must remain in the next 90 days.
    */
-  editMessageLiveLocation(int53 chat_id_, int53 message_id_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<location> &&location_, int32 live_period_, int32 heading_, int32 proximity_alert_radius_);
+  editMessageLiveLocation(int53 chat_id_, int53 message_id_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<liveLocation> &&location_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1890511980;
+  static const std::int32_t ID = 419474098;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<message>;
@@ -99783,7 +103008,7 @@ class editMessageText final : public Function {
   int53 message_id_;
   /// The new message reply markup; pass null if none; for bots only.
   object_ptr<ReplyMarkup> reply_markup_;
-  /// New text content of the message. Must be of type inputMessageText.
+  /// New text content of the message. Must be of type inputMessageText or inputMessageRichMessage.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -99801,7 +103026,7 @@ class editMessageText final : public Function {
    * \param[in] chat_id_ The chat the message belongs to.
    * \param[in] message_id_ Identifier of the message. Use messageProperties.can_be_edited to check whether the message can be edited.
    * \param[in] reply_markup_ The new message reply markup; pass null if none; for bots only.
-   * \param[in] input_message_content_ New text content of the message. Must be of type inputMessageText.
+   * \param[in] input_message_content_ New text content of the message. Must be of type inputMessageText or inputMessageRichMessage.
    */
   editMessageText(int53 chat_id_, int53 message_id_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -99903,7 +103128,7 @@ class editQuickReplyMessage final : public Function {
   int32 shortcut_id_;
   /// Identifier of the message.
   int53 message_id_;
-  /// New content of the message. Must be one of the following types: inputMessageAnimation, inputMessageAudio, inputMessageChecklist, inputMessageDocument, inputMessagePhoto, inputMessageText, or inputMessageVideo.
+  /// New content of the message. Must be one of the following types: inputMessageAnimation, inputMessageAudio, inputMessageChecklist, inputMessageDocument, inputMessagePhoto, inputMessageRichMessage, inputMessageText, or inputMessageVideo.
   object_ptr<InputMessageContent> input_message_content_;
 
   /**
@@ -99920,7 +103145,7 @@ class editQuickReplyMessage final : public Function {
    *
    * \param[in] shortcut_id_ Unique identifier of the quick reply shortcut with the message.
    * \param[in] message_id_ Identifier of the message.
-   * \param[in] input_message_content_ New content of the message. Must be one of the following types: inputMessageAnimation, inputMessageAudio, inputMessageChecklist, inputMessageDocument, inputMessagePhoto, inputMessageText, or inputMessageVideo.
+   * \param[in] input_message_content_ New content of the message. Must be one of the following types: inputMessageAnimation, inputMessageAudio, inputMessageChecklist, inputMessageDocument, inputMessagePhoto, inputMessageRichMessage, inputMessageText, or inputMessageVideo.
    */
   editQuickReplyMessage(int32 shortcut_id_, int53 message_id_, object_ptr<InputMessageContent> &&input_message_content_);
 
@@ -100715,7 +103940,7 @@ class getAccountTtl final : public Function {
 class sessions;
 
 /**
- * Returns all active sessions of the current user.
+ * Returns all active sessions of the current user. Additionally, getBusinessConnectedBot must be used to show the bot on top of active sessions.
  *
  * Returns object_ptr<Sessions>.
  */
@@ -100731,7 +103956,7 @@ class getActiveSessions final : public Function {
  public:
 
   /**
-   * Default constructor for a function, which returns all active sessions of the current user.
+   * Default constructor for a function, which returns all active sessions of the current user. Additionally, getBusinessConnectedBot must be used to show the bot on top of active sessions.
    *
    * Returns object_ptr<Sessions>.
    */
@@ -102188,12 +105413,12 @@ class getBusinessChatLinks final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class businessConnectedBot;
+class businessConnectedBotInfo;
 
 /**
- * Returns the business bot that is connected to the current user account. Returns a 404 error if there is no connected bot.
+ * Returns information about the business bot that is connected to the current user account. Returns a 404 error if there is no connected bot.
  *
- * Returns object_ptr<BusinessConnectedBot>.
+ * Returns object_ptr<BusinessConnectedBotInfo>.
  */
 class getBusinessConnectedBot final : public Function {
   /**
@@ -102207,17 +105432,17 @@ class getBusinessConnectedBot final : public Function {
  public:
 
   /**
-   * Default constructor for a function, which returns the business bot that is connected to the current user account. Returns a 404 error if there is no connected bot.
+   * Default constructor for a function, which returns information about the business bot that is connected to the current user account. Returns a 404 error if there is no connected bot.
    *
-   * Returns object_ptr<BusinessConnectedBot>.
+   * Returns object_ptr<BusinessConnectedBotInfo>.
    */
   getBusinessConnectedBot();
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 911058883;
+  static const std::int32_t ID = 1494823093;
 
   /// Typedef for the type returned by the function.
-  using ReturnType = object_ptr<businessConnectedBot>;
+  using ReturnType = object_ptr<businessConnectedBotInfo>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -104195,7 +107420,7 @@ class getChatNotificationSettingsExceptions final : public Function {
 class user;
 
 /**
- * Returns the user who will become the owner of the chat after 7 days if the current user does not return to the supergroup or channel during that period or immediately for basic groups; requires owner privileges in the chat. Available only for supergroups and channel chats.
+ * Returns the user who will become the owner of the chat after 7 days if the current user does not return to the supergroup or channel during that period or immediately for basic groups; requires owner privileges in the chat. Available only for basic groups, supergroups, and channel chats.
  *
  * Returns object_ptr<User>.
  */
@@ -104213,14 +107438,14 @@ class getChatOwnerAfterLeaving final : public Function {
   int53 chat_id_;
 
   /**
-   * Default constructor for a function, which returns the user who will become the owner of the chat after 7 days if the current user does not return to the supergroup or channel during that period or immediately for basic groups; requires owner privileges in the chat. Available only for supergroups and channel chats.
+   * Default constructor for a function, which returns the user who will become the owner of the chat after 7 days if the current user does not return to the supergroup or channel during that period or immediately for basic groups; requires owner privileges in the chat. Available only for basic groups, supergroups, and channel chats.
    *
    * Returns object_ptr<User>.
    */
   getChatOwnerAfterLeaving();
 
   /**
-   * Creates a function, which returns the user who will become the owner of the chat after 7 days if the current user does not return to the supergroup or channel during that period or immediately for basic groups; requires owner privileges in the chat. Available only for supergroups and channel chats.
+   * Creates a function, which returns the user who will become the owner of the chat after 7 days if the current user does not return to the supergroup or channel during that period or immediately for basic groups; requires owner privileges in the chat. Available only for basic groups, supergroups, and channel chats.
    *
    * Returns object_ptr<User>.
    *
@@ -104668,7 +107893,7 @@ class SearchMessagesFilter;
 class messagePositions;
 
 /**
- * Returns sparse positions of messages of the specified type in the chat to be used for shared media scroll implementation. Returns the results in reverse chronological order (i.e., in order of decreasing message_id). Cannot be used in secret chats or with searchMessagesFilterFailedToSend filter without an enabled message database.
+ * Returns sparse positions of messages of the specified type in the chat to be used for Shared Media scroll implementation. Returns the results in reverse chronological order (i.e., in order of decreasing message_id). Cannot be used in secret chats or with searchMessagesFilterFailedToSend filter without an enabled message database.
  *
  * Returns object_ptr<MessagePositions>.
  */
@@ -104694,14 +107919,14 @@ class getChatSparseMessagePositions final : public Function {
   int53 saved_messages_topic_id_;
 
   /**
-   * Default constructor for a function, which returns sparse positions of messages of the specified type in the chat to be used for shared media scroll implementation. Returns the results in reverse chronological order (i.e., in order of decreasing message_id). Cannot be used in secret chats or with searchMessagesFilterFailedToSend filter without an enabled message database.
+   * Default constructor for a function, which returns sparse positions of messages of the specified type in the chat to be used for Shared Media scroll implementation. Returns the results in reverse chronological order (i.e., in order of decreasing message_id). Cannot be used in secret chats or with searchMessagesFilterFailedToSend filter without an enabled message database.
    *
    * Returns object_ptr<MessagePositions>.
    */
   getChatSparseMessagePositions();
 
   /**
-   * Creates a function, which returns sparse positions of messages of the specified type in the chat to be used for shared media scroll implementation. Returns the results in reverse chronological order (i.e., in order of decreasing message_id). Cannot be used in secret chats or with searchMessagesFilterFailedToSend filter without an enabled message database.
+   * Creates a function, which returns sparse positions of messages of the specified type in the chat to be used for Shared Media scroll implementation. Returns the results in reverse chronological order (i.e., in order of decreasing message_id). Cannot be used in secret chats or with searchMessagesFilterFailedToSend filter without an enabled message database.
    *
    * Returns object_ptr<MessagePositions>.
    *
@@ -105458,6 +108683,56 @@ class getCountries final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<countries>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class countryInfo;
+
+/**
+ * Returns information about an existing country. Can be called before authorization.
+ *
+ * Returns object_ptr<CountryInfo>.
+ */
+class getCountry final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// A two-letter ISO 3166-1 alpha-2 country code.
+  string country_code_;
+
+  /**
+   * Default constructor for a function, which returns information about an existing country. Can be called before authorization.
+   *
+   * Returns object_ptr<CountryInfo>.
+   */
+  getCountry();
+
+  /**
+   * Creates a function, which returns information about an existing country. Can be called before authorization.
+   *
+   * Returns object_ptr<CountryInfo>.
+   *
+   * \param[in] country_code_ A two-letter ISO 3166-1 alpha-2 country code.
+   */
+  explicit getCountry(string const &country_code_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1094306864;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<countryInfo>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -106582,7 +109857,7 @@ class getExternalLink final : public Function {
 class LoginUrlInfo;
 
 /**
- * Returns information about an action to be done when the current user clicks an external link. Don't use this method for links from secret chats if link preview is disabled in secret chats.
+ * Returns information about an action to be done when the current user clicks an external link. Don't use this method for links from secret chats if link preview is disabled in secret chats, and use directly getLinkWebBrowserType.
  *
  * Returns object_ptr<LoginUrlInfo>.
  */
@@ -106600,14 +109875,14 @@ class getExternalLinkInfo final : public Function {
   string link_;
 
   /**
-   * Default constructor for a function, which returns information about an action to be done when the current user clicks an external link. Don't use this method for links from secret chats if link preview is disabled in secret chats.
+   * Default constructor for a function, which returns information about an action to be done when the current user clicks an external link. Don't use this method for links from secret chats if link preview is disabled in secret chats, and use directly getLinkWebBrowserType.
    *
    * Returns object_ptr<LoginUrlInfo>.
    */
   getExternalLinkInfo();
 
   /**
-   * Creates a function, which returns information about an action to be done when the current user clicks an external link. Don't use this method for links from secret chats if link preview is disabled in secret chats.
+   * Creates a function, which returns information about an action to be done when the current user clicks an external link. Don't use this method for links from secret chats if link preview is disabled in secret chats, and use directly getLinkWebBrowserType.
    *
    * Returns object_ptr<LoginUrlInfo>.
    *
@@ -107134,6 +110409,59 @@ class getForumTopics final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<forumTopics>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class richMessage;
+
+/**
+ * Returns the full version of a rich message.
+ *
+ * Returns object_ptr<RichMessage>.
+ */
+class getFullRichMessage final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the chat the messages belong to.
+  int53 chat_id_;
+  /// Identifier of the message.
+  int53 message_id_;
+
+  /**
+   * Default constructor for a function, which returns the full version of a rich message.
+   *
+   * Returns object_ptr<RichMessage>.
+   */
+  getFullRichMessage();
+
+  /**
+   * Creates a function, which returns the full version of a rich message.
+   *
+   * Returns object_ptr<RichMessage>.
+   *
+   * \param[in] chat_id_ Identifier of the chat the messages belong to.
+   * \param[in] message_id_ Identifier of the message.
+   */
+  getFullRichMessage(int53 chat_id_, int53 message_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 784619552;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<richMessage>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -108697,6 +112025,56 @@ class getLinkPreview final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<linkPreview>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class WebBrowserType;
+
+/**
+ * Returns a type of the web browser which must be used to open the link.
+ *
+ * Returns object_ptr<WebBrowserType>.
+ */
+class getLinkWebBrowserType final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The HTTP link.
+  string link_;
+
+  /**
+   * Default constructor for a function, which returns a type of the web browser which must be used to open the link.
+   *
+   * Returns object_ptr<WebBrowserType>.
+   */
+  getLinkWebBrowserType();
+
+  /**
+   * Creates a function, which returns a type of the web browser which must be used to open the link.
+   *
+   * Returns object_ptr<WebBrowserType>.
+   *
+   * \param[in] link_ The HTTP link.
+   */
+  explicit getLinkWebBrowserType(string const &link_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 2035736166;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<WebBrowserType>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -112918,7 +116296,7 @@ class FileType;
 class file;
 
 /**
- * Returns information about a file by its remote identifier. This is an offline method. Can be used to register a URL as a file for further uploading, or sending as a message. Even the request succeeds, the file can be used only if it is still accessible to the user. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application.
+ * Returns information about a file by its remote identifier. This is an offline method. Can be used to register a URL as a file for further uploading, or sending as a message. Even if the request succeeds, the file can be used only if it is still accessible to the user. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application.
  *
  * Returns object_ptr<File>.
  */
@@ -112938,14 +116316,14 @@ class getRemoteFile final : public Function {
   object_ptr<FileType> file_type_;
 
   /**
-   * Default constructor for a function, which returns information about a file by its remote identifier. This is an offline method. Can be used to register a URL as a file for further uploading, or sending as a message. Even the request succeeds, the file can be used only if it is still accessible to the user. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application.
+   * Default constructor for a function, which returns information about a file by its remote identifier. This is an offline method. Can be used to register a URL as a file for further uploading, or sending as a message. Even if the request succeeds, the file can be used only if it is still accessible to the user. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application.
    *
    * Returns object_ptr<File>.
    */
   getRemoteFile();
 
   /**
-   * Creates a function, which returns information about a file by its remote identifier. This is an offline method. Can be used to register a URL as a file for further uploading, or sending as a message. Even the request succeeds, the file can be used only if it is still accessible to the user. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application.
+   * Creates a function, which returns information about a file by its remote identifier. This is an offline method. Can be used to register a URL as a file for further uploading, or sending as a message. Even if the request succeeds, the file can be used only if it is still accessible to the user. For example, if the file is from a message, then the message must be not deleted and accessible to the user. If the file database is disabled, then the corresponding object with the file must be preloaded by the application.
    *
    * Returns object_ptr<File>.
    *
@@ -116764,14 +120142,14 @@ class getVideoMessageAdvertisements final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class httpUrl;
-
 class webAppOpenParameters;
+
+class webAppUrl;
 
 /**
  * Returns an HTTPS URL of a Web App to open after a link of the type internalLinkTypeWebApp is clicked.
  *
- * Returns object_ptr<HttpUrl>.
+ * Returns object_ptr<WebAppUrl>.
  */
 class getWebAppLinkUrl final : public Function {
   /**
@@ -116799,14 +120177,14 @@ class getWebAppLinkUrl final : public Function {
   /**
    * Default constructor for a function, which returns an HTTPS URL of a Web App to open after a link of the type internalLinkTypeWebApp is clicked.
    *
-   * Returns object_ptr<HttpUrl>.
+   * Returns object_ptr<WebAppUrl>.
    */
   getWebAppLinkUrl();
 
   /**
    * Creates a function, which returns an HTTPS URL of a Web App to open after a link of the type internalLinkTypeWebApp is clicked.
    *
-   * Returns object_ptr<HttpUrl>.
+   * Returns object_ptr<WebAppUrl>.
    *
    * \param[in] chat_id_ Identifier of the chat in which the link was clicked; pass 0 if none.
    * \param[in] bot_user_id_ Identifier of the target bot.
@@ -116818,10 +120196,10 @@ class getWebAppLinkUrl final : public Function {
   getWebAppLinkUrl(int53 chat_id_, int53 bot_user_id_, string const &web_app_short_name_, string const &start_parameter_, bool allow_write_access_, object_ptr<webAppOpenParameters> &&parameters_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1627284161;
+  static const std::int32_t ID = -379857548;
 
   /// Typedef for the type returned by the function.
-  using ReturnType = object_ptr<httpUrl>;
+  using ReturnType = object_ptr<webAppUrl>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -116881,14 +120259,14 @@ class getWebAppPlaceholder final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class httpUrl;
-
 class webAppOpenParameters;
+
+class webAppUrl;
 
 /**
  * Returns an HTTPS URL of a Web App to open from the side menu, a keyboardButtonTypeWebApp button, or an inlineQueryResultsButtonTypeWebApp button.
  *
- * Returns object_ptr<HttpUrl>.
+ * Returns object_ptr<WebAppUrl>.
  */
 class getWebAppUrl final : public Function {
   /**
@@ -116910,14 +120288,14 @@ class getWebAppUrl final : public Function {
   /**
    * Default constructor for a function, which returns an HTTPS URL of a Web App to open from the side menu, a keyboardButtonTypeWebApp button, or an inlineQueryResultsButtonTypeWebApp button.
    *
-   * Returns object_ptr<HttpUrl>.
+   * Returns object_ptr<WebAppUrl>.
    */
   getWebAppUrl();
 
   /**
    * Creates a function, which returns an HTTPS URL of a Web App to open from the side menu, a keyboardButtonTypeWebApp button, or an inlineQueryResultsButtonTypeWebApp button.
    *
-   * Returns object_ptr<HttpUrl>.
+   * Returns object_ptr<WebAppUrl>.
    *
    * \param[in] bot_user_id_ Identifier of the target bot. If the bot is restricted for the current user, then show an error instead of calling the method.
    * \param[in] url_ The URL from a keyboardButtonTypeWebApp button, inlineQueryResultsButtonTypeWebApp button, or an empty string when the bot is opened from the side menu.
@@ -116926,10 +120304,10 @@ class getWebAppUrl final : public Function {
   getWebAppUrl(int53 bot_user_id_, string const &url_, object_ptr<webAppOpenParameters> &&parameters_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1526784188;
+  static const std::int32_t ID = -2128908038;
 
   /// Typedef for the type returned by the function.
-  using ReturnType = object_ptr<httpUrl>;
+  using ReturnType = object_ptr<webAppUrl>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -117505,12 +120883,12 @@ class isProfileAudio final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class ok;
+class ChatJoinResult;
 
 /**
- * Adds the current user as a new member to a chat. Private and secret chats can't be joined using this method. May return an error with a message &quot;INVITE_REQUEST_SENT&quot; if only a join request was created.
+ * Adds the current user as a new member to a chat. Private and secret chats can't be joined using this method.
  *
- * Returns object_ptr<Ok>.
+ * Returns object_ptr<ChatJoinResult>.
  */
 class joinChat final : public Function {
   /**
@@ -117526,26 +120904,26 @@ class joinChat final : public Function {
   int53 chat_id_;
 
   /**
-   * Default constructor for a function, which adds the current user as a new member to a chat. Private and secret chats can't be joined using this method. May return an error with a message &quot;INVITE_REQUEST_SENT&quot; if only a join request was created.
+   * Default constructor for a function, which adds the current user as a new member to a chat. Private and secret chats can't be joined using this method.
    *
-   * Returns object_ptr<Ok>.
+   * Returns object_ptr<ChatJoinResult>.
    */
   joinChat();
 
   /**
-   * Creates a function, which adds the current user as a new member to a chat. Private and secret chats can't be joined using this method. May return an error with a message &quot;INVITE_REQUEST_SENT&quot; if only a join request was created.
+   * Creates a function, which adds the current user as a new member to a chat. Private and secret chats can't be joined using this method.
    *
-   * Returns object_ptr<Ok>.
+   * Returns object_ptr<ChatJoinResult>.
    *
    * \param[in] chat_id_ Chat identifier.
    */
   explicit joinChat(int53 chat_id_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 326769313;
+  static const std::int32_t ID = 1906378229;
 
   /// Typedef for the type returned by the function.
-  using ReturnType = object_ptr<ok>;
+  using ReturnType = object_ptr<ChatJoinResult>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -117555,12 +120933,12 @@ class joinChat final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
-class chat;
+class ChatJoinResult;
 
 /**
- * Uses an invite link to add the current user to the chat if possible. May return an error with a message &quot;INVITE_REQUEST_SENT&quot; if only a join request was created.
+ * Uses an invite link to add the current user to the chat if possible.
  *
- * Returns object_ptr<Chat>.
+ * Returns object_ptr<ChatJoinResult>.
  */
 class joinChatByInviteLink final : public Function {
   /**
@@ -117576,26 +120954,26 @@ class joinChatByInviteLink final : public Function {
   string invite_link_;
 
   /**
-   * Default constructor for a function, which uses an invite link to add the current user to the chat if possible. May return an error with a message &quot;INVITE_REQUEST_SENT&quot; if only a join request was created.
+   * Default constructor for a function, which uses an invite link to add the current user to the chat if possible.
    *
-   * Returns object_ptr<Chat>.
+   * Returns object_ptr<ChatJoinResult>.
    */
   joinChatByInviteLink();
 
   /**
-   * Creates a function, which uses an invite link to add the current user to the chat if possible. May return an error with a message &quot;INVITE_REQUEST_SENT&quot; if only a join request was created.
+   * Creates a function, which uses an invite link to add the current user to the chat if possible.
    *
-   * Returns object_ptr<Chat>.
+   * Returns object_ptr<ChatJoinResult>.
    *
    * \param[in] invite_link_ Invite link to use.
    */
   explicit joinChatByInviteLink(string const &invite_link_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1049973882;
+  static const std::int32_t ID = -28699137;
 
   /// Typedef for the type returned by the function.
-  using ReturnType = object_ptr<chat>;
+  using ReturnType = object_ptr<ChatJoinResult>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -120727,6 +124105,45 @@ class removeAllFilesFromDownloads final : public Function {
 class ok;
 
 /**
+ * Removes special handling for the opening of all links.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class removeAllWebBrowserSettingsExceptions final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Default constructor for a function, which removes special handling for the opening of all links.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  removeAllWebBrowserSettingsExceptions();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -2086257000;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
  * Removes the connected business bot from a specific chat by adding the chat to businessRecipients.excluded_chat_ids.
  *
  * Returns object_ptr<Ok>.
@@ -122067,6 +125484,56 @@ class removeTopChat final : public Function {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -1907876267;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Removes a special handling for the opening of the specified URL.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class removeWebBrowserSettingsException final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// URL of the website.
+  string url_;
+
+  /**
+   * Default constructor for a function, which removes a special handling for the opening of the specified URL.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  removeWebBrowserSettingsException();
+
+  /**
+   * Creates a function, which removes a special handling for the opening of the specified URL.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] url_ URL of the website.
+   */
+  explicit removeWebBrowserSettingsException(string const &url_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1498406903;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -124783,7 +128250,7 @@ class searchChatMessages final : public Function {
 class messages;
 
 /**
- * Returns information about the recent locations of chat members that were sent to the chat. Returns up to 1 location message per user.
+ * Returns information about the recent live locations of chat members that were sent to the chat. Returns at most one live location message per user.
  *
  * Returns object_ptr<Messages>.
  */
@@ -124803,14 +128270,14 @@ class searchChatRecentLocationMessages final : public Function {
   int32 limit_;
 
   /**
-   * Default constructor for a function, which returns information about the recent locations of chat members that were sent to the chat. Returns up to 1 location message per user.
+   * Default constructor for a function, which returns information about the recent live locations of chat members that were sent to the chat. Returns at most one live location message per user.
    *
    * Returns object_ptr<Messages>.
    */
   searchChatRecentLocationMessages();
 
   /**
-   * Creates a function, which returns information about the recent locations of chat members that were sent to the chat. Returns up to 1 location message per user.
+   * Creates a function, which returns information about the recent live locations of chat members that were sent to the chat. Returns at most one live location message per user.
    *
    * Returns object_ptr<Messages>.
    *
@@ -124833,6 +128300,8 @@ class searchChatRecentLocationMessages final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class SearchChatTypeFilter;
+
 class chats;
 
 /**
@@ -124852,6 +128321,8 @@ class searchChats final : public Function {
  public:
   /// Query to search for. If the query is empty, returns up to 50 recently found chats.
   string query_;
+  /// Additional filter for type of the chats to be returned; pass null to search for chats of all types.
+  object_ptr<SearchChatTypeFilter> type_filter_;
   /// The maximum number of chats to be returned.
   int32 limit_;
 
@@ -124868,12 +128339,13 @@ class searchChats final : public Function {
    * Returns object_ptr<Chats>.
    *
    * \param[in] query_ Query to search for. If the query is empty, returns up to 50 recently found chats.
+   * \param[in] type_filter_ Additional filter for type of the chats to be returned; pass null to search for chats of all types.
    * \param[in] limit_ The maximum number of chats to be returned.
    */
-  searchChats(string const &query_, int32 limit_);
+  searchChats(string const &query_, object_ptr<SearchChatTypeFilter> &&type_filter_, int32 limit_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1879787060;
+  static const std::int32_t ID = 1829367610;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<chats>;
@@ -124885,6 +128357,8 @@ class searchChats final : public Function {
    */
   void store(TlStorerToString &s, const char *field_name) const final;
 };
+
+class SearchChatTypeFilter;
 
 class chats;
 
@@ -124905,6 +128379,8 @@ class searchChatsOnServer final : public Function {
  public:
   /// Query to search for.
   string query_;
+  /// Additional filter for type of the chats to be returned; pass null to search for chats of all types.
+  object_ptr<SearchChatTypeFilter> type_filter_;
   /// The maximum number of chats to be returned.
   int32 limit_;
 
@@ -124921,12 +128397,13 @@ class searchChatsOnServer final : public Function {
    * Returns object_ptr<Chats>.
    *
    * \param[in] query_ Query to search for.
+   * \param[in] type_filter_ Additional filter for type of the chats to be returned; pass null to search for chats of all types.
    * \param[in] limit_ The maximum number of chats to be returned.
    */
-  searchChatsOnServer(string const &query_, int32 limit_);
+  searchChatsOnServer(string const &query_, object_ptr<SearchChatTypeFilter> &&type_filter_, int32 limit_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1158402188;
+  static const std::int32_t ID = 707218193;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<chats>;
@@ -125470,6 +128947,8 @@ class searchPublicChat final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class SearchChatTypeFilter;
+
 class chats;
 
 /**
@@ -125489,6 +128968,8 @@ class searchPublicChats final : public Function {
  public:
   /// Query to search for.
   string query_;
+  /// Additional filter for type of the chats to be returned; pass null to search for chats of all types.
+  object_ptr<SearchChatTypeFilter> type_filter_;
 
   /**
    * Default constructor for a function, which searches public chats by looking for specified query in their username and title. Currently, only private chats, supergroups and channels can be public. Returns a meaningful number of results. Excludes private chats with contacts and chats from the chat list from the results.
@@ -125503,11 +128984,12 @@ class searchPublicChats final : public Function {
    * Returns object_ptr<Chats>.
    *
    * \param[in] query_ Query to search for.
+   * \param[in] type_filter_ Additional filter for type of the chats to be returned; pass null to search for chats of all types.
    */
-  explicit searchPublicChats(string const &query_);
+  searchPublicChats(string const &query_, object_ptr<SearchChatTypeFilter> &&type_filter_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 970385337;
+  static const std::int32_t ID = -1467609397;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<chats>;
@@ -125869,6 +129351,8 @@ class searchQuote final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class SearchChatTypeFilter;
+
 class chats;
 
 /**
@@ -125888,6 +129372,8 @@ class searchRecentlyFoundChats final : public Function {
  public:
   /// Query to search for.
   string query_;
+  /// Additional filter for type of the chats to be returned; pass null to search for chats of all types.
+  object_ptr<SearchChatTypeFilter> type_filter_;
   /// The maximum number of chats to be returned.
   int32 limit_;
 
@@ -125904,12 +129390,13 @@ class searchRecentlyFoundChats final : public Function {
    * Returns object_ptr<Chats>.
    *
    * \param[in] query_ Query to search for.
+   * \param[in] type_filter_ Additional filter for type of the chats to be returned; pass null to search for chats of all types.
    * \param[in] limit_ The maximum number of chats to be returned.
    */
-  searchRecentlyFoundChats(string const &query_, int32 limit_);
+  searchRecentlyFoundChats(string const &query_, object_ptr<SearchChatTypeFilter> &&type_filter_, int32 limit_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1647445393;
+  static const std::int32_t ID = -1323794817;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<chats>;
@@ -128010,6 +131497,67 @@ class sendResoldGift final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<GiftResaleResult>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class inputRichMessage;
+
+class ok;
+
+/**
+ * Sends a draft for a being generated rich message; for bots only.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class sendRichMessageDraft final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Chat identifier.
+  int53 chat_id_;
+  /// The forum topic identifier in which the message will be sent; pass 0 if none.
+  int32 forum_topic_id_;
+  /// Unique identifier of the draft.
+  int64 draft_id_;
+  /// Draft of the message.
+  object_ptr<inputRichMessage> message_;
+
+  /**
+   * Default constructor for a function, which sends a draft for a being generated rich message; for bots only.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  sendRichMessageDraft();
+
+  /**
+   * Creates a function, which sends a draft for a being generated rich message; for bots only.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] chat_id_ Chat identifier.
+   * \param[in] forum_topic_id_ The forum topic identifier in which the message will be sent; pass 0 if none.
+   * \param[in] draft_id_ Unique identifier of the draft.
+   * \param[in] message_ Draft of the message.
+   */
+  sendRichMessageDraft(int53 chat_id_, int32 forum_topic_id_, int64 draft_id_, object_ptr<inputRichMessage> &&message_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1509401116;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -136463,7 +140011,7 @@ class synchronizeLanguagePack final : public Function {
 class ok;
 
 /**
- * Terminates all other sessions of the current user.
+ * Terminates all other sessions of the current user. Additionally, the user must be suggested to delete the connected business bot using deleteBusinessConnectedBot if there is any.
  *
  * Returns object_ptr<Ok>.
  */
@@ -136479,7 +140027,7 @@ class terminateAllOtherSessions final : public Function {
  public:
 
   /**
-   * Default constructor for a function, which terminates all other sessions of the current user.
+   * Default constructor for a function, which terminates all other sessions of the current user. Additionally, the user must be suggested to delete the connected business bot using deleteBusinessConnectedBot if there is any.
    *
    * Returns object_ptr<Ok>.
    */
@@ -139176,6 +142724,10 @@ class toggleSupergroupJoinByRequest final : public Function {
   int53 supergroup_id_;
   /// New value of join_by_request.
   bool join_by_request_;
+  /// Identifier of the bot which will be the guard bot in the group; pass 0 if none; ignored if join_by_request == false. The bot must have administrator privileges and can_invite_users right in the supergroup chat, and must have userTypeBot.is_guard == true.
+  int53 guard_bot_user_id_;
+  /// Pass true to apply the change to the existing invite links, including primary links.
+  bool apply_to_invite_links_;
 
   /**
    * Default constructor for a function, which toggles whether all users directly joining the supergroup need to be approved by supergroup administrators; requires can_restrict_members administrator right.
@@ -139191,11 +142743,13 @@ class toggleSupergroupJoinByRequest final : public Function {
    *
    * \param[in] supergroup_id_ Identifier of the supergroup that isn't a broadcast group and isn't a channel direct message group.
    * \param[in] join_by_request_ New value of join_by_request.
+   * \param[in] guard_bot_user_id_ Identifier of the bot which will be the guard bot in the group; pass 0 if none; ignored if join_by_request == false. The bot must have administrator privileges and can_invite_users right in the supergroup chat, and must have userTypeBot.is_guard == true.
+   * \param[in] apply_to_invite_links_ Pass true to apply the change to the existing invite links, including primary links.
    */
-  toggleSupergroupJoinByRequest(int53 supergroup_id_, bool join_by_request_);
+  toggleSupergroupJoinByRequest(int53 supergroup_id_, bool join_by_request_, int53 guard_bot_user_id_, bool apply_to_invite_links_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 2111807454;
+  static const std::int32_t ID = 957605043;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -139780,7 +143334,7 @@ class translateText final : public Function {
  public:
   /// Text to translate.
   object_ptr<formattedText> text_;
-  /// Language code of the language to which the message is translated. Must be one of &quot;af&quot;, &quot;sq&quot;, &quot;am&quot;, &quot;ar&quot;, &quot;hy&quot;, &quot;az&quot;, &quot;eu&quot;, &quot;be&quot;, &quot;bn&quot;, &quot;bs&quot;, &quot;bg&quot;, &quot;ca&quot;, &quot;ceb&quot;, &quot;zh-CN&quot;, &quot;zh&quot;, &quot;zh-Hans&quot;, &quot;zh-TW&quot;, &quot;zh-Hant&quot;, &quot;co&quot;, &quot;hr&quot;, &quot;cs&quot;, &quot;da&quot;, &quot;nl&quot;, &quot;en&quot;, &quot;eo&quot;, &quot;et&quot;, &quot;fi&quot;, &quot;fr&quot;, &quot;fy&quot;, &quot;gl&quot;, &quot;ka&quot;, &quot;de&quot;, &quot;el&quot;, &quot;gu&quot;, &quot;ht&quot;, &quot;ha&quot;, &quot;haw&quot;, &quot;he&quot;, &quot;iw&quot;, &quot;hi&quot;, &quot;hmn&quot;, &quot;hu&quot;, &quot;is&quot;, &quot;ig&quot;, &quot;id&quot;, &quot;in&quot;, &quot;ga&quot;, &quot;it&quot;, &quot;ja&quot;, &quot;jv&quot;, &quot;kn&quot;, &quot;kk&quot;, &quot;km&quot;, &quot;rw&quot;, &quot;ko&quot;, &quot;ku&quot;, &quot;ky&quot;, &quot;lo&quot;, &quot;la&quot;, &quot;lv&quot;, &quot;lt&quot;, &quot;lb&quot;, &quot;mk&quot;, &quot;mg&quot;, &quot;ms&quot;, &quot;ml&quot;, &quot;mt&quot;, &quot;mi&quot;, &quot;mr&quot;, &quot;mn&quot;, &quot;my&quot;, &quot;ne&quot;, &quot;no&quot;, &quot;ny&quot;, &quot;or&quot;, &quot;ps&quot;, &quot;fa&quot;, &quot;pl&quot;, &quot;pt&quot;, &quot;pa&quot;, &quot;ro&quot;, &quot;ru&quot;, &quot;sm&quot;, &quot;gd&quot;, &quot;sr&quot;, &quot;st&quot;, &quot;sn&quot;, &quot;sd&quot;, &quot;si&quot;, &quot;sk&quot;, &quot;sl&quot;, &quot;so&quot;, &quot;es&quot;, &quot;su&quot;, &quot;sw&quot;, &quot;sv&quot;, &quot;tl&quot;, &quot;tg&quot;, &quot;ta&quot;, &quot;tt&quot;, &quot;te&quot;, &quot;th&quot;, &quot;tr&quot;, &quot;tk&quot;, &quot;uk&quot;, &quot;ur&quot;, &quot;ug&quot;, &quot;uz&quot;, &quot;vi&quot;, &quot;cy&quot;, &quot;xh&quot;, &quot;yi&quot;, &quot;ji&quot;, &quot;yo&quot;, &quot;zu&quot;.
+  /// Language code of the language to which the message is translated. Must be one of &quot;af&quot;, &quot;sq&quot;, &quot;am&quot;, &quot;ar&quot;, &quot;hy&quot;, &quot;az&quot;, &quot;eu&quot;, &quot;be&quot;, &quot;bn&quot;, &quot;bs&quot;, &quot;bg&quot;, &quot;ca&quot;, &quot;ceb&quot;, &quot;zh-CN&quot;, &quot;zh&quot;, &quot;zh-Hans&quot;, &quot;zh-TW&quot;, &quot;zh-Hant&quot;, &quot;co&quot;, &quot;hr&quot;, &quot;cs&quot;, &quot;da&quot;, &quot;nl&quot;, &quot;en&quot;, &quot;eo&quot;, &quot;et&quot;, &quot;fi&quot;, &quot;fr&quot;, &quot;fy&quot;, &quot;gl&quot;, &quot;ka&quot;, &quot;de&quot;, &quot;el&quot;, &quot;gu&quot;, &quot;ht&quot;, &quot;ha&quot;, &quot;haw&quot;, &quot;he&quot;, &quot;iw&quot;, &quot;hi&quot;, &quot;hmn&quot;, &quot;hu&quot;, &quot;is&quot;, &quot;ig&quot;, &quot;id&quot;, &quot;in&quot;, &quot;ga&quot;, &quot;it&quot;, &quot;ja&quot;, &quot;jv&quot;, &quot;kn&quot;, &quot;kk&quot;, &quot;km&quot;, &quot;rw&quot;, &quot;ko&quot;, &quot;ku&quot;, &quot;ky&quot;, &quot;lo&quot;, &quot;la&quot;, &quot;lv&quot;, &quot;lt&quot;, &quot;lb&quot;, &quot;mk&quot;, &quot;mg&quot;, &quot;ms&quot;, &quot;ml&quot;, &quot;mt&quot;, &quot;mi&quot;, &quot;mr&quot;, &quot;mn&quot;, &quot;my&quot;, &quot;ne&quot;, &quot;no&quot;, &quot;ny&quot;, &quot;or&quot;, &quot;ps&quot;, &quot;fa&quot;, &quot;pl&quot;, &quot;pt&quot;, &quot;pt-BR&quot;, &quot;pa&quot;, &quot;ro&quot;, &quot;ru&quot;, &quot;sm&quot;, &quot;gd&quot;, &quot;sr&quot;, &quot;st&quot;, &quot;sn&quot;, &quot;sd&quot;, &quot;si&quot;, &quot;sk&quot;, &quot;sl&quot;, &quot;so&quot;, &quot;es&quot;, &quot;su&quot;, &quot;sw&quot;, &quot;sv&quot;, &quot;tl&quot;, &quot;tg&quot;, &quot;ta&quot;, &quot;tt&quot;, &quot;te&quot;, &quot;th&quot;, &quot;tr&quot;, &quot;tk&quot;, &quot;uk&quot;, &quot;ur&quot;, &quot;ug&quot;, &quot;uz&quot;, &quot;vi&quot;, &quot;cy&quot;, &quot;xh&quot;, &quot;yi&quot;, &quot;ji&quot;, &quot;yo&quot;, &quot;zu&quot;.
   string to_language_code_;
   /// Tone of the translation; must be one of &quot;&quot;, &quot;formal&quot;, &quot;neutral&quot;, &quot;casual&quot;; defaults to &quot;neutral&quot;.
   string tone_;
@@ -139798,7 +143352,7 @@ class translateText final : public Function {
    * Returns object_ptr<FormattedText>.
    *
    * \param[in] text_ Text to translate.
-   * \param[in] to_language_code_ Language code of the language to which the message is translated. Must be one of &quot;af&quot;, &quot;sq&quot;, &quot;am&quot;, &quot;ar&quot;, &quot;hy&quot;, &quot;az&quot;, &quot;eu&quot;, &quot;be&quot;, &quot;bn&quot;, &quot;bs&quot;, &quot;bg&quot;, &quot;ca&quot;, &quot;ceb&quot;, &quot;zh-CN&quot;, &quot;zh&quot;, &quot;zh-Hans&quot;, &quot;zh-TW&quot;, &quot;zh-Hant&quot;, &quot;co&quot;, &quot;hr&quot;, &quot;cs&quot;, &quot;da&quot;, &quot;nl&quot;, &quot;en&quot;, &quot;eo&quot;, &quot;et&quot;, &quot;fi&quot;, &quot;fr&quot;, &quot;fy&quot;, &quot;gl&quot;, &quot;ka&quot;, &quot;de&quot;, &quot;el&quot;, &quot;gu&quot;, &quot;ht&quot;, &quot;ha&quot;, &quot;haw&quot;, &quot;he&quot;, &quot;iw&quot;, &quot;hi&quot;, &quot;hmn&quot;, &quot;hu&quot;, &quot;is&quot;, &quot;ig&quot;, &quot;id&quot;, &quot;in&quot;, &quot;ga&quot;, &quot;it&quot;, &quot;ja&quot;, &quot;jv&quot;, &quot;kn&quot;, &quot;kk&quot;, &quot;km&quot;, &quot;rw&quot;, &quot;ko&quot;, &quot;ku&quot;, &quot;ky&quot;, &quot;lo&quot;, &quot;la&quot;, &quot;lv&quot;, &quot;lt&quot;, &quot;lb&quot;, &quot;mk&quot;, &quot;mg&quot;, &quot;ms&quot;, &quot;ml&quot;, &quot;mt&quot;, &quot;mi&quot;, &quot;mr&quot;, &quot;mn&quot;, &quot;my&quot;, &quot;ne&quot;, &quot;no&quot;, &quot;ny&quot;, &quot;or&quot;, &quot;ps&quot;, &quot;fa&quot;, &quot;pl&quot;, &quot;pt&quot;, &quot;pa&quot;, &quot;ro&quot;, &quot;ru&quot;, &quot;sm&quot;, &quot;gd&quot;, &quot;sr&quot;, &quot;st&quot;, &quot;sn&quot;, &quot;sd&quot;, &quot;si&quot;, &quot;sk&quot;, &quot;sl&quot;, &quot;so&quot;, &quot;es&quot;, &quot;su&quot;, &quot;sw&quot;, &quot;sv&quot;, &quot;tl&quot;, &quot;tg&quot;, &quot;ta&quot;, &quot;tt&quot;, &quot;te&quot;, &quot;th&quot;, &quot;tr&quot;, &quot;tk&quot;, &quot;uk&quot;, &quot;ur&quot;, &quot;ug&quot;, &quot;uz&quot;, &quot;vi&quot;, &quot;cy&quot;, &quot;xh&quot;, &quot;yi&quot;, &quot;ji&quot;, &quot;yo&quot;, &quot;zu&quot;.
+   * \param[in] to_language_code_ Language code of the language to which the message is translated. Must be one of &quot;af&quot;, &quot;sq&quot;, &quot;am&quot;, &quot;ar&quot;, &quot;hy&quot;, &quot;az&quot;, &quot;eu&quot;, &quot;be&quot;, &quot;bn&quot;, &quot;bs&quot;, &quot;bg&quot;, &quot;ca&quot;, &quot;ceb&quot;, &quot;zh-CN&quot;, &quot;zh&quot;, &quot;zh-Hans&quot;, &quot;zh-TW&quot;, &quot;zh-Hant&quot;, &quot;co&quot;, &quot;hr&quot;, &quot;cs&quot;, &quot;da&quot;, &quot;nl&quot;, &quot;en&quot;, &quot;eo&quot;, &quot;et&quot;, &quot;fi&quot;, &quot;fr&quot;, &quot;fy&quot;, &quot;gl&quot;, &quot;ka&quot;, &quot;de&quot;, &quot;el&quot;, &quot;gu&quot;, &quot;ht&quot;, &quot;ha&quot;, &quot;haw&quot;, &quot;he&quot;, &quot;iw&quot;, &quot;hi&quot;, &quot;hmn&quot;, &quot;hu&quot;, &quot;is&quot;, &quot;ig&quot;, &quot;id&quot;, &quot;in&quot;, &quot;ga&quot;, &quot;it&quot;, &quot;ja&quot;, &quot;jv&quot;, &quot;kn&quot;, &quot;kk&quot;, &quot;km&quot;, &quot;rw&quot;, &quot;ko&quot;, &quot;ku&quot;, &quot;ky&quot;, &quot;lo&quot;, &quot;la&quot;, &quot;lv&quot;, &quot;lt&quot;, &quot;lb&quot;, &quot;mk&quot;, &quot;mg&quot;, &quot;ms&quot;, &quot;ml&quot;, &quot;mt&quot;, &quot;mi&quot;, &quot;mr&quot;, &quot;mn&quot;, &quot;my&quot;, &quot;ne&quot;, &quot;no&quot;, &quot;ny&quot;, &quot;or&quot;, &quot;ps&quot;, &quot;fa&quot;, &quot;pl&quot;, &quot;pt&quot;, &quot;pt-BR&quot;, &quot;pa&quot;, &quot;ro&quot;, &quot;ru&quot;, &quot;sm&quot;, &quot;gd&quot;, &quot;sr&quot;, &quot;st&quot;, &quot;sn&quot;, &quot;sd&quot;, &quot;si&quot;, &quot;sk&quot;, &quot;sl&quot;, &quot;so&quot;, &quot;es&quot;, &quot;su&quot;, &quot;sw&quot;, &quot;sv&quot;, &quot;tl&quot;, &quot;tg&quot;, &quot;ta&quot;, &quot;tt&quot;, &quot;te&quot;, &quot;th&quot;, &quot;tr&quot;, &quot;tk&quot;, &quot;uk&quot;, &quot;ur&quot;, &quot;ug&quot;, &quot;uz&quot;, &quot;vi&quot;, &quot;cy&quot;, &quot;xh&quot;, &quot;yi&quot;, &quot;ji&quot;, &quot;yo&quot;, &quot;zu&quot;.
    * \param[in] tone_ Tone of the translation; must be one of &quot;&quot;, &quot;formal&quot;, &quot;neutral&quot;, &quot;casual&quot;; defaults to &quot;neutral&quot;.
    */
   translateText(object_ptr<formattedText> &&text_, string const &to_language_code_, string const &tone_);
@@ -140099,7 +143653,7 @@ class upgradeGift final : public Function {
   string received_gift_id_;
   /// Pass true to keep the original gift text, sender and receiver in the upgraded gift.
   bool keep_original_details_;
-  /// The Telegram Star amount required to pay for the upgrade. It the gift has prepaid_upgrade_star_count &gt; 0, then pass 0, otherwise, pass gift.upgrade_star_count.
+  /// The Telegram Star amount required to pay for the upgrade. If the gift has prepaid_upgrade_star_count &gt; 0, then pass 0, otherwise, pass gift.upgrade_star_count.
   int53 star_count_;
 
   /**
@@ -140117,7 +143671,7 @@ class upgradeGift final : public Function {
    * \param[in] business_connection_id_ Unique identifier of business connection on behalf of which to send the request; for bots only.
    * \param[in] received_gift_id_ Identifier of the gift.
    * \param[in] keep_original_details_ Pass true to keep the original gift text, sender and receiver in the upgraded gift.
-   * \param[in] star_count_ The Telegram Star amount required to pay for the upgrade. It the gift has prepaid_upgrade_star_count &gt; 0, then pass 0, otherwise, pass gift.upgrade_star_count.
+   * \param[in] star_count_ The Telegram Star amount required to pay for the upgrade. If the gift has prepaid_upgrade_star_count &gt; 0, then pass 0, otherwise, pass gift.upgrade_star_count.
    */
   upgradeGift(string const &business_connection_id_, string const &received_gift_id_, bool keep_original_details_, int53 star_count_);
 

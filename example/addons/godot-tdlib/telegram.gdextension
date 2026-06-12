@@ -32,7 +32,7 @@ windows.x86_64 = {
     "bin/godot_tdlib_win_x86_64/zlib1.dll": ""
 }
 linux.x86_64 = {
-    "bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.64": ""
+    "bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.65": ""
 }
 android.arm64 = {
     "bin/godot_tdlib_android_arm64/libtdjson.so": ""

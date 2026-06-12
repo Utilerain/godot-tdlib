@@ -35,7 +35,6 @@ func get_chats_list(limit):
 		chats.append(await TdlibSingleton.search_for_state("updateNewChat", 1000))
 	
 	for chat in chats:
-		
 		var item = load("res://ui/ChatItem.res").instantiate()
 		item.chat_id = chat["chat"]["id"]
 		%ChatList.add_child(item)
