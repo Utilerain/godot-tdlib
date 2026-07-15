@@ -1,3 +1,6 @@
+/* 
+** Most of the comments are taken from include\td\telegram\td_json_client.h
+*/
 #include "tdjson.hpp"
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/classes/json.hpp>
