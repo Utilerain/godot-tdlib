@@ -1,5 +1,3 @@
-FROM ubuntu:22.04
-
 #
 #   Godot Android Builder for godot-tdlib
 #   Image uses NDK 28.1.13356709 by default
@@ -12,6 +10,8 @@ FROM ubuntu:22.04
 #       (For example (Windows): docker run --rm -v ${PWD}:/build godot-tdlib-android-builder scons -j6 platform=android verbose=true)
 #       (For example (Linux): docker run --rm -v $(pwd):/build godot-tdlib-android-builder scons -j6 platform=android verbose=true)
 #
+
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
