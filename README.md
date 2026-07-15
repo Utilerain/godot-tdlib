@@ -1,5 +1,5 @@
 # Godot-tdlib
-GDExtension C++ library for working with [TdLib](https://github.com/tdlib/td) (JSON interface) on Godot Engine.
+GDExtension C++ wrapper for working with [TdLib](https://github.com/tdlib/td) (JSON interface) on Godot Engine.
 
 ### Realized Functions
 
@@ -12,7 +12,7 @@ GDExtension C++ library for working with [TdLib](https://github.com/tdlib/td) (J
 
 ## Usage
 
-This library can be used to create games or applications for integration or create alternative Telegram clients through Telegram Database Api. Look **[example](./example)** for discover.
+This wrapper can be used to create games or applications for integration or create alternative Telegram clients through Telegram Database Api. Look **[example](./example)** for discover.
 General pattern of usage:
 ```gdscript
 var client := TdJson.new()
