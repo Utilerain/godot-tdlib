@@ -95,7 +95,7 @@ void TdJson::set_max_verbosity_level(int verbosity_level)
 void TdJson::set_verbosity_level(int new_verbosity_level)
 {
     String _req = UtilityFunctions::str("{ \"@type\":\"setLogVerbosityLevel\", \"new_verbosity_level\": ", new_verbosity_level, " }");
-    td_execute(client_id, _req.utf8().get_data());
+    td_execute(_req.utf8().get_data());
 }
 
 TdJson::TdJson()
