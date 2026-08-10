@@ -1,4 +1,6 @@
 # Godot-tdlib
+![alt text](assets/thumbnail.png)
+
 GDExtension C++ wrapper for working with [TdLib](https://github.com/tdlib/td) (JSON interface) on Godot Engine.
 
 ### Realized Functions
