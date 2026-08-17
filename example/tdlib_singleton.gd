@@ -27,10 +27,15 @@ func _ready() -> void:
 	client.send(reqversion)
 	client.request_received.connect(receive_signal)
 	thrd.start(_wait_response)
+	client.set_tdlib_parameters(self.api_id, 
+		self.api_hash, 
+		"1.0.0",
+		"Desktop")
 
 func _wait_response():
 	while running:
 		client.receive(1.0)
+		
 
 func receive_signal(_response: Dictionary): 
 	_handle_update.call_deferred(_response)
@@ -50,20 +55,21 @@ func update_state():
 		if auth_type == "authorizationStateClosed":
 			return
 		
-		elif auth_type == "authorizationStateWaitTdlibParameters":
-			client.send(
-			{
-				"@type": "setTdlibParameters",
-				"database_directory": USR_PATH+"/tdlib_data",
-				"use_message_database": true,
-				"use_secret_chats": true,
-				"api_id": self.api_id,
-				"api_hash": self.api_hash,
-				"system_language_code": OS.get_locale_language(),
-				"device_model": "Desktop",
-				"application_version": "1.0",
-			}
-		)
+		# Deprecated: use TdJson.set_tdlib_parameters() instead
+		#elif auth_type == "authorizationStateWaitTdlibParameters": 
+			#client.send(
+			#{
+				#"@type": "setTdlibParameters",
+				#"database_directory": USR_PATH+"/tdlib_data",
+				#"use_message_database": true,
+				#"use_secret_chats": true,
+				#"api_id": self.api_id,
+				#"api_hash": self.api_hash,
+				#"system_language_code": OS.get_locale_language(),
+				#"device_model": "Desktop",
+				#"application_version": "1.0",
+			#}
+			#)
 		
 		elif auth_type == "authorizationStateWaitPhoneNumber":
 			wait_for_phone_number.emit()
