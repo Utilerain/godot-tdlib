@@ -54,7 +54,7 @@ Dictionary TdJson::receive(double timeout)
 }
 
 // Logs message output for godot console
-void TdJson::set_log_message_callback()
+void TdJson::_set_log_message_callback()
 {
     td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message)
                                 {
@@ -88,7 +88,7 @@ void TdJson::set_log_callback(Callable p_callback)
 void TdJson::set_max_verbosity_level(int verbosity_level)
 {
     max_verbosity_level = verbosity_level;
-    set_log_message_callback();
+    _set_log_message_callback();
 }
 
 // Sets the verbosity level for TDLib log messages. Can be called from any thread.
@@ -104,7 +104,7 @@ void TdJson::set_verbosity_level(int new_verbosity_level)
 TdJson::TdJson()
 {
     client_id = td_create_client_id();
-    set_log_message_callback();
+    _set_log_message_callback();
 }
 
 int TdJson::get_client_id()
@@ -112,7 +112,7 @@ int TdJson::get_client_id()
     return client_id;
 }
 /**
- * Alias to setTdlibParameters. Sets the parameters for TDLib initialization. 
+ * Alias to setTdlibParameters. Sets the parameters for TDLib initialization.
  * \param[in] api_id Application identifier for Telegram API access, which can be obtained at https://my.telegram.org.
  * \param[in] api_hash Application identifier hash for Telegram API access, which can be obtained at https://my.telegram.org.
  * \param[in] application_version Application version; must be non-empty.
@@ -170,6 +170,7 @@ void godot::TdJson::set_tdlib_parameters(int api_id,
     this->connect("request_received", Callable(this, "_send_tdlib_parameters").bind(_req));
 }
 
+// \return Current version of the tdlib 
 String godot::TdJson::get_tdlib_version()
 {
     Dictionary _req;
@@ -181,19 +182,21 @@ String godot::TdJson::get_tdlib_version()
 void TdJson::_send_tdlib_parameters(Dictionary p_response, Dictionary p_parameters)
 {
     String type = p_response.get("@type", "");
-    if (type != "updateAuthorizationState") {
+    if (type != "updateAuthorizationState")
+    {
         return;
     }
 
     Dictionary auth_state = p_response.get("authorization_state", Dictionary());
-    
+
     String auth_type = auth_state.get("@type", "");
-    if (auth_type != "authorizationStateWaitTdlibParameters") {
+    if (auth_type != "authorizationStateWaitTdlibParameters")
+    {
         return;
     }
-    
+
     this->send(p_parameters);
-    this->disconnect("request_received",  Callable(this, "_send_tdlib_parameters"));
+    this->disconnect("request_received", Callable(this, "_send_tdlib_parameters"));
 }
 
 // Bindings for godot
@@ -231,7 +234,7 @@ void TdJson::_bind_methods()
                          DEFVAL(OS::get_singleton()->get_locale_language()),
                          DEFVAL(String("")));
 
-    ClassDB::bind_method(D_METHOD("_send_tdlib_parameters","p_response","p_parameters"), &TdJson::_send_tdlib_parameters);
+    ClassDB::bind_method(D_METHOD("_send_tdlib_parameters", "p_response", "p_parameters"), &TdJson::_send_tdlib_parameters);
 
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
 }

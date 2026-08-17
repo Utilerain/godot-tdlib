@@ -30,13 +30,12 @@ namespace godot
             bool use_message_database = true,
             bool use_secret_chats = true,
             String system_language_code = String(""),
-            String system_version = String("")
-        );
+            String system_version = String(""));
         String get_tdlib_version();
 
     private:
         int client_id;
-        void set_log_message_callback();
+        void _set_log_message_callback();
         int max_verbosity_level = 4;
         void _send_tdlib_parameters(Dictionary _response, Dictionary parameters);
         static Callable *log_callback;
