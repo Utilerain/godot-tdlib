@@ -159,10 +159,24 @@ void godot::TdJson::set_tdlib_parameters(int api_id,
     this->connect("request_received", Callable(this, "_send_tdlib_parameters").bind(_req));
 }
 
-void TdJson::_send_tdlib_parameters(Dictionary parameters)
+void TdJson::_send_tdlib_parameters(Dictionary p_response, Dictionary p_parameters)
 {
-    godot::print_line("Sending TDLib parameters: " + JSON::stringify(parameters));
-    this->send(parameters);
+    godot::print_line("Received response: " + JSON::stringify(p_response));
+
+    String type = p_response.get("@type", "");
+    if (type != "updateAuthorizationState") {
+        return;
+    }
+
+    Dictionary auth_state = p_response.get("authorization_state", Dictionary());
+    
+    String auth_type = auth_state.get("@type", "");
+    if (auth_type != "authorizationStateWaitTdlibParameters") {
+        return;
+    }
+    
+    godot::print_line("Sending TDLib parameters: " + JSON::stringify(p_parameters));
+    this->send(p_parameters);
 }
 
 // Bindings for godot
@@ -200,7 +214,7 @@ void TdJson::_bind_methods()
                          DEFVAL(String("")),
                          DEFVAL(String("")));
 
-    ClassDB::bind_method(D_METHOD("_send_tdlib_parameters", "parameters"), &TdJson::_send_tdlib_parameters);
+    ClassDB::bind_method(D_METHOD("_send_tdlib_parameters","p_response","p_parameters"), &TdJson::_send_tdlib_parameters);
 
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
 }
