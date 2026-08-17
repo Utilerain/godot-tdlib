@@ -5,6 +5,7 @@
 		"RefCounted",
 		"UtilityFunctions",
 		"JSON",
-        "OS"
+        "OS",
+		"ProjectSettings"
 	]
 }

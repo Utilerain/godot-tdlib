@@ -23,7 +23,7 @@ namespace godot
             String api_hash,
             String application_version,
             String device_model,
-            String database_directory = String(""),
+            String database_directory = String("user://tdlib_data"),
             bool use_test_dc = false,
             String files_directory = String(""),
             bool use_file_database = true,

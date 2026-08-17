@@ -222,7 +222,7 @@ void TdJson::_bind_methods()
                                   "system_language_code",
                                   "system_version"),
                          &TdJson::set_tdlib_parameters,
-                         DEFVAL(String("")),
+                         DEFVAL(String("user://tdlib_data")),
                          DEFVAL(false),
                          DEFVAL(String("")),
                          DEFVAL(true),
