@@ -173,6 +173,7 @@ void TdJson::_send_tdlib_parameters(Dictionary p_response, Dictionary p_paramete
     }
     
     this->send(p_parameters);
+    this->disconnect("request_received",  Callable(this, "_send_tdlib_parameters"));
 }
 
 // Bindings for godot
