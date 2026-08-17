@@ -1,4 +1,4 @@
-/* 
+/*
 ** Most of the comments are taken from include\td\telegram\td_json_client.h
 */
 #include "tdjson.hpp"
@@ -108,6 +108,62 @@ int TdJson::get_client_id()
 {
     return client_id;
 }
+/**
+ * Alias to setTdlibParameters. Sets the parameters for TDLib initialization. 
+ * \param[in] api_id Application identifier for Telegram API access, which can be obtained at https://my.telegram.org.
+ * \param[in] api_hash Application identifier hash for Telegram API access, which can be obtained at https://my.telegram.org.
+ * \param[in] application_version Application version; must be non-empty.
+ * \param[in] database_directory Path to the directory for the persistent database; by default uses user data directory (`user://tdlib_data/`).
+ * \param[in] use_test_dc If true, the Telegram test environment will be used instead of the production environment.
+ * \param[in] files_directory Path to the directory for storing files; must be non-empty.
+ * \param[in] use_file_database If true, information about downloaded and uploaded files will be saved between application restarts.
+ * \param[in] use_message_database If true, the local database will be used for storing chats and messages between application restarts.
+ * \param[in] use_secret_chats If true, support for secret chats will be enabled. This option can't be disabled if it was enabled before.
+ * \param[in] system_language_code IETF language tag of the user's operating system language; By default uses `OS.get_locale_language()`.
+ */
+void godot::TdJson::set_tdlib_parameters(int api_id,
+                                         String api_hash,
+                                         String application_version,
+                                         String database_directory,
+                                         bool use_test_dc,
+                                         String files_directory,
+                                         bool use_file_database,
+                                         bool use_message_database,
+                                         bool use_secret_chats,
+                                         String system_language_code,
+                                         String device_model,
+                                         String system_version)
+{
+    Dictionary _req;
+    _req["@type"] = "setTdlibParameters";
+    _req["api_id"] = api_id;
+    _req["api_hash"] = api_hash;
+    _req["application_version"] = application_version;
+    _req["database_directory"] = database_directory;
+    _req["use_test_dc"] = use_test_dc;
+
+    if (files_directory != Variant(nullptr))
+        _req["files_directory"] = files_directory;
+
+    _req["use_file_database"] = use_file_database;
+    _req["use_message_database"] = use_message_database;
+    _req["use_secret_chats"] = use_secret_chats;
+    _req["system_language_code"] = system_language_code;
+
+    if (device_model != Variant(nullptr))
+        _req["device_model"] = device_model;
+
+    if (system_version != Variant(nullptr))
+        _req["system_version"] = system_version;
+
+    this->connect("request_received", Callable(this, "_send_tdlib_parameters").bind(_req));
+}
+
+void TdJson::_send_tdlib_parameters(Dictionary parameters)
+{
+    godot::print_line("Sending TDLib parameters: " + JSON::stringify(parameters));
+    this->send(parameters);
+}
 
 // Bindings for godot
 void TdJson::_bind_methods()
@@ -119,6 +175,32 @@ void TdJson::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_client_id"), &TdJson::get_client_id);
     ClassDB::bind_method(D_METHOD("set_verbosity_level", "new_verbosity_level"), &TdJson::set_verbosity_level);
     ClassDB::bind_method(D_METHOD("set_log_callback", "callback"), &TdJson::set_log_callback);
+    
+    ClassDB::bind_method(D_METHOD("set_tdlib_parameters",
+                                  "api_id",
+                                  "api_hash",
+                                  "application_version",
+                                  "database_directory",
+                                  "use_test_dc",
+                                  "files_directory",
+                                  "use_file_database",
+                                  "use_message_database",
+                                  "use_secret_chats",
+                                  "system_language_code",
+                                  "device_model",
+                                  "system_version"),
+                         &TdJson::set_tdlib_parameters,
+                         DEFVAL(OS::get_singleton()->get_user_data_dir().path_join(String("tdlib_data"))),
+                         DEFVAL(false),
+                         DEFVAL(Variant(nullptr)),
+                         DEFVAL(true),
+                         DEFVAL(true),
+                         DEFVAL(true),
+                         DEFVAL(OS::get_singleton()->get_locale_language()),
+                         DEFVAL(Variant(nullptr)),
+                         DEFVAL(Variant(nullptr)));
+
+    ClassDB::bind_method(D_METHOD("_send_tdlib_parameters", "parameters"), &TdJson::_send_tdlib_parameters);
 
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
 }
