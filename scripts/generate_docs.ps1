@@ -1,0 +1,2 @@
+# .\gen\godot.exe - path to godot executable
+.\gen\godot.exe --path .\example --doctool .\ --gdextension-docs
