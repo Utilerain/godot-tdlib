@@ -144,7 +144,12 @@ void godot::TdJson::set_tdlib_parameters(int api_id,
     _req["api_hash"] = api_hash;
     _req["application_version"] = application_version;
     _req["device_model"] = device_model;
-    _req["database_directory"] = database_directory;
+
+    if (database_directory != String(""))
+        _req["database_directory"] = database_directory;
+    else
+        _req["database_directory"] = OS::get_singleton()->get_user_data_dir().path_join(String("tdlib_data"));
+        
     _req["use_test_dc"] = use_test_dc;
 
     if (files_directory != String(""))
@@ -153,7 +158,11 @@ void godot::TdJson::set_tdlib_parameters(int api_id,
     _req["use_file_database"] = use_file_database;
     _req["use_message_database"] = use_message_database;
     _req["use_secret_chats"] = use_secret_chats;
-    _req["system_language_code"] = system_language_code;
+
+    if (system_language_code != String(""))
+        _req["system_language_code"] = system_language_code;
+    else
+        _req["system_language_code"] = OS::get_singleton()->get_locale_language();
 
     if (system_version != String(""))
         _req["system_version"] = system_version;

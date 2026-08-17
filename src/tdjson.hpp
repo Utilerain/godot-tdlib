@@ -23,13 +23,13 @@ namespace godot
             String api_hash,
             String application_version,
             String device_model,
-            String database_directory = OS::get_singleton()->get_user_data_dir().path_join(String("tdlib_data")),
+            String database_directory = String(""),
             bool use_test_dc = false,
             String files_directory = String(""),
             bool use_file_database = true,
             bool use_message_database = true,
             bool use_secret_chats = true,
-            String system_language_code = OS::get_singleton()->get_locale_language(),
+            String system_language_code = String(""),
             String system_version = String("")
         );
         String get_tdlib_version();
