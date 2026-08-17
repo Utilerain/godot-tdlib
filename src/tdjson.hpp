@@ -1,4 +1,5 @@
 #include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/classes/os.hpp>
 
 namespace godot
 {
@@ -17,11 +18,26 @@ namespace godot
         void set_verbosity_level(int new_verbosity_level);
         void set_log_callback(Callable callback);
         int get_client_id();
+        void set_tdlib_parameters(
+            int api_id,
+            String api_hash,
+            String application_version,
+            String database_directory,
+            bool use_test_dc = false,
+            String files_directory = Variant(nullptr),
+            bool use_file_database = true,
+            bool use_message_database = true,
+            bool use_secret_chats = true,
+            String system_language_code = OS::get_singleton()->get_locale(),
+            String device_model = Variant(nullptr),
+            String system_version = Variant(nullptr)
+        );
 
     private:
         int client_id;
         void set_log_message_callback();
         int max_verbosity_level = 4;
+        void send_tdlib_parameters(Dictionary parameters);
         static Callable *log_callback;
     };
 }
