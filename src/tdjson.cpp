@@ -142,7 +142,7 @@ void godot::TdJson::set_tdlib_parameters(int api_id,
     _req["database_directory"] = database_directory;
     _req["use_test_dc"] = use_test_dc;
 
-    if (files_directory != Variant(nullptr))
+    if (files_directory != String(""))
         _req["files_directory"] = files_directory;
 
     _req["use_file_database"] = use_file_database;
@@ -150,10 +150,10 @@ void godot::TdJson::set_tdlib_parameters(int api_id,
     _req["use_secret_chats"] = use_secret_chats;
     _req["system_language_code"] = system_language_code;
 
-    if (device_model != Variant(nullptr))
+    if (device_model != String(""))
         _req["device_model"] = device_model;
 
-    if (system_version != Variant(nullptr))
+    if (system_version != String(""))
         _req["system_version"] = system_version;
 
     this->connect("request_received", Callable(this, "_send_tdlib_parameters").bind(_req));
@@ -192,13 +192,13 @@ void TdJson::_bind_methods()
                          &TdJson::set_tdlib_parameters,
                          DEFVAL(OS::get_singleton()->get_user_data_dir().path_join(String("tdlib_data"))),
                          DEFVAL(false),
-                         DEFVAL(Variant(nullptr)),
+                         DEFVAL(String("")),
                          DEFVAL(true),
                          DEFVAL(true),
                          DEFVAL(true),
                          DEFVAL(OS::get_singleton()->get_locale_language()),
-                         DEFVAL(Variant(nullptr)),
-                         DEFVAL(Variant(nullptr)));
+                         DEFVAL(String("")),
+                         DEFVAL(String("")));
 
     ClassDB::bind_method(D_METHOD("_send_tdlib_parameters", "parameters"), &TdJson::_send_tdlib_parameters);
 

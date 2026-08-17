@@ -24,20 +24,20 @@ namespace godot
             String application_version,
             String database_directory = OS::get_singleton()->get_user_data_dir().path_join(String("tdlib_data")),
             bool use_test_dc = false,
-            String files_directory = Variant(nullptr),
+            String files_directory = String(""),
             bool use_file_database = true,
             bool use_message_database = true,
             bool use_secret_chats = true,
             String system_language_code = OS::get_singleton()->get_locale_language(),
-            String device_model = Variant(nullptr),
-            String system_version = Variant(nullptr)
+            String device_model = String(""),
+            String system_version = String("")
         );
 
     private:
         int client_id;
         void set_log_message_callback();
         int max_verbosity_level = 4;
-        void _send_tdlib_parameters(Dictionary parameters);
+        void _send_tdlib_parameters(Dictionary _response, Dictionary parameters);
         static Callable *log_callback;
     };
 }
