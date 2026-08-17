@@ -1,12 +1,14 @@
 /*
-** Most of the comments are taken from include\td\telegram\td_json_client.h
-*/
+ * Most of the comments are taken from include\td\telegram\td_json_client.h
+ */
+
 #include "tdjson.hpp"
-#include <godot_cpp/godot.hpp>
+
 #include <godot_cpp/classes/json.hpp>
+#include <godot_cpp/classes/project_settings.hpp>
+#include <godot_cpp/godot.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <td/telegram/td_json_client.h>
-#include <godot_cpp/classes/project_settings.hpp>
 
 using namespace godot;
 
@@ -46,43 +48,43 @@ Dictionary TdJson::receive(double timeout)
 {
     const char *response = td_receive(timeout);
 
-    if (response != nullptr)
-    {
+    if (response != nullptr) {
         emit_signal("request_received", Dictionary(JSON::parse_string(String(response))));
         return Dictionary(JSON::parse_string(String(response)));
     }
+
     return Dictionary();
 }
 
 // Logs message output for godot console
 void TdJson::_set_log_message_callback()
 {
-    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message)
-                                {
-    
-    if (verbosity_level > 0) {
-        print_line(String("[TDLib] ") + String(message));
-    }
-    else {
-        print_error(String("[TDLib] [FATAL!!!] ") + String(message), __FILE__, __LINE__);
-    } });
+    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message) {
+        if (verbosity_level > 0) {
+            print_line(String("[TDLib] ") + String(message));
+        } else {
+            print_error(String("[TDLib] [FATAL!!!] ") + String(message), __FILE__, __LINE__);
+        }
+    });
 }
 
 Callable *TdJson::log_callback;
-// Sets the callback that will be called when a message is added to the internal TDLib log. None of the TDLib methods can be called from the callback. By default the callback is set in set_log_message_callback
+
+// Sets the callback that will be called when a message is added to the internal TDLib log.
+// None of the TDLib methods can be called from the callback. By default the callback is set in set_log_message_callback
 void TdJson::set_log_callback(Callable p_callback)
 {
-    if (!log_callback)
-    {
+    if (!log_callback) {
         log_callback = memnew(Callable);
     }
+
     *log_callback = p_callback;
 
-    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message)
-                                {
+    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message) {
         if (log_callback && log_callback->is_valid()) {
             log_callback->call_deferred(Variant(verbosity_level), Variant(String(message)));
-        } });
+        }
+    });
 }
 
 // Sets the maximum verbosity level for TDLib log messages. Can be called from any thread.
@@ -112,6 +114,7 @@ int TdJson::get_client_id()
 {
     return client_id;
 }
+
 /**
  * Alias to setTdlibParameters. Sets the parameters for TDLib initialization.
  * \param[in] api_id Application identifier for Telegram API access, which can be obtained at https://my.telegram.org.
@@ -126,18 +129,19 @@ int TdJson::get_client_id()
  * \param[in] use_secret_chats If true, support for secret chats will be enabled.
  * \param[in] system_language_code IETF language tag of the user's operating system language; By default uses locale language of the OS.
  */
-void godot::TdJson::set_tdlib_parameters(int api_id,
-                                         String api_hash,
-                                         String application_version,
-                                         String device_model,
-                                         String database_directory,
-                                         bool use_test_dc,
-                                         String files_directory,
-                                         bool use_file_database,
-                                         bool use_message_database,
-                                         bool use_secret_chats,
-                                         String system_language_code,
-                                         String system_version)
+void godot::TdJson::set_tdlib_parameters(
+    int api_id,
+    String api_hash,
+    String application_version,
+    String device_model,
+    String database_directory,
+    bool use_test_dc,
+    String files_directory,
+    bool use_file_database,
+    bool use_message_database,
+    bool use_secret_chats,
+    String system_language_code,
+    String system_version)
 {
     Dictionary _req;
     _req["@type"] = "setTdlibParameters";
@@ -149,51 +153,52 @@ void godot::TdJson::set_tdlib_parameters(int api_id,
 
     _req["use_test_dc"] = use_test_dc;
 
-    if (files_directory != String(""))
+    if (files_directory != String("")) {
         _req["files_directory"] = files_directory;
+    }
 
     _req["use_file_database"] = use_file_database;
     _req["use_message_database"] = use_message_database;
     _req["use_secret_chats"] = use_secret_chats;
 
-    if (system_language_code != String(""))
+    if (system_language_code != String("")) {
         _req["system_language_code"] = system_language_code;
-    else
+    } else {
         _req["system_language_code"] = OS::get_singleton()->get_locale_language();
+    }
 
-    if (system_version != String(""))
+    if (system_version != String("")) {
         _req["system_version"] = system_version;
+    }
 
-    this->connect("request_received", Callable(this, "_send_tdlib_parameters").bind(_req));
+    connect("request_received", Callable(this, "_send_tdlib_parameters").bind(_req));
 }
 
-// \return Current version of the tdlib 
+// \return Current version of the tdlib
 String godot::TdJson::get_tdlib_version()
 {
     Dictionary _req;
     _req["@type"] = "getOption";
     _req["name"] = "version";
-    return String(this->execute(_req).get("value", ""));
+    return String(execute(_req).get("value", ""));
 }
 
 void TdJson::_send_tdlib_parameters(Dictionary p_response, Dictionary p_parameters)
 {
     String type = p_response.get("@type", "");
-    if (type != "updateAuthorizationState")
-    {
+    if (type != "updateAuthorizationState") {
         return;
     }
 
     Dictionary auth_state = p_response.get("authorization_state", Dictionary());
-
     String auth_type = auth_state.get("@type", "");
-    if (auth_type != "authorizationStateWaitTdlibParameters")
-    {
+
+    if (auth_type != "authorizationStateWaitTdlibParameters") {
         return;
     }
 
-    this->send(p_parameters);
-    this->disconnect("request_received", Callable(this, "_send_tdlib_parameters"));
+    send(p_parameters);
+    disconnect("request_received", Callable(this, "_send_tdlib_parameters"));
 }
 
 // Bindings for godot
@@ -208,28 +213,29 @@ void TdJson::_bind_methods()
     ClassDB::bind_method(D_METHOD("set_log_callback", "callback"), &TdJson::set_log_callback);
     ClassDB::bind_method(D_METHOD("get_tdlib_version"), &TdJson::get_tdlib_version);
 
-    ClassDB::bind_method(D_METHOD("set_tdlib_parameters",
-                                  "api_id",
-                                  "api_hash",
-                                  "application_version",
-                                  "device_model",
-                                  "database_directory",
-                                  "use_test_dc",
-                                  "files_directory",
-                                  "use_file_database",
-                                  "use_message_database",
-                                  "use_secret_chats",
-                                  "system_language_code",
-                                  "system_version"),
-                         &TdJson::set_tdlib_parameters,
-                         DEFVAL(String("user://tdlib_data")),
-                         DEFVAL(false),
-                         DEFVAL(String("")),
-                         DEFVAL(true),
-                         DEFVAL(true),
-                         DEFVAL(true),
-                         DEFVAL(String("")),
-                         DEFVAL(String("")));
+    ClassDB::bind_method(
+        D_METHOD("set_tdlib_parameters",
+                 "api_id",
+                 "api_hash",
+                 "application_version",
+                 "device_model",
+                 "database_directory",
+                 "use_test_dc",
+                 "files_directory",
+                 "use_file_database",
+                 "use_message_database",
+                 "use_secret_chats",
+                 "system_language_code",
+                 "system_version"),
+        &TdJson::set_tdlib_parameters,
+        DEFVAL(String("user://tdlib_data")),
+        DEFVAL(false),
+        DEFVAL(String("")),
+        DEFVAL(true),
+        DEFVAL(true),
+        DEFVAL(true),
+        DEFVAL(String("")),
+        DEFVAL(String("")));
 
     ClassDB::bind_method(D_METHOD("_send_tdlib_parameters", "p_response", "p_parameters"), &TdJson::_send_tdlib_parameters);
 
