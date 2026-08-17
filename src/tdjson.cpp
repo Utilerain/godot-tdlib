@@ -149,7 +149,7 @@ void godot::TdJson::set_tdlib_parameters(int api_id,
         _req["database_directory"] = database_directory;
     else
         _req["database_directory"] = OS::get_singleton()->get_user_data_dir().path_join(String("tdlib_data"));
-        
+
     _req["use_test_dc"] = use_test_dc;
 
     if (files_directory != String(""))
@@ -206,7 +206,8 @@ void TdJson::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_client_id"), &TdJson::get_client_id);
     ClassDB::bind_method(D_METHOD("set_verbosity_level", "new_verbosity_level"), &TdJson::set_verbosity_level);
     ClassDB::bind_method(D_METHOD("set_log_callback", "callback"), &TdJson::set_log_callback);
-    
+    ClassDB::bind_method(D_METHOD("get_tdlib_version"), &TdJson::get_tdlib_version);
+
     ClassDB::bind_method(D_METHOD("set_tdlib_parameters",
                                   "api_id",
                                   "api_hash",
