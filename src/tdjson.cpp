@@ -6,6 +6,7 @@
 #include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <td/telegram/td_json_client.h>
+#include <godot_cpp/classes/project_settings.hpp>
 
 using namespace godot;
 
@@ -144,11 +145,7 @@ void godot::TdJson::set_tdlib_parameters(int api_id,
     _req["api_hash"] = api_hash;
     _req["application_version"] = application_version;
     _req["device_model"] = device_model;
-
-    if (database_directory != String(""))
-        _req["database_directory"] = database_directory;
-    else
-        _req["database_directory"] = OS::get_singleton()->get_user_data_dir().path_join(String("tdlib_data"));
+    _req["database_directory"] = ProjectSettings::get_singleton()->globalize_path(String(database_directory));
 
     _req["use_test_dc"] = use_test_dc;
 
@@ -225,13 +222,13 @@ void TdJson::_bind_methods()
                                   "system_language_code",
                                   "system_version"),
                          &TdJson::set_tdlib_parameters,
-                         DEFVAL(OS::get_singleton()->get_user_data_dir().path_join(String("tdlib_data"))),
+                         DEFVAL(String("")),
                          DEFVAL(false),
                          DEFVAL(String("")),
                          DEFVAL(true),
                          DEFVAL(true),
                          DEFVAL(true),
-                         DEFVAL(OS::get_singleton()->get_locale_language()),
+                         DEFVAL(String("")),
                          DEFVAL(String("")));
 
     ClassDB::bind_method(D_METHOD("_send_tdlib_parameters", "p_response", "p_parameters"), &TdJson::_send_tdlib_parameters);
