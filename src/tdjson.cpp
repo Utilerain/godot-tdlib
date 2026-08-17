@@ -94,7 +94,10 @@ void TdJson::set_max_verbosity_level(int verbosity_level)
 // Sets the verbosity level for TDLib log messages. Can be called from any thread.
 void TdJson::set_verbosity_level(int new_verbosity_level)
 {
-    String _req = UtilityFunctions::str("{ \"@type\":\"setLogVerbosityLevel\", \"new_verbosity_level\": ", new_verbosity_level, " }");
+    Dictionary _dict = Dictionary();
+    _dict["@type"] = "setLogVerbosityLevel";
+    _dict["new_verbosity_level"] = new_verbosity_level;
+    String _req = JSON::stringify(_dict);
     td_execute(_req.utf8().get_data());
 }
 
