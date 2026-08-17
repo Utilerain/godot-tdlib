@@ -40,6 +40,24 @@
 			<param index="0" name="timeout" type="float" />
 			<description>
 				Receives incoming updates and request responses. Must not be called simultaneously from two different threads. The returned pointer can be used until the next call to [code]receive[/code] or [code]execute[/code], after which it will be deallocated by TDLib.
+				Example:
+				[codeblocks]
+				[gdscript]
+				var client: TdJson = TdJson.new()
+				var thrd := Thread.new()
+				const TIMEOUT = 10.0
+				
+				func _ready():
+					thrd.start(_receive)
+				
+				func _receive():
+					while true:
+						var result = client.receive(10.0)
+						if result:
+							# parse the result as a JSON object and process it as an incoming update or the answer to a previously sent request
+							pass
+				[/gdscript]
+				[/codeblocks]
 			</description>
 		</method>
 		<method name="send">
