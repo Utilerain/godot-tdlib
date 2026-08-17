@@ -22,6 +22,7 @@ namespace godot
             int api_id,
             String api_hash,
             String application_version,
+            String device_model,
             String database_directory = OS::get_singleton()->get_user_data_dir().path_join(String("tdlib_data")),
             bool use_test_dc = false,
             String files_directory = String(""),
@@ -29,7 +30,6 @@ namespace godot
             bool use_message_database = true,
             bool use_secret_chats = true,
             String system_language_code = OS::get_singleton()->get_locale_language(),
-            String device_model = String(""),
             String system_version = String("")
         );
 
