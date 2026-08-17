@@ -35,6 +35,20 @@
 				Returns client id of the session
 			</description>
 		</method>
+		<method name="get_tdlib_version">
+			<return type="String" />
+			<description>
+			Returns Tdlib version. Alias to this json
+			[codeblocks]
+			[gdscript]
+			{
+				"@type": "getOption", 
+				"name": "version"
+			}
+			[/gdscript]
+			[/codeblocks]
+			</description>
+		</method>
 		<method name="receive">
 			<return type="Dictionary" />
 			<param index="0" name="timeout" type="float" />
@@ -46,10 +60,10 @@
 				var client: TdJson = TdJson.new()
 				var thrd := Thread.new()
 				const TIMEOUT = 10.0
-				
+
 				func _ready():
 					thrd.start(_receive)
-				
+
 				func _receive():
 					while true:
 						var result = client.receive(10.0)
@@ -101,21 +115,47 @@
 				- Level 6+ = even more detailed logging (your own verbosity)
 			</description>
 		</method>
+		<method name="set_tdlib_parameters">
+			<return type="void" />
+			<param index="0" name="api_id" type="int" />
+			<param index="1" name="api_hash" type="String" />
+			<param index="2" name="application_version" type="String" />
+			<param index="3" name="device_model" type="String" />
+			<param index="4" name="database_directory" type="String" default="&quot;user://tdlib_data&quot;" />
+			<param index="5" name="use_test_dc" type="bool" default="false" />
+			<param index="6" name="files_directory" type="String" default="&quot;&quot;" />
+			<param index="7" name="use_file_database" type="bool" default="true" />
+			<param index="8" name="use_message_database" type="bool" default="true" />
+			<param index="9" name="use_secret_chats" type="bool" default="true" />
+			<param index="10" name="system_language_code" type="String" default="&quot;&quot;" />
+			<param index="11" name="system_version" type="String" default="&quot;&quot;" />
+			<description>
+			Sets the parameters for TDLib initialization. Alias to setTdlibParameters (look [url=https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1set_tdlib_parameters.html]setTdlibParameters[/url] class).
+			Activates on [code]authorizationStateWaitTdlibParameters[/code] event.
+ 			* [code]api_id[/code] - Application identifier for Telegram API access, which can be obtained at https://my.telegram.org.
+ 			* [code]api_hash[/code] - Application identifier hash for Telegram API access, which can be obtained at https://my.telegram.org.
+ 			* [code]application_version[/code] - Application version; must be non-empty.
+ 			* [code]device_model[/code] - Model of the device the application is being run on; must be non-empty.
+ 			* [code]database_directory[/code] - Path to the directory for the persistent database; by default uses user data directory (`user://tdlib_data/`).
+ 			* [code]use_test_dc[/code] - If true, the Telegram test environment will be used instead of the production environment.
+ 			* [code]files_directory[/code] - Path to the directory for storing files; must be non-empty.
+ 			* [code]use_file_database[/code] - If true, information about downloaded and uploaded files will be saved between application restarts.
+ 			* [code]use_message_database[/code] - If true, the local database will be used for storing chats and messages between application restarts.
+ 			* [code]use_secret_chats[/code] - If true, support for secret chats will be enabled. This option can't be disabled if it was enabled before.
+ 			* [code]system_language_code[/code] - IETF language tag of the user's operating system language; By default uses `OS.get_locale_language()`.
+			</description>
+		</method>
 		<method name="set_verbosity_level">
 			<return type="void" />
 			<param index="0" name="new_verbosity_level" type="int" />
 			<description>
-				Sets the verbosity level for Tdlib logs. Works as same as this code:
+				Sets the verbosity level for Tdlib logs. Alias to this code:
 				[codeblocks]
 				[gdscript]
-				var client := TdJson.new()
-				var new_verbosity_level = 2
-				client.send(
-					{
-						"@type": "setLogVerbosityLevel",
-						"new_verbosity_level": new_verbosity_level
-					}
-				)
+				{
+					"@type": "setLogVerbosityLevel",
+					"new_verbosity_level": new_verbosity_level
+				}
 				[/gdscript]
 				[/codeblocks]
 			</description>
