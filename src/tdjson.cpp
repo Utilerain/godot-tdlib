@@ -120,11 +120,11 @@ int TdJson::get_client_id()
  * \param[in] device_model Model of the device the application is being run on; must be non-empty.
  * \param[in] database_directory Path to the directory for the persistent database; by default uses user data directory (`user://tdlib_data/`).
  * \param[in] use_test_dc If true, the Telegram test environment will be used instead of the production environment.
- * \param[in] files_directory Path to the directory for storing files; must be non-empty.
+ * \param[in] files_directory Path to the directory for storing files; by default uses database_directory.
  * \param[in] use_file_database If true, information about downloaded and uploaded files will be saved between application restarts.
  * \param[in] use_message_database If true, the local database will be used for storing chats and messages between application restarts.
- * \param[in] use_secret_chats If true, support for secret chats will be enabled. This option can't be disabled if it was enabled before.
- * \param[in] system_language_code IETF language tag of the user's operating system language; By default uses `OS.get_locale_language()`.
+ * \param[in] use_secret_chats If true, support for secret chats will be enabled.
+ * \param[in] system_language_code IETF language tag of the user's operating system language; By default uses locale language of the OS.
  */
 void godot::TdJson::set_tdlib_parameters(int api_id,
                                          String api_hash,

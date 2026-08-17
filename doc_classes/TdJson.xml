@@ -47,6 +47,7 @@
 			}
 			[/gdscript]
 			[/codeblocks]
+			Note: it doesn't start the TDLib
 			</description>
 		</method>
 		<method name="receive">
@@ -132,17 +133,17 @@
 			<description>
 			Sets the parameters for TDLib initialization. Alias to setTdlibParameters (look [url=https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1set_tdlib_parameters.html]setTdlibParameters[/url] class).
 			Activates on [code]authorizationStateWaitTdlibParameters[/code] event.
- 			* [code]api_id[/code] - Application identifier for Telegram API access, which can be obtained at https://my.telegram.org.
- 			* [code]api_hash[/code] - Application identifier hash for Telegram API access, which can be obtained at https://my.telegram.org.
- 			* [code]application_version[/code] - Application version; must be non-empty.
- 			* [code]device_model[/code] - Model of the device the application is being run on; must be non-empty.
- 			* [code]database_directory[/code] - Path to the directory for the persistent database; by default uses user data directory (`user://tdlib_data/`).
- 			* [code]use_test_dc[/code] - If true, the Telegram test environment will be used instead of the production environment.
- 			* [code]files_directory[/code] - Path to the directory for storing files; must be non-empty.
- 			* [code]use_file_database[/code] - If true, information about downloaded and uploaded files will be saved between application restarts.
- 			* [code]use_message_database[/code] - If true, the local database will be used for storing chats and messages between application restarts.
- 			* [code]use_secret_chats[/code] - If true, support for secret chats will be enabled. This option can't be disabled if it was enabled before.
- 			* [code]system_language_code[/code] - IETF language tag of the user's operating system language; By default uses `OS.get_locale_language()`.
+			- [code]api_id[/code] - Application identifier for Telegram API access, which can be obtained at [url=https://my.telegram.org]https://my.telegram.org[/url].
+			- [code]api_hash[/code] - Application identifier hash for Telegram API access, which can be obtained at [url=https://my.telegram.org]https://my.telegram.org[/url].
+			- [code]application_version[/code] - Application version; must be non-empty.
+			- [code]device_model[/code] - Model of the device the application is being run on; must be non-empty.
+			- [code]database_directory[/code] - Path to the directory for the persistent database; by default uses user data directory ([code]"user://tdlib_data/"[/code]).
+			- [code]use_test_dc[/code] - If true, the Telegram test environment will be used instead of the production environment.
+			- [code]files_directory[/code] - Path to the directory for storing files; by default uses [code]database_directory[/code].
+			- [code]use_file_database[/code] - If true, information about downloaded and uploaded files will be saved between application restarts.
+			- [code]use_message_database[/code] - If true, the local database will be used for storing chats and messages between application restarts.
+			- [code]use_secret_chats[/code] - If true, support for secret chats will be enabled.
+			- [code]system_language_code[/code] - IETF language tag of the user's operating system language; By default uses locale language of the OS.
 			</description>
 		</method>
 		<method name="set_verbosity_level">
