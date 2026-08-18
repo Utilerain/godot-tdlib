@@ -24,13 +24,13 @@ func _ready() -> void:
 	client = TdJson.new()
 	client.set_max_verbosity_level(4)
 	client.set_verbosity_level(2)
-	client.send(reqversion)
 	client.request_received.connect(receive_signal)
 	thrd.start(_wait_response)
 	client.set_tdlib_parameters(self.api_id, 
 		self.api_hash, 
 		"1.0.0",
 		"Desktop")
+	client.run() # or you can use client.send(reqversion) instead
 
 func _wait_response():
 	while running:

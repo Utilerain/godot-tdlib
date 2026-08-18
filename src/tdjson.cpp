@@ -201,6 +201,15 @@ void TdJson::_send_tdlib_parameters(Dictionary p_response, Dictionary p_paramete
     disconnect("request_received", Callable(this, "_send_tdlib_parameters"));
 }
 
+// Starts the TDLib client. Unnecessary if you've used `send()` before
+void TdJson::run()
+{
+    Dictionary _req;
+    _req["@type"] = "getOption";
+    _req["name"] = "version";
+    send(_req);
+}
+
 // Bindings for godot
 void TdJson::_bind_methods()
 {
@@ -212,6 +221,7 @@ void TdJson::_bind_methods()
     ClassDB::bind_method(D_METHOD("set_verbosity_level", "new_verbosity_level"), &TdJson::set_verbosity_level);
     ClassDB::bind_method(D_METHOD("set_log_callback", "callback"), &TdJson::set_log_callback);
     ClassDB::bind_method(D_METHOD("get_tdlib_version"), &TdJson::get_tdlib_version);
+    ClassDB::bind_method(D_METHOD("run"), &TdJson::run);
 
     ClassDB::bind_method(
         D_METHOD("set_tdlib_parameters",

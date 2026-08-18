@@ -32,6 +32,7 @@ namespace godot
             String system_language_code = String(""),
             String system_version = String(""));
         String get_tdlib_version();
+        void run();
 
     private:
         int client_id;
