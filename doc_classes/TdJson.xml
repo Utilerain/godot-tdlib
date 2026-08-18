@@ -150,6 +150,7 @@
 				- [code]use_message_database[/code] - If true, the local database will be used for storing chats and messages between application restarts.
 				- [code]use_secret_chats[/code] - If true, support for secret chats will be enabled.
 				- [code]system_language_code[/code] - IETF language tag of the user's operating system language; By default uses locale language of the OS.
+				- [code]system_version[/code] - Version of the user's operating system; By default uses the version of the OS.
 			</description>
 		</method>
 		<method name="set_verbosity_level">
