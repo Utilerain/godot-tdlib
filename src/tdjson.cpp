@@ -9,6 +9,8 @@
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <td/telegram/td_json_client.h>
+#include <atomic>
+#include <thread>
 
 using namespace godot;
 
@@ -211,13 +213,45 @@ void TdJson::_send_tdlib_parameters(Dictionary p_response, Dictionary p_paramete
     disconnect("request_received", Callable(this, "_send_tdlib_parameters"));
 }
 
-// Starts the TDLib client. Unnecessary if you've used `send()` before
-void TdJson::run()
+const double POLL_TIMEOUT = 10.0;
+
+void TdJson::_thread_poll()
 {
+    while (_is_running) {
+        receive(POLL_TIMEOUT);
+    }
+}
+
+// Starts the TDLib client.
+void TdJson::start_poll()
+{
+    if (_is_running) return;
+    _is_running = true;
     Dictionary _req;
     _req["@type"] = "getOption";
     _req["name"] = "version";
     send(_req);
+
+    worker_thread = std::thread(&TdJson::_thread_poll, this);
+}
+
+// Stops the TDLib client.
+void TdJson::stop_poll()
+{
+    if (!_is_running) return;
+    _is_running = false;
+    Dictionary _req;
+    _req["@type"] = "close";
+    send(_req);
+
+    if (worker_thread.joinable()) {
+        worker_thread.join();
+    }
+}
+
+bool TdJson::is_running()
+{
+    return _is_running;
 }
 
 // Bindings for godot
@@ -231,7 +265,9 @@ void TdJson::_bind_methods()
     ClassDB::bind_method(D_METHOD("set_verbosity_level", "new_verbosity_level"), &TdJson::set_verbosity_level);
     ClassDB::bind_method(D_METHOD("set_log_callback", "callback"), &TdJson::set_log_callback);
     ClassDB::bind_method(D_METHOD("get_tdlib_version"), &TdJson::get_tdlib_version);
-    ClassDB::bind_method(D_METHOD("run"), &TdJson::run);
+    ClassDB::bind_method(D_METHOD("start_poll"), &TdJson::start_poll);
+    ClassDB::bind_method(D_METHOD("stop_poll"), &TdJson::stop_poll);
+    ClassDB::bind_method(D_METHOD("is_running"), &TdJson::is_running);
 
     ClassDB::bind_method(
         D_METHOD("set_tdlib_parameters",

@@ -1,5 +1,4 @@
 #include <godot_cpp/classes/ref_counted.hpp>
-#include <godot_cpp/classes/os.hpp>
 
 namespace godot
 {
@@ -33,13 +32,18 @@ namespace godot
             String system_language_code = String(""),
             String system_version = String(""));
         String get_tdlib_version();
-        void run();
+        void start_poll();
+        void stop_poll();
+        bool is_running();
 
     private:
         int client_id;
         void _set_log_message_callback();
         int max_verbosity_level = 4;
         void _send_tdlib_parameters(Dictionary _response, Dictionary parameters);
+        void _thread_poll();
         static Callable *log_callback;
+        std::thread worker_thread;
+        std::atomic<bool> _is_running{false};
     };
 }
