@@ -74,10 +74,10 @@ Callable *TdJson::log_callback;
 // None of the TDLib methods can be called from the callback. By default the callback is set in set_log_message_callback
 void TdJson::set_log_callback(Callable p_callback)
 {
-    if (!log_callback) {
-        log_callback = memnew(Callable);
+    if (log_callback) {
+        memdelete(log_callback);
     }
-
+    log_callback = memnew(Callable);
     *log_callback = p_callback;
 
     td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message) {
