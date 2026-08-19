@@ -138,7 +138,7 @@ int TdJson::get_client_id()
  * \param[in] use_secret_chats If true, support for secret chats will be enabled.
  * \param[in] system_language_code IETF language tag of the user's operating system language; By default uses locale language of the OS.
  */
-void godot::TdJson::set_tdlib_parameters(
+void TdJson::set_tdlib_parameters(
     int api_id,
     String api_hash,
     String application_version,
@@ -184,7 +184,7 @@ void godot::TdJson::set_tdlib_parameters(
 }
 
 // \return Current version of the tdlib
-String godot::TdJson::get_tdlib_version()
+String TdJson::get_tdlib_version()
 {
     Dictionary _req;
     _req["@type"] = "getOption";
