@@ -57,12 +57,13 @@ Dictionary TdJson::receive(double timeout)
 {
     const char *response = td_receive(timeout);
 
-    if (response != nullptr) {
-        emit_signal("request_received", Dictionary(JSON::parse_string(String(response))));
-        return Dictionary(JSON::parse_string(String(response)));
+    if (response == nullptr) {
+        return Dictionary();
     }
 
-    return Dictionary();
+    Dictionary parsed_response = Dictionary(JSON::parse_string(String(response)));
+    emit_signal("request_received", parsed_response);
+    return parsed_response;
 }
 
 // Logs message output for godot console
