@@ -2,7 +2,6 @@ extends Node
 
 var client: TdJson
 var reqversion := {"@type": "getOption", "name": "version"}
-var thrd = Thread.new()
 #region Taken from https://github.com/tdlib/td/blob/master/example/python/tdjson_example.py
 #	You should obtain your own api_id and api_hash at https://my.telegram.org
 var api_hash := "a3406de8d171bb422bb6ddf3bbd800e2"
@@ -10,7 +9,6 @@ var api_id := 94575
 #endregion
 
 var response: Dictionary
-var running = true
 
 var USR_PATH = OS.get_user_data_dir()
 signal wait_for_phone_number
@@ -25,26 +23,20 @@ func _ready() -> void:
 	client.set_max_verbosity_level(4)
 	client.set_verbosity_level(2)
 	client.request_received.connect(receive_signal)
-	thrd.start(_wait_response)
 	client.set_tdlib_parameters(self.api_id, 
 		self.api_hash, 
 		"1.0.0",
 		"Desktop")
-	client.run() # or you can use client.send(reqversion) instead
-
-func _wait_response():
-	while running:
-		client.receive(1.0)
+	client.start_poll()
 		
 
 func receive_signal(_response: Dictionary): 
-	_handle_update.call_deferred(_response)
-	
-func _handle_update(data):
-	response = data
-	update_state()
+	response = _response
+	update_state.call_deferred()
 	
 func update_state():
+	if not response.has("@type"):
+		return
 	var event_type = response["@type"]
 	state_changed.emit()
 	
@@ -108,9 +100,8 @@ func send_password(password):
 	)
 
 func _exit_tree() -> void:
-	running = false
-	client.send(reqversion)
-	thrd.wait_to_finish()
+	client.stop_poll()
+	print(client.is_running())
 
 func print_json(data):
 	print(JSON.stringify(data, "\t"))
