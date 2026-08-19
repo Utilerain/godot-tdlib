@@ -8,6 +8,7 @@
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/classes/os.hpp>
 #include <td/telegram/td_json_client.h>
 #include <atomic>
 #include <thread>
