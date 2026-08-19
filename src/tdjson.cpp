@@ -34,7 +34,16 @@ Dictionary TdJson::execute(Dictionary request)
     String _req = JSON::stringify(request);
     const char *response = td_execute(_req.utf8().get_data());
 
-    return Dictionary(JSON::parse_string(String(response != nullptr ? response : "")));
+    if (!response) {
+        return Dictionary();
+    }
+
+    Variant parsed_response = JSON::parse_string(String(response));
+    if (parsed_response.get_type() != Variant::DICTIONARY) {
+        return Dictionary();
+    }
+
+    return parsed_response;
 }
 
 /**
