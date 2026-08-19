@@ -260,3 +260,11 @@ void TdJson::_bind_methods()
 
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
 }
+
+TdJson::~TdJson()
+{
+    if (log_callback) {
+        memdelete(log_callback);
+        log_callback = nullptr;
+    }
+}

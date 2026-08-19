@@ -11,6 +11,7 @@ namespace godot
 
     public:
         TdJson();
+        ~TdJson();
         void send(Dictionary request);
         Dictionary execute(Dictionary request);
         Dictionary receive(double timeout);
