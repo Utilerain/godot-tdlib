@@ -33,7 +33,7 @@ func receive_signal(_response: Dictionary):
 	if not _response.has("@type"):
 		return
 	response = _response
-	update_state.call_deferred(response)
+	update_state(response)
 	
 func update_state(response):
 	var event_type = response["@type"]

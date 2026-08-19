@@ -65,7 +65,7 @@ Dictionary TdJson::receive(double timeout)
     }
 
     Dictionary parsed_response = Dictionary(JSON::parse_string(String(response)));
-    emit_signal("request_received", parsed_response);
+    call_deferred("emit_signal","request_received", parsed_response);
     return parsed_response;
 }
 
