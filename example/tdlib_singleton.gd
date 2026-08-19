@@ -28,15 +28,14 @@ func _ready() -> void:
 		"1.0.0",
 		"Desktop")
 	client.start_poll()
-		
 
 func receive_signal(_response: Dictionary): 
-	response = _response
-	update_state.call_deferred()
-	
-func update_state():
-	if not response.has("@type"):
+	if not _response.has("@type"):
 		return
+	response = _response
+	update_state.call_deferred(response)
+	
+func update_state(response):
 	var event_type = response["@type"]
 	state_changed.emit()
 	
@@ -106,11 +105,13 @@ func _exit_tree() -> void:
 func print_json(data):
 	print(JSON.stringify(data, "\t"))
 
-func search_for_state(event_type: String, attempts: int = 10) -> Dictionary:
-	while TdlibSingleton.response["@type"] != event_type and attempts > 0:
-		await TdlibSingleton.state_changed
-		attempts -= 1
+func search_for_state(event_type: String, timeout_sec: float = 3.0) -> Dictionary:
+	var timer := get_tree().create_timer(timeout_sec)
+	
+	while timer.time_left > 0:
+		if TdlibSingleton.response.get("@type", "") == event_type:
+			return TdlibSingleton.response
 		
-	if attempts == 0:
-		return {}
-	return TdlibSingleton.response
+		await TdlibSingleton.state_changed
+	
+	return {}
