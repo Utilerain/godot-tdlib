@@ -16,6 +16,14 @@
 			if result:
 				# parse the result as a JSON object and process it as an incoming update or the answer to a previously sent request
 				pass
+		
+		# You can also use:
+		var client := TdJson.new()
+		client.request_received.connect(_on_request_received)
+		client.start_poll()
+		func _on_request_received(response):
+			# parse the response as a JSON object and process it as an incoming update or the answer to a previously sent request
+			pass
 		[/gdscript]
 		[/codeblocks]
 	</description>
@@ -38,16 +46,14 @@
 		<method name="get_tdlib_version">
 			<return type="String" />
 			<description>
-				Returns Tdlib version. Alias to this json
-				[codeblocks]
-				[gdscript]
-				{
-				"@type": "getOption", 
-				"name": "version"
-				}
-				[/gdscript]
-				[/codeblocks]
+				Returns Tdlib version.
 				Note: it doesn't start the TDLib
+			</description>
+		</method>
+		<method name="is_running">
+			<return type="bool" />
+			<description>
+				Returns true if the TDLib client's poll is running.
 			</description>
 		</method>
 		<method name="receive">
@@ -75,17 +81,19 @@
 				[/codeblocks]
 			</description>
 		</method>
-		<method name="run">
-			<return type="void" />
-			<description>
-				Runs the TDLib client. Unnecessary if you've used `send()` before.
-			</description>
-		</method>
 		<method name="send">
 			<return type="void" />
 			<param index="0" name="request" type="Dictionary" />
 			<description>
 				Sends request to the TDLib client. May be called from any thread.
+			</description>
+		</method>
+		<method name="set_bot_token">
+			<return type="void" />
+			<param index="0" name="bot_token" type="String" />
+			<description>
+				Sets the authentication token of a bot; to log in as a bot. 
+				Activates on [code]authorizationStateWaitPhoneNumber[/code] event.
 			</description>
 		</method>
 		<method name="set_log_callback">
@@ -166,6 +174,18 @@
 				}
 				[/gdscript]
 				[/codeblocks]
+			</description>
+		</method>
+		<method name="start_poll">
+			<return type="void" />
+			<description>
+				Starts TDLib client threaded poll.
+			</description>
+		</method>
+		<method name="stop_poll">
+			<return type="void" />
+			<description>
+				Stops TDLib client threaded poll.
 			</description>
 		</method>
 	</methods>
