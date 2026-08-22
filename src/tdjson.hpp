@@ -40,7 +40,7 @@ namespace godot
         int client_id;
         void _set_log_message_callback();
         int max_verbosity_level = 4;
-        void _send_tdlib_parameters(Dictionary _response, Dictionary parameters);
+        void _set_tdlib_parameters(Dictionary _response, Dictionary parameters);
         void _thread_poll();
         static Callable *log_callback;
         std::thread worker_thread;

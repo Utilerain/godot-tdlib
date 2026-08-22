@@ -196,7 +196,7 @@ String TdJson::get_tdlib_version()
     return String(execute(_req).get("value", ""));
 }
 
-void TdJson::_send_tdlib_parameters(Dictionary p_response, Dictionary p_parameters)
+void TdJson::_set_tdlib_parameters(Dictionary p_response, Dictionary p_parameters)
 {
     String type = p_response.get("@type", "");
     if (type != "updateAuthorizationState") {
@@ -294,7 +294,7 @@ void TdJson::_bind_methods()
         DEFVAL(String("")),
         DEFVAL(String("")));
 
-    ClassDB::bind_method(D_METHOD("_send_tdlib_parameters", "p_response", "p_parameters"), &TdJson::_send_tdlib_parameters);
+    ClassDB::bind_method(D_METHOD("_set_tdlib_parameters", "p_response", "p_parameters"), &TdJson::_set_tdlib_parameters);
 
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
 }
