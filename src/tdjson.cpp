@@ -222,6 +222,25 @@ void TdJson::_thread_poll()
         receive(POLL_TIMEOUT);
     }
 }
+void godot::TdJson::_set_bot_token(Dictionary p_response, Dictionary p_parameters)
+{
+    String type = p_response.get("@type", "");
+    if (type != "updateAuthorizationState")
+    {
+        return;
+    }
+
+    Dictionary auth_state = p_response.get("authorization_state", Dictionary());
+    String auth_type = auth_state.get("@type", "");
+
+    if (auth_type != "authorizationStateWaitPhoneNumber")
+    {
+        return;
+    }
+
+    send(p_parameters);
+    disconnect("request_received", Callable(this, "_set_bot_token"));
+}
 
 // Starts the TDLib client.
 void TdJson::start_poll()
@@ -254,6 +273,15 @@ bool TdJson::is_running()
 {
     return _is_running;
 }
+// Sets the bot token for the TDLib client. Can be used instead of user authentication. The bot token can be obtained from @BotFather.
+void godot::TdJson::set_bot_token(String bot_token)
+{
+    Dictionary _req;
+    _req["@type"] = "checkAuthenticationBotToken";
+    _req["token"] = bot_token;
+
+    connect("request_received", Callable(this, "_set_bot_token").bind(_req));
+}
 
 // Bindings for godot
 void TdJson::_bind_methods()
@@ -269,6 +297,8 @@ void TdJson::_bind_methods()
     ClassDB::bind_method(D_METHOD("start_poll"), &TdJson::start_poll);
     ClassDB::bind_method(D_METHOD("stop_poll"), &TdJson::stop_poll);
     ClassDB::bind_method(D_METHOD("is_running"), &TdJson::is_running);
+    ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJson::set_bot_token);
+    ClassDB::bind_method(D_METHOD("_set_bot_token", "p_response", "p_parameters"), &TdJson::_set_bot_token);
 
     ClassDB::bind_method(
         D_METHOD("set_tdlib_parameters",

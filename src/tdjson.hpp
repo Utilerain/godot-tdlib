@@ -35,6 +35,7 @@ namespace godot
         void start_poll();
         void stop_poll();
         bool is_running();
+void set_bot_token(String bot_token);
 
     private:
         int client_id;
@@ -42,6 +43,7 @@ namespace godot
         int max_verbosity_level = 4;
         void _set_tdlib_parameters(Dictionary _response, Dictionary parameters);
         void _thread_poll();
+void _set_bot_token(Dictionary p_response, Dictionary p_parameters);
         static Callable *log_callback;
         std::thread worker_thread;
         std::atomic<bool> _is_running{false};
