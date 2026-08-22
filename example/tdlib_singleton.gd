@@ -7,6 +7,7 @@ var reqversion := {"@type": "getOption", "name": "version"}
 var api_hash := "a3406de8d171bb422bb6ddf3bbd800e2"
 var api_id := 94575 
 #endregion
+var bot_token := "abcdefg"
 
 var response: Dictionary
 
@@ -28,6 +29,7 @@ func _ready() -> void:
 		"1.0.0",
 		"Desktop")
 	client.start_poll()
+	# client.set_bot_token(bot_token)
 
 func receive_signal(_response: Dictionary): 
 	if not _response.has("@type"):
@@ -63,6 +65,7 @@ func update_state(response):
 			#)
 		
 		elif auth_type == "authorizationStateWaitPhoneNumber":
+			# before here you can set bot token in line 32
 			wait_for_phone_number.emit()
 		
 		elif auth_type == "authorizationStateWaitCode":

@@ -16,7 +16,7 @@
 			if result:
 				# parse the result as a JSON object and process it as an incoming update or the answer to a previously sent request
 				pass
-		
+
 		# You can also use:
 		var client := TdJson.new()
 		client.request_received.connect(_on_request_received)
