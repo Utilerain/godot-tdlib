@@ -37,12 +37,14 @@ Dictionary TdJson::execute(Dictionary request)
     String _req = JSON::stringify(request);
     const char *response = td_execute(_req.utf8().get_data());
 
-    if (!response) {
+    if (!response)
+    {
         return Dictionary();
     }
 
     Variant parsed_response = JSON::parse_string(String(response));
-    if (parsed_response.get_type() != Variant::DICTIONARY) {
+    if (parsed_response.get_type() != Variant::DICTIONARY)
+    {
         return Dictionary();
     }
 
@@ -60,25 +62,26 @@ Dictionary TdJson::receive(double timeout)
 {
     const char *response = td_receive(timeout);
 
-    if (response == nullptr) {
+    if (response == nullptr)
+    {
         return Dictionary();
     }
 
     Dictionary parsed_response = Dictionary(JSON::parse_string(String(response)));
-    call_deferred("emit_signal","request_received", parsed_response);
+    call_deferred("emit_signal", "request_received", parsed_response);
     return parsed_response;
 }
 
 // Logs message output for godot console
 void TdJson::_set_log_message_callback()
 {
-    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message) {
+    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message)
+                                {
         if (verbosity_level > 0) {
             print_line(String("[TDLib] ") + String(message));
         } else {
             print_error(String("[TDLib] [FATAL!!!] ") + String(message), __FILE__, __LINE__);
-        }
-    });
+        } });
 }
 
 Callable *TdJson::log_callback;
@@ -87,17 +90,18 @@ Callable *TdJson::log_callback;
 // None of the TDLib methods can be called from the callback. By default the callback is set in set_log_message_callback
 void TdJson::set_log_callback(Callable p_callback)
 {
-    if (log_callback) {
+    if (log_callback)
+    {
         memdelete(log_callback);
     }
     log_callback = memnew(Callable);
     *log_callback = p_callback;
 
-    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message) {
+    td_set_log_message_callback(max_verbosity_level, [](int verbosity_level, const char *message)
+                                {
         if (log_callback && log_callback->is_valid()) {
             log_callback->call_deferred(Variant(verbosity_level), Variant(String(message)));
-        }
-    });
+        } });
 }
 
 // Sets the maximum verbosity level for TDLib log messages. Can be called from any thread.
@@ -166,7 +170,8 @@ void TdJson::set_tdlib_parameters(
 
     _req["use_test_dc"] = use_test_dc;
 
-    if (files_directory != String("")) {
+    if (files_directory != String(""))
+    {
         _req["files_directory"] = files_directory;
     }
 
@@ -174,13 +179,17 @@ void TdJson::set_tdlib_parameters(
     _req["use_message_database"] = use_message_database;
     _req["use_secret_chats"] = use_secret_chats;
 
-    if (system_language_code != String("")) {
+    if (system_language_code != String(""))
+    {
         _req["system_language_code"] = system_language_code;
-    } else {
+    }
+    else
+    {
         _req["system_language_code"] = OS::get_singleton()->get_locale_language();
     }
 
-    if (system_version != String("")) {
+    if (system_version != String(""))
+    {
         _req["system_version"] = system_version;
     }
 
@@ -199,14 +208,16 @@ String TdJson::get_tdlib_version()
 void TdJson::_set_tdlib_parameters(Dictionary p_response, Dictionary p_parameters)
 {
     String type = p_response.get("@type", "");
-    if (type != "updateAuthorizationState") {
+    if (type != "updateAuthorizationState")
+    {
         return;
     }
 
     Dictionary auth_state = p_response.get("authorization_state", Dictionary());
     String auth_type = auth_state.get("@type", "");
 
-    if (auth_type != "authorizationStateWaitTdlibParameters") {
+    if (auth_type != "authorizationStateWaitTdlibParameters")
+    {
         return;
     }
 
@@ -218,10 +229,12 @@ const double POLL_TIMEOUT = 10.0;
 
 void TdJson::_thread_poll()
 {
-    while (_is_running) {
+    while (_is_running)
+    {
         receive(POLL_TIMEOUT);
     }
 }
+
 void godot::TdJson::_set_bot_token(Dictionary p_response, Dictionary p_parameters)
 {
     String type = p_response.get("@type", "");
@@ -245,7 +258,8 @@ void godot::TdJson::_set_bot_token(Dictionary p_response, Dictionary p_parameter
 // Starts the TDLib client.
 void TdJson::start_poll()
 {
-    if (_is_running) return;
+    if (_is_running)
+        return;
     _is_running = true;
     Dictionary _req;
     _req["@type"] = "getOption";
@@ -258,13 +272,15 @@ void TdJson::start_poll()
 // Stops the TDLib client.
 void TdJson::stop_poll()
 {
-    if (!_is_running) return;
+    if (!_is_running)
+        return;
     _is_running = false;
     Dictionary _req;
     _req["@type"] = "close";
     send(_req);
 
-    if (worker_thread.joinable()) {
+    if (worker_thread.joinable())
+    {
         worker_thread.join();
     }
 }
@@ -273,6 +289,7 @@ bool TdJson::is_running()
 {
     return _is_running;
 }
+
 // Sets the bot token for the TDLib client. Can be used instead of user authentication. The bot token can be obtained from @BotFather.
 void godot::TdJson::set_bot_token(String bot_token)
 {
@@ -332,7 +349,8 @@ void TdJson::_bind_methods()
 TdJson::~TdJson()
 {
     stop_poll();
-    if (log_callback) {
+    if (log_callback)
+    {
         memdelete(log_callback);
         log_callback = nullptr;
     }
