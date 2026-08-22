@@ -20,8 +20,6 @@ void uninitialize_telegram_module(godot::ModuleInitializationLevel p_level)
     {
         return;
     }
-
-    godot::ClassDB::unregister_class<godot::TdJson>();
 }
 
 extern "C"
