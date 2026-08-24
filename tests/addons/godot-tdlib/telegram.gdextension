@@ -15,7 +15,7 @@ windows.x86_64 = {
     "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/libcrypto-3-x64.dll": "",
     "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/libssl-3-x64.dll": "",
     "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/tdjson.dll": "",
-    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/zlib1.dll": ""
+    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/z.dll": ""
 }
 linux.x86_64 = {
     "res://../addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.67": ""
