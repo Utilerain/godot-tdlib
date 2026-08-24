@@ -69,6 +69,7 @@ jobs:
           Expand-Archive -Path godot-ci.zip -DestinationPath godot-ci
 
       - name: Run headless tests
+        timeout-minutes: 5
         shell: pwsh
         run: .\godot-ci\Godot_v4.5.2-stable_win64.exe --path .\tests --headless
 
@@ -123,6 +124,7 @@ jobs:
           unzip -q godot-ci.zip -d godot-ci
 
       - name: Run headless tests
+        timeout-minutes: 5
         run: ./godot-ci/Godot_v4.5.2-stable_linux.x86_64 --path ./tests --headless
 
   docs:
