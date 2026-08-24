@@ -12,7 +12,7 @@ The process exits with code `0` when all checks pass. The suite covers:
 
 - client creation and unique client id;
 - `get_tdlib_version` and synchronous `execute` parsing;
-- `send`/`receive` round-trip and preservation of `@extra`;
+- `send`/`receive` delivery of a TDLib event;
 - `request_received` signal payload and delivery;
 - `start_poll`/`stop_poll`, including repeated calls.
 
@@ -25,6 +25,7 @@ These should run in a separate environment and never use production data:
 3. Verify `set_bot_token` responds only to `authorizationStateWaitPhoneNumber`.
 4. Authenticate with a disposable bot, wait for `authorizationStateReady`, call `getMe`, then close the client.
 5. Kill the process during polling and verify the next run can reopen the same temporary database.
+6. After initialization, send `getOption` with `@extra` and verify the matching response preserves `@extra`.
 
 Required CI variables for the bot scenario should be supplied by the CI secret store, for example `TDLIB_TEST_API_ID`, `TDLIB_TEST_API_HASH`, and `TDLIB_TEST_BOT_TOKEN`. Do not commit them.
 
