@@ -145,6 +145,7 @@ int TdJson::get_client_id()
  * \param[in] use_message_database If true, the local database will be used for storing chats and messages between application restarts.
  * \param[in] use_secret_chats If true, support for secret chats will be enabled.
  * \param[in] system_language_code IETF language tag of the user's operating system language; By default uses locale language of the OS.
+ * \param[in] system_version Version of the operating system the application is being run on; by default uses OS version.
  */
 void TdJson::set_tdlib_parameters(
     int api_id,
