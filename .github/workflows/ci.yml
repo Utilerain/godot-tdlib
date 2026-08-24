@@ -42,6 +42,38 @@ jobs:
         shell: pwsh
         run: scons target=template_debug
 
+      - name: Upload GDExtension
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-tdlib-windows-debug
+          path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64
+
+      - name: Download Godot
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri https://github.com/godotengine/godot/releases/download/4.5.2-stable/Godot_v4.5.2-stable_win64.exe.zip `
+            -OutFile godot-ci.zip
+          Expand-Archive -Path godot-ci.zip -DestinationPath godot-ci
+
+      - name: Run headless tests
+        shell: pwsh
+        run: .\godot-ci\Godot_v4.5.2-stable_win64.exe --path .\tests --headless
+
+  docs:
+    name: Check generated documentation
+    needs: build-and-test
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download GDExtension
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-tdlib-windows-debug
+          path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64
+
       - name: Download Godot
         shell: pwsh
         run: |
@@ -53,7 +85,3 @@ jobs:
       - name: Check generated documentation
         shell: pwsh
         run: .\scripts\check_docs.ps1 -GodotPath .\godot-ci\Godot_v4.5.2-stable_win64.exe
-
-      - name: Run headless tests
-        shell: pwsh
-        run: .\godot-ci\Godot_v4.5.2-stable_win64.exe --path .\tests --headless
