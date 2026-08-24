@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and run tests
+    runs-on: windows-latest
+    steps:
+      - name: Checkout submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: none
+
+      - name: Install SCons
+        shell: pwsh
+        run: python -m pip install scons
+
+      - name: Build TDLib
+        shell: pwsh
+        working-directory: thirdparty
+        run: .\build.ps1
+
+      - name: Build GDExtension
+        shell: pwsh
+        run: scons target=template_debug
+
+      - name: Download Godot
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri https://github.com/godotengine/godot/releases/download/4.5.2-stable/Godot_v4.5.2-stable_win64.exe.zip `
+            -OutFile godot-ci.zip
+          Expand-Archive -Path godot-ci.zip -DestinationPath godot-ci
+
+      - name: Check generated documentation
+        shell: pwsh
+        run: .\scripts\check_docs.ps1 -GodotPath .\godot-ci\Godot_v4.5.2-stable_win64.exe
+
+      - name: Run headless tests
+        shell: pwsh
+        run: .\godot-ci\Godot_v4.5.2-stable_win64.exe --path .\tests --headless
