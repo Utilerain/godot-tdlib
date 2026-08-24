@@ -183,25 +183,17 @@ jobs:
 
       - name: Build Android GDExtension
         run: |
-          docker run --rm \
-            --volume "$GITHUB_WORKSPACE:/build" \
-            godot-tdlib-android-builder \
-            scons -j"$(nproc)" platform=android target=template_debug arch=x86_32
-          docker run --rm \
-            --volume "$GITHUB_WORKSPACE:/build" \
-            godot-tdlib-android-builder \
-            scons -j"$(nproc)" platform=android target=template_debug arch=x86_64
-          docker run --rm \
-            --volume "$GITHUB_WORKSPACE:/build" \
-            godot-tdlib-android-builder \
-            scons -j"$(nproc)" platform=android target=template_debug arch=arm32
-          docker run --rm \
-            --volume "$GITHUB_WORKSPACE:/build" \
-            godot-tdlib-android-builder \
-            scons -j"$(nproc)" platform=android target=template_debug arch=arm64
+          for target in template_debug template_release; do
+            for arch in x86_32 x86_64 arm32 arm64; do
+              docker run --rm \
+                --volume "$GITHUB_WORKSPACE:/build" \
+                godot-tdlib-android-builder \
+                scons -j"$(nproc)" platform=android target="$target" arch="$arch"
+            done
+          done
 
       - name: Upload Android GDExtension
         uses: actions/upload-artifact@v4
         with:
-          name: godot-tdlib-android-debug
+          name: godot-tdlib-android-debug-release
           path: addons/godot-tdlib/bin
