@@ -7,6 +7,7 @@ reloadable = true
 [libraries]
 
 windows.debug.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/godot_tdlib_debug.dll"
+linux.debug.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so"
 
 [dependencies]
 
@@ -15,4 +16,7 @@ windows.x86_64 = {
     "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/libssl-3-x64.dll": "",
     "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/tdjson.dll": "",
     "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/zlib1.dll": ""
+}
+linux.x86_64 = {
+    "res://../addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.66": ""
 }

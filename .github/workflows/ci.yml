@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  build-and-test:
-    name: Build and run tests
+  windows:
+    name: Windows build and tests
     runs-on: windows-latest
     steps:
       - name: Checkout submodules
@@ -72,9 +72,56 @@ jobs:
         shell: pwsh
         run: .\godot-ci\Godot_v4.5.2-stable_win64.exe --path .\tests --headless
 
+  linux:
+    name: Linux build and tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gperf libssl-dev zlib1g-dev php-cli
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install SCons
+        run: python -m pip install scons
+
+      - name: Cache TDLib build
+        uses: actions/cache@v4
+        with:
+          path: |
+            thirdparty/td/build
+            thirdparty/tdlib_linux_x86_64
+          key: tdlib-linux-${{ hashFiles('thirdparty/build.sh') }}-${{ hashFiles('thirdparty/td/CMakeLists.txt') }}
+
+      - name: Build TDLib
+        working-directory: thirdparty
+        run: bash ./build.sh
+
+      - name: Build GDExtension
+        run: scons platform=linux target=template_debug
+
+      - name: Download Godot
+        run: |
+          curl -L \
+            https://github.com/godotengine/godot/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip \
+            -o godot-ci.zip
+          unzip -q godot-ci.zip -d godot-ci
+
+      - name: Run headless tests
+        run: ./godot-ci/Godot_v4.5.2-stable_linux.x86_64 --path ./tests --headless
+
   docs:
     name: Check generated documentation
-    needs: build-and-test
+    needs: windows
     runs-on: windows-latest
     steps:
       - name: Checkout
