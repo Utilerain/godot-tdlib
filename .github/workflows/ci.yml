@@ -33,6 +33,18 @@ jobs:
         shell: pwsh
         run: python -m pip install scons
 
+      - name: Cache TDLib and vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            thirdparty/vcpkg/vcpkg.exe
+            thirdparty/vcpkg/installed
+            thirdparty/vcpkg/packages
+            thirdparty/vcpkg/downloads
+            thirdparty/td/build
+            thirdparty/tdlib_win_x86_64
+          key: tdlib-windows-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
+
       - name: Build TDLib
         shell: pwsh
         working-directory: thirdparty

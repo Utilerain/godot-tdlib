@@ -36,8 +36,7 @@ if (-not (Test-Path (Join-Path $ZlibRoot "include\zlib.h")) -or
 }
 
 $BuildRoot = Join-Path $TdRoot "build"
-Remove-Item $BuildRoot -Force -Recurse -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Path $BuildRoot | Out-Null
+New-Item -ItemType Directory -Path $BuildRoot -Force | Out-Null
 Push-Location $BuildRoot
 try {
 	cmake -A x64 `
