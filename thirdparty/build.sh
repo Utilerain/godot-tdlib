@@ -3,8 +3,9 @@
 # You can install those dependencies using package manager.
 
 cd td
-rm -rf build
-mkdir build
+if [ ! -d "build" ]; then
+  mkdir build
+fi
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=../../tdlib_linux_x86_64 ..
 cmake --build . --target install
