@@ -1,4 +1,6 @@
 #include <godot_cpp/classes/ref_counted.hpp>
+#include <thread>
+#include <atomic>
 
 namespace godot
 {
