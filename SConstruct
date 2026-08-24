@@ -4,6 +4,7 @@ import shutil
 
 localEnv = Environment(tools=["default"])
 localEnv["build_profile"] = "build_profile.json"
+tdlib_version = "1.8.67"
 
 android_archs = {
     "arm64": "arm64-v8a",
@@ -72,7 +73,7 @@ if env["platform"] == "windows":
             print('Warning: could not copy', src_path, '->', dest_path, '-', e)
 
 elif env["platform"] == "linux":
-    source_lib = "thirdparty/tdlib_linux_x86_64/lib/libtdjson.so.1.8.66"
+    source_lib = f"thirdparty/tdlib_linux_x86_64/lib/libtdjson.so.{tdlib_version}"
 
     env.Append(LINKFLAGS=["-Wl,-rpath,'$$ORIGIN'"])
 
@@ -82,7 +83,7 @@ elif env["platform"] == "linux":
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
         
-    dest_path = os.path.join(dest_dir, "libtdjson.so.1.8.66")
+    dest_path = os.path.join(dest_dir, f"libtdjson.so.{tdlib_version}")
     try:
         shutil.copy2(source_lib, dest_path)
     except Exception as e:
