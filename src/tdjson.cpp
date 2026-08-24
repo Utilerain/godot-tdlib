@@ -193,7 +193,7 @@ void TdJson::set_tdlib_parameters(
         _req["system_version"] = system_version;
     }
 
-    connect("request_received", Callable(this, "_send_tdlib_parameters").bind(_req));
+    connect("request_received", Callable(this, "_set_tdlib_parameters").bind(_req));
 }
 
 // \return Current version of the tdlib
@@ -222,7 +222,7 @@ void TdJson::_set_tdlib_parameters(Dictionary p_response, Dictionary p_parameter
     }
 
     send(p_parameters);
-    disconnect("request_received", Callable(this, "_send_tdlib_parameters"));
+    disconnect("request_received", Callable(this, "_set_tdlib_parameters"));
 }
 
 const double POLL_TIMEOUT = 10.0;
