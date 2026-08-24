@@ -16,6 +16,16 @@ The process exits with code `0` when all checks pass. The suite covers:
 - `request_received` signal payload and delivery;
 - `start_poll`/`stop_poll`, including repeated calls.
 
+## Documentation check
+
+After building the GDExtension, compare the committed documentation with a fresh Godot DocTool export:
+
+```powershell
+.\scripts\check_docs.ps1 -GodotPath .\gen\godot.exe
+```
+
+The generated XML is written to a temporary directory and removed afterwards. The command fails if a public method is missing from either the committed or generated `TdJson.xml`. Methods whose names start with `_` are treated as internal and ignored.
+
 ## Integration scenarios
 
 These should run in a separate environment and never use production data:
