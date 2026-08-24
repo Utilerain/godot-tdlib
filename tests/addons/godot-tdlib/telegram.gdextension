@@ -1,0 +1,18 @@
+[configuration]
+
+entry_symbol = "tdjson_library_init"
+compatibility_minimum = 4.5
+reloadable = true
+
+[libraries]
+
+windows.debug.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/godot_tdlib_debug.dll"
+
+[dependencies]
+
+windows.x86_64 = {
+    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/libcrypto-3-x64.dll": "",
+    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/libssl-3-x64.dll": "",
+    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/tdjson.dll": "",
+    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/zlib1.dll": ""
+}
