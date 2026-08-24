@@ -9,40 +9,40 @@ TdJson = "icons/telegram.png"
 
 [libraries]
 
-windows.release.x86_64 = "bin/godot_tdlib_win_x86_64/godot_tdlib.dll"
-windows.debug.x86_64 = "bin/godot_tdlib_win_x86_64/godot_tdlib_debug.dll"
-linux.release.x86_64 = "bin/godot_tdlib_linux_x86_64/libgodot_tdlib.so"
-linux.debug.x86_64 = "bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so"
-android.debug.arm64 = "bin/godot_tdlib_android_arm64/libgodot_tdlib_debug.so"
-android.release.arm64 = "bin/godot_tdlib_android_arm64/libgodot_tdlib.so"
-android.debug.x86_64 = "bin/godot_tdlib_android_x86_64/libgodot_tdlib_debug.so"
-android.release.x86_64 = "bin/godot_tdlib_android_x86_64/libgodot_tdlib.so"
-android.debug.x86_32 = "bin/godot_tdlib_android_x86_32/libgodot_tdlib_debug.so"
-android.release.x86_32 = "bin/godot_tdlib_android_x86_32/libgodot_tdlib.so"
-android.debug.arm32 = "bin/godot_tdlib_android_arm32/libgodot_tdlib_debug.so"
-android.release.arm32 = "bin/godot_tdlib_android_arm32/libgodot_tdlib.so"
+windows.release.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/godot_tdlib.dll"
+windows.debug.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/godot_tdlib_debug.dll"
+linux.release.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libgodot_tdlib.so"
+linux.debug.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so"
+android.debug.arm64 = "res://../addons/godot-tdlib/bin/godot_tdlib_android_arm64/libgodot_tdlib_debug.so"
+android.release.arm64 = "res://../addons/godot-tdlib/bin/godot_tdlib_android_arm64/libgodot_tdlib.so"
+android.debug.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_android_x86_64/libgodot_tdlib_debug.so"
+android.release.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_android_x86_64/libgodot_tdlib.so"
+android.debug.x86_32 = "res://../addons/godot-tdlib/bin/godot_tdlib_android_x86_32/libgodot_tdlib_debug.so"
+android.release.x86_32 = "res://../addons/godot-tdlib/bin/godot_tdlib_android_x86_32/libgodot_tdlib.so"
+android.debug.arm32 = "res://../addons/godot-tdlib/bin/godot_tdlib_android_arm32/libgodot_tdlib_debug.so"
+android.release.arm32 = "res://../addons/godot-tdlib/bin/godot_tdlib_android_arm32/libgodot_tdlib.so"
 
 
 [dependencies]
 
 windows.x86_64 = {
-    "bin/godot_tdlib_win_x86_64/libcrypto-3-x64.dll": "",
-    "bin/godot_tdlib_win_x86_64/libssl-3-x64.dll": "",
-    "bin/godot_tdlib_win_x86_64/tdjson.dll": "",
-    "bin/godot_tdlib_win_x86_64/zlib1.dll": ""
+    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/libcrypto-3-x64.dll": "",
+    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/libssl-3-x64.dll": "",
+    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/tdjson.dll": "",
+    "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/zlib1.dll": ""
 }
 linux.x86_64 = {
-    "bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.66": ""
+    "res://../addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.66": ""
 }
 android.arm64 = {
-    "bin/godot_tdlib_android_arm64/libtdjson.so": ""
+    "res://../addons/godot-tdlib/bin/godot_tdlib_android_arm64/libtdjson.so": ""
 }
 android.x86_64 = {
-    "bin/godot_tdlib_android_x86_64/libtdjson.so": ""
+    "res://../addons/godot-tdlib/bin/godot_tdlib_android_x86_64/libtdjson.so": ""
 }
 android.arm32 = {
-    "bin/godot_tdlib_android_arm32/libtdjson.so": ""
+    "res://../addons/godot-tdlib/bin/godot_tdlib_android_arm32/libtdjson.so": ""
 }
 android.x86_32 = {
-    "bin/godot_tdlib_android_x86_32/libtdjson.so": ""
+    "res://../addons/godot-tdlib/bin/godot_tdlib_android_x86_32/libtdjson.so": ""
 }
