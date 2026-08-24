@@ -16,7 +16,6 @@ function Get-PublicMethodNames([string]$XmlPath) {
 
 $readyMethods = @(Get-PublicMethodNames $Path | Sort-Object -Unique)
 $generatedDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("godot-tdlib-docs-" + [guid]::NewGuid())
-$generatedPath = Join-Path $generatedDirectory "doc_classes/TdJson.xml"
 
 try {
     New-Item -ItemType Directory -Path $generatedDirectory -Force | Out-Null
@@ -33,8 +32,12 @@ try {
     if ($godotProcess.ExitCode -ne 0) {
         throw "Godot documentation generation failed with exit code $($godotProcess.ExitCode)"
     }
-    if (-not (Test-Path $generatedPath)) {
-        throw "Godot did not generate $generatedPath"
+    $generatedPath = Get-ChildItem -Path $generatedDirectory -Filter "TdJson.xml" -File -Recurse |
+        Select-Object -First 1 -ExpandProperty FullName
+    if ([string]::IsNullOrWhiteSpace($generatedPath)) {
+        $generatedFiles = @(Get-ChildItem -Path $generatedDirectory -File -Recurse |
+            ForEach-Object { $_.FullName })
+        throw "Godot did not generate TdJson.xml. Generated files: $($generatedFiles -join ', ')"
     }
 
     $generatedMethods = @(Get-PublicMethodNames $generatedPath | Sort-Object -Unique)
