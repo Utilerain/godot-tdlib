@@ -29,6 +29,7 @@ try {
     $godotProcess = Start-Process `
         -FilePath (Resolve-Path $GodotPath) `
         -ArgumentList @(
+            "--editor",
             "--path", (Resolve-Path $ProjectPath),
             "--doctool", $generatedDirectory,
             "--gdextension-docs"
@@ -39,12 +40,13 @@ try {
     if ($godotProcess.ExitCode -ne 0) {
         throw "Godot documentation generation failed with exit code $($godotProcess.ExitCode)"
     }
-    $generatedPath = Get-ChildItem -Path $generatedDirectory -Filter "TdJson.xml" -File -Recurse |
+    $generatedPath = Get-ChildItem -Path $generatedDirectory -Filter "*.xml" -File -Recurse |
+        Where-Object { try { ([xml](Get-Content -Raw $_.FullName)).class.name -eq "TdJson" } catch { $false } } |
         Select-Object -First 1 -ExpandProperty FullName
     if ([string]::IsNullOrWhiteSpace($generatedPath)) {
         $generatedFiles = @(Get-ChildItem -Path $generatedDirectory -File -Recurse |
             ForEach-Object { $_.FullName })
-        throw "Godot did not generate TdJson.xml. Generated files: $($generatedFiles -join ', ')"
+        throw "Godot did not generate documentation for TdJson. Generated files: $($generatedFiles -join ', ')"
     }
 
     $generatedMethods = @(Get-PublicMethodNames $generatedPath | Sort-Object -Unique)
