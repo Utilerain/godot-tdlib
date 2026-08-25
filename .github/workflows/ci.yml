@@ -116,7 +116,8 @@ jobs:
 
       - name: Build TDLib
         working-directory: thirdparty
-        run: if [ ! -d tdlib_linux_x86_64 ]; then
+        run: |
+          if [ ! -f tdlib_linux_x86_64/lib/libtdjson.so.1.8.67 ]; then
             bash ./build.sh
           else
             echo "Using cached Linux TDLib build"
