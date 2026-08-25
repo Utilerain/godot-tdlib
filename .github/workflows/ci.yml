@@ -95,7 +95,7 @@ jobs:
         shell: pwsh
         run: |
           Invoke-WebRequest `
-            -Uri https://github.com `
+            -Uri https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_win64.exe.zip `
             -OutFile godot-ci.zip
           Expand-Archive -Path godot-ci.zip -DestinationPath godot-ci
 
@@ -190,7 +190,7 @@ jobs:
       - name: Download Godot
         run: |
           curl -L \
-            https://github.com \
+            https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_linux.x86_64.zip \
             -o godot-ci.zip
           unzip -q godot-ci.zip -d godot-ci
 
@@ -235,7 +235,7 @@ jobs:
         shell: pwsh
         run: |
           Invoke-WebRequest `
-            -Uri https://github.com `
+            -Uri https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_win64.exe.zip `
             -OutFile godot-ci.zip
           Expand-Archive -Path godot-ci.zip -DestinationPath godot-ci
 
