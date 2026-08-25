@@ -157,6 +157,14 @@ jobs:
               exit 1
             fi
           done
+          extension_dir="$GITHUB_WORKSPACE/addons/godot-tdlib/bin/godot_tdlib_linux_x86_64"
+          echo "Linux GDExtension dependencies:"
+          ldd "$extension_dir/libgodot_tdlib_debug.so"
+          if ldd "$extension_dir/libgodot_tdlib_debug.so" | grep -q 'not found'; then
+            echo "Linux GDExtension has unresolved shared-library dependencies"
+            exit 1
+          fi
+          export LD_LIBRARY_PATH="$extension_dir${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           ./godot-ci/Godot_v4.5.2-stable_linux.x86_64 --path ./tests --headless
 
   docs:
