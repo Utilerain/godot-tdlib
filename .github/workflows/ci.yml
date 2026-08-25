@@ -261,6 +261,63 @@ jobs:
           path: generated-docs
           if-no-files-found: warn
 
+  docs_linux:
+    name: Check generated documentation (Linux)
+    needs: linux
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore GDExtension for documentation
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-tdlib-linux-debug-release
+          path: addons/godot-tdlib/bin/godot_tdlib_linux_x86_64
+
+      - name: Check GDExtension dependencies
+        run: |
+          extension_dir="$GITHUB_WORKSPACE/addons/godot-tdlib/bin/godot_tdlib_linux_x86_64"
+          required_files=(
+            "$extension_dir/libgodot_tdlib_debug.so"
+            "$extension_dir/libtdjson.so.1.8.67"
+          )
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Linux GDExtension file is missing: $file"
+              exit 1
+            fi
+          done
+          ldd "$extension_dir/libgodot_tdlib_debug.so"
+          if ldd "$extension_dir/libgodot_tdlib_debug.so" | grep -q 'not found'; then
+            echo "Linux GDExtension has unresolved shared-library dependencies"
+            exit 1
+          fi
+
+      - name: Download Godot
+        run: |
+          curl -L \
+            https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_linux.x86_64.zip \
+            -o godot-ci.zip
+          unzip -q godot-ci.zip -d godot-ci
+
+      - name: Check generated documentation
+        timeout-minutes: 5
+        env:
+          LD_LIBRARY_PATH: ${{ github.workspace }}/addons/godot-tdlib/bin/godot_tdlib_linux_x86_64
+        run: |
+          pwsh ./scripts/check_docs.ps1 \
+            -GodotPath ./godot-ci/Godot_v4.5-stable_linux.x86_64 \
+            -GeneratedPath ./generated-docs
+
+      - name: Upload generated Linux documentation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-godot-docs-linux
+          path: generated-docs
+          if-no-files-found: warn
+
   android:
     name: Android build
     runs-on: ubuntu-22.04
