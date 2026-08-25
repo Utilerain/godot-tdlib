@@ -285,12 +285,6 @@ void TdJson::stop_poll()
             worker_thread.join();
         }
     }
-    else if (client_id > 0)
-    {
-        Dictionary _req;
-        _req["@type"] = "close";
-        send(_req);
-    }
 }
 
 bool TdJson::is_running()
