@@ -22,12 +22,12 @@ func on_response(response: Dictionary) -> void:
 func run_tests() -> void:
 	var extension = load("res://addons/godot-tdlib/telegram.gdextension")
 	check(extension != null, "GDExtension resource is available")
-	var client = TdJson.new()
-	client.set_max_verbosity_level(4)
-	client.set_verbosity_level(0)
+	var client = ClassDB.instantiate("TdJson")
 	check(client != null, "TdJson class is registered")
 	if client == null:
 		return
+	client.set_max_verbosity_level(4)
+	client.set_verbosity_level(0)
 	check(client.get_client_id() > 0, "client id is allocated")
 	check(client.is_running() == false, "polling is stopped by default")
 
