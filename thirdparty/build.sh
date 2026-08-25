@@ -8,6 +8,6 @@ if [ ! -d "build" ]; then
 fi
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=../../tdlib_linux_x86_64 ..
-cmake --build . --target install --parallel
+cmake --build . --target install --parallel "${CMAKE_BUILD_PARALLEL_LEVEL:-2}"
 cd ..
 cd ..
