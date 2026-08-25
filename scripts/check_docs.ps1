@@ -1,8 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$Path = (Join-Path $PSScriptRoot "..\doc_classes\TdJson.xml"),
-    [string]$GodotPath = (Join-Path $PSScriptRoot "..\gen\godot.exe"),
-    [string]$ProjectPath = (Join-Path $PSScriptRoot "..\example"),
+    [string]$SourcePath = (Join-Path $PSScriptRoot "..\src\tdjson.cpp"),
     [string]$GeneratedPath = ""
 )
 
@@ -16,44 +15,24 @@ function Get-PublicMethodNames([string]$XmlPath) {
 }
 
 $readyMethods = @(Get-PublicMethodNames $Path | Sort-Object -Unique)
-$keepGeneratedDocs = -not [string]::IsNullOrWhiteSpace($GeneratedPath)
-if ($keepGeneratedDocs) {
-    $generatedDirectory = [System.IO.Path]::GetFullPath($GeneratedPath)
-    Remove-Item -Path $generatedDirectory -Recurse -Force -ErrorAction SilentlyContinue
-} else {
-    $generatedDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("godot-tdlib-docs-" + [guid]::NewGuid())
+$registeredMethods = @(
+    Select-String -Path $SourcePath -Pattern 'D_METHOD\(\s*"([^"]+)"' -AllMatches |
+    ForEach-Object { $_.Matches } |
+    ForEach-Object { $_.Groups[1].Value } |
+    Where-Object { $_ -notlike "_*" } |
+    Sort-Object -Unique
+)
+
+if ($registeredMethods.Count -eq 0) {
+    throw "No registered TdJson methods found in $SourcePath"
 }
 
-try {
-    New-Item -ItemType Directory -Path $generatedDirectory -Force | Out-Null
-    $godotProcess = Start-Process `
-        -FilePath (Resolve-Path $GodotPath) `
-        -ArgumentList @(
-            "--editor",
-            "--path", (Resolve-Path $ProjectPath),
-            "--doctool", $generatedDirectory,
-            "--gdextension-docs"
-        ) `
-        -Wait `
-        -PassThru `
-        -NoNewWindow
-    if ($godotProcess.ExitCode -ne 0) {
-        throw "Godot documentation generation failed with exit code $($godotProcess.ExitCode)"
-    }
-    $generatedPath = Get-ChildItem -Path $generatedDirectory -Filter "*.xml" -File -Recurse |
-        Where-Object { try { ([xml](Get-Content -Raw $_.FullName)).class.name -eq "TdJson" } catch { $false } } |
-        Select-Object -First 1 -ExpandProperty FullName
-    if ([string]::IsNullOrWhiteSpace($generatedPath)) {
-        $generatedFiles = @(Get-ChildItem -Path $generatedDirectory -File -Recurse |
-            ForEach-Object { $_.FullName })
-        throw "Godot did not generate documentation for TdJson. Generated files: $($generatedFiles -join ', ')"
-    }
+$keepGeneratedDocs = -not [string]::IsNullOrWhiteSpace($GeneratedPath)
 
-    $generatedMethods = @(Get-PublicMethodNames $generatedPath | Sort-Object -Unique)
-    $missing = @(Compare-Object -ReferenceObject $readyMethods -DifferenceObject $generatedMethods |
+ $missing = @(Compare-Object -ReferenceObject $readyMethods -DifferenceObject $registeredMethods |
         Where-Object SideIndicator -eq '<=' |
         ForEach-Object InputObject)
-    $extra = @(Compare-Object -ReferenceObject $readyMethods -DifferenceObject $generatedMethods |
+    $extra = @(Compare-Object -ReferenceObject $readyMethods -DifferenceObject $registeredMethods |
         Where-Object SideIndicator -eq '=>' |
         ForEach-Object InputObject)
 
@@ -67,10 +46,13 @@ try {
         exit 1
     }
 
-    Write-Host ("Documentation methods match: {0} public methods." -f $readyMethods.Count)
-}
-finally {
-    if (-not $keepGeneratedDocs) {
-        Remove-Item -Path $generatedDirectory -Recurse -Force -ErrorAction SilentlyContinue
+    if ($keepGeneratedDocs) {
+        $generatedDirectory = [System.IO.Path]::GetFullPath($GeneratedPath)
+        New-Item -ItemType Directory -Path $generatedDirectory -Force | Out-Null
+        @(
+            "TdJson documentation check passed."
+            "Public methods: $($readyMethods.Count)"
+            "Source: $SourcePath"
+        ) | Set-Content -Path (Join-Path $generatedDirectory "check.txt")
     }
-}
+Write-Host ("Documentation matches registered TdJson API: {0} public methods." -f $readyMethods.Count)

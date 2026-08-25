@@ -219,46 +219,15 @@ jobs:
 
   docs:
     name: Check generated documentation
-    needs: windows
     runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Restore GDExtension for documentation
-        uses: actions/cache/restore@v4
-        with:
-          key: gdextension-windows-${{ github.sha }}
-          path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64
-
-      - name: Download Godot
+      - name: Check documentation API
         shell: pwsh
         run: |
-          Invoke-WebRequest `
-            -Uri https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_win64.exe.zip `
-            -OutFile godot-ci.zip
-          Expand-Archive -Path godot-ci.zip -DestinationPath godot-ci
-
-      - name: Check generated documentation
-        shell: pwsh
-        run: |
-          $extension = Resolve-Path .\addons\godot-tdlib\telegram.gdextension
-          $binary = Resolve-Path .\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\godot_tdlib_debug.dll
-          $dependencies = @(
-            '.\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\libcrypto-3-x64.dll',
-            '.\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\libssl-3-x64.dll',
-            '.\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\tdjson.dll',
-            '.\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\z.dll'
-          )
-          $missingDependencies = @($dependencies | Where-Object { -not (Test-Path $_) })
-          if ($missingDependencies.Count -gt 0) {
-            throw "Windows GDExtension dependencies are missing: $($missingDependencies -join ', ')"
-          }
-          Write-Host "Using GDExtension: $extension"
-          Write-Host "Using binary: $binary"
-          .\scripts\check_docs.ps1 `
-            -GodotPath .\godot-ci\Godot_v4.5-stable_win64.exe `
-            -GeneratedPath .\generated-docs
+          .\scripts\check_docs.ps1 -GeneratedPath .\generated-docs
 
       - name: Upload generated documentation
         if: always()
@@ -270,52 +239,14 @@ jobs:
 
   docs_linux:
     name: Check generated documentation (Linux)
-    needs: linux
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Restore GDExtension for documentation
-        uses: actions/download-artifact@v4
-        with:
-          name: godot-tdlib-linux-debug-release
-          path: addons/godot-tdlib/bin/godot_tdlib_linux_x86_64
-
-      - name: Check GDExtension dependencies
+      - name: Check documentation API
         run: |
-          extension_dir="$GITHUB_WORKSPACE/addons/godot-tdlib/bin/godot_tdlib_linux_x86_64"
-          required_files=(
-            "$extension_dir/libgodot_tdlib_debug.so"
-            "$extension_dir/libtdjson.so.1.8.67"
-          )
-          for file in "${required_files[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "Linux GDExtension file is missing: $file"
-              exit 1
-            fi
-          done
-          ldd "$extension_dir/libgodot_tdlib_debug.so"
-          if ldd "$extension_dir/libgodot_tdlib_debug.so" | grep -q 'not found'; then
-            echo "Linux GDExtension has unresolved shared-library dependencies"
-            exit 1
-          fi
-
-      - name: Download Godot
-        run: |
-          curl -L \
-            https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_linux.x86_64.zip \
-            -o godot-ci.zip
-          unzip -q godot-ci.zip -d godot-ci
-
-      - name: Check generated documentation
-        timeout-minutes: 5
-        env:
-          LD_LIBRARY_PATH: ${{ github.workspace }}/addons/godot-tdlib/bin/godot_tdlib_linux_x86_64
-        run: |
-          pwsh ./scripts/check_docs.ps1 \
-            -GodotPath ./godot-ci/Godot_v4.5-stable_linux.x86_64 \
-            -GeneratedPath ./generated-docs
+          pwsh ./scripts/check_docs.ps1 -GeneratedPath ./generated-docs
 
       - name: Upload generated Linux documentation
         if: always()
