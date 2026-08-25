@@ -19,6 +19,7 @@ jobs:
           submodules: recursive
 
       - name: Cache TDLib and vcpkg
+        id: cache-tdlib-windows
         uses: actions/cache@v4
         with:
           path: |
@@ -31,6 +32,7 @@ jobs:
           key: tdlib-windows-v2-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
 
       - name: Build TDLib
+        if: steps:cache-tdlib-windows.outputs.cache-hit != 'true'
         shell: pwsh
         working-directory: thirdparty
         run: .\build.ps1
@@ -61,7 +63,7 @@ jobs:
         run: python -m pip install scons
 
       - name: Restore TDLib and vcpkg cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             thirdparty/vcpkg/vcpkg.exe
@@ -71,6 +73,7 @@ jobs:
             thirdparty/td/build
             thirdparty/tdlib_win_x86_64
           key: tdlib-windows-v2-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
+          fail-on-cache-miss: true
 
       - name: Build GDExtension
         shell: pwsh
@@ -93,7 +96,7 @@ jobs:
         shell: pwsh
         run: |
           Invoke-WebRequest `
-            -Uri https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_win64.exe.zip `
+            -Uri https://github.com `
             -OutFile godot-ci.zip
           Expand-Archive -Path godot-ci.zip -DestinationPath godot-ci
 
@@ -112,7 +115,7 @@ jobs:
           if ($missingFiles.Count -gt 0) {
             throw "Windows GDExtension files are missing: $($missingFiles -join ', ')"
           }
-          .\godot-ci\Godot_v4.5-stable_win64.exe --path .\tests --headless
+          .\godot-ci\Godot_v4.5-stable_win64.exe --path .\tests --headless --audio-driver Dummy --display-driver headless
 
   linux_tdlib:
     name: Linux TDLib
@@ -154,6 +157,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install Godot rendering dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools libasound2
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -183,7 +191,7 @@ jobs:
       - name: Download Godot
         run: |
           curl -L \
-            https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_linux.x86_64.zip \
+            https://github.com \
             -o godot-ci.zip
           unzip -q godot-ci.zip -d godot-ci
 
@@ -208,7 +216,7 @@ jobs:
             exit 1
           fi
           export LD_LIBRARY_PATH="$extension_dir${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          ./godot-ci/Godot_v4.5-stable_linux.x86_64 --path ./tests --headless
+          ./godot-ci/Godot_v4.5-stable_linux.x86_64 --path ./tests --headless --audio-driver Dummy --display-driver headless
 
   docs:
     name: Check generated documentation
@@ -228,7 +236,7 @@ jobs:
         shell: pwsh
         run: |
           Invoke-WebRequest `
-            -Uri https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_win64.exe.zip `
+            -Uri https://github.com `
             -OutFile godot-ci.zip
           Expand-Archive -Path godot-ci.zip -DestinationPath godot-ci
 
