@@ -9,8 +9,35 @@ permissions:
   contents: read
 
 jobs:
+  windows_tdlib:
+    name: Windows TDLib
+    runs-on: windows-latest
+    steps:
+      - name: Checkout submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cache TDLib and vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            thirdparty/vcpkg/vcpkg.exe
+            thirdparty/vcpkg/installed
+            thirdparty/vcpkg/packages
+            thirdparty/vcpkg/downloads
+            thirdparty/td/build
+            thirdparty/tdlib_win_x86_64
+          key: tdlib-windows-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
+
+      - name: Build TDLib
+        shell: pwsh
+        working-directory: thirdparty
+        run: .\build.ps1
+
   windows:
-    name: Windows build and tests
+    name: Windows extension and tests
+    needs: windows_tdlib
     runs-on: windows-latest
     steps:
       - name: Checkout submodules
@@ -33,7 +60,7 @@ jobs:
         shell: pwsh
         run: python -m pip install scons
 
-      - name: Cache TDLib and vcpkg
+      - name: Restore TDLib and vcpkg cache
         uses: actions/cache@v4
         with:
           path: |
@@ -41,13 +68,9 @@ jobs:
             thirdparty/vcpkg/installed
             thirdparty/vcpkg/packages
             thirdparty/vcpkg/downloads
+            thirdparty/td/build
             thirdparty/tdlib_win_x86_64
           key: tdlib-windows-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
-
-      - name: Build TDLib
-        shell: pwsh
-        working-directory: thirdparty
-        run: .\build.ps1
 
       - name: Build GDExtension
         shell: pwsh
@@ -85,8 +108,8 @@ jobs:
           }
           .\godot-ci\Godot_v4.5.2-stable_win64.exe --path .\tests --headless
 
-  linux:
-    name: Linux build and tests
+  linux_tdlib:
+    name: Linux TDLib
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout submodules
@@ -98,14 +121,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gperf libssl-dev zlib1g-dev php-cli
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install SCons
-        run: python -m pip install scons
 
       - name: Cache TDLib build
         uses: actions/cache@v4
@@ -123,12 +138,29 @@ jobs:
             echo "Using cached Linux TDLib build"
           fi
 
-      - name: Upload include files of TDLib
-        uses: actions/upload-artifact@v4
+  linux:
+    name: Linux extension and tests
+    needs: linux_tdlib
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout submodules
+        uses: actions/checkout@v4
         with:
-          name: tdlib-linux-x86_64
-          path: thirdparty/tdlib_linux_x86_64/include
-          if-no-files-found: error
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install SCons
+        run: python -m pip install scons
+
+      - name: Restore TDLib cache
+        uses: actions/cache@v4
+        with:
+          path: thirdparty/tdlib_linux_x86_64
+          key: tdlib-linux-${{ hashFiles('thirdparty/build.sh') }}-${{ hashFiles('thirdparty/td/CMakeLists.txt') }}
 
       - name: Build GDExtension
         run: |
@@ -138,7 +170,7 @@ jobs:
       - name: Upload GDExtension
         uses: actions/upload-artifact@v4
         with:
-          name: godot-tdlib-linux-debug
+          name: godot-tdlib-linux-debug-release
           path: addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/*
           if-no-files-found: error
 
@@ -183,7 +215,7 @@ jobs:
       - name: Download GDExtension
         uses: actions/download-artifact@v4
         with:
-          name: godot-tdlib-windows-debug
+          name: godot-tdlib-windows-debug-release
           path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64
 
       - name: Download Godot
