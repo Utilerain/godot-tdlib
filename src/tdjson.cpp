@@ -273,16 +273,23 @@ void TdJson::start_poll()
 // Stops the TDLib client.
 void TdJson::stop_poll()
 {
-    if (!_is_running)
-        return;
-    _is_running = false;
-    Dictionary _req;
-    _req["@type"] = "close";
-    send(_req);
-
-    if (worker_thread.joinable())
+    if (_is_running)
     {
-        worker_thread.join();
+        _is_running = false;
+        Dictionary _req;
+        _req["@type"] = "close";
+        send(_req);
+
+        if (worker_thread.joinable())
+        {
+            worker_thread.join();
+        }
+    }
+    else if (client_id > 0)
+    {
+        Dictionary _req;
+        _req["@type"] = "close";
+        send(_req);
     }
 }
 
@@ -350,6 +357,7 @@ void TdJson::_bind_methods()
 TdJson::~TdJson()
 {
     stop_poll();
+    td_set_log_message_callback(0, nullptr);
     if (log_callback)
     {
         memdelete(log_callback);
