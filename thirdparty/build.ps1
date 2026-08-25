@@ -48,7 +48,12 @@ try {
 	if ($LASTEXITCODE -ne 0) {
 		throw "TDLib CMake configuration failed with exit code $LASTEXITCODE"
 	}
-	cmake --build . --target install --config Release --parallel
+	$parallelLevel = if ($env:CMAKE_BUILD_PARALLEL_LEVEL) {
+		$env:CMAKE_BUILD_PARALLEL_LEVEL
+	} else {
+		2
+	}
+	cmake --build . --target install --config Release --parallel $parallelLevel
 	if ($LASTEXITCODE -ne 0) {
 		throw "TDLib build failed with exit code $LASTEXITCODE"
 	}
