@@ -131,7 +131,9 @@ jobs:
           if-no-files-found: error
 
       - name: Build GDExtension
-        run: scons platform=linux target=template_debug target=template_release
+        run: |
+          scons -j"$(nproc)" platform=linux target=template_debug
+          scons -j"$(nproc)" platform=linux target=template_release
 
       - name: Upload GDExtension
         uses: actions/upload-artifact@v4
