@@ -2,7 +2,8 @@
 param(
     [string]$Path = (Join-Path $PSScriptRoot "..\doc_classes\TdJson.xml"),
     [string]$GodotPath = (Join-Path $PSScriptRoot "..\gen\godot.exe"),
-    [string]$ProjectPath = (Join-Path $PSScriptRoot "..\example")
+    [string]$ProjectPath = (Join-Path $PSScriptRoot "..\example"),
+    [string]$GeneratedPath = ""
 )
 
 function Get-PublicMethodNames([string]$XmlPath) {
@@ -15,7 +16,13 @@ function Get-PublicMethodNames([string]$XmlPath) {
 }
 
 $readyMethods = @(Get-PublicMethodNames $Path | Sort-Object -Unique)
-$generatedDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("godot-tdlib-docs-" + [guid]::NewGuid())
+$keepGeneratedDocs = -not [string]::IsNullOrWhiteSpace($GeneratedPath)
+if ($keepGeneratedDocs) {
+    $generatedDirectory = [System.IO.Path]::GetFullPath($GeneratedPath)
+    Remove-Item -Path $generatedDirectory -Recurse -Force -ErrorAction SilentlyContinue
+} else {
+    $generatedDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("godot-tdlib-docs-" + [guid]::NewGuid())
+}
 
 try {
     New-Item -ItemType Directory -Path $generatedDirectory -Force | Out-Null
@@ -61,5 +68,7 @@ try {
     Write-Host ("Documentation methods match: {0} public methods." -f $readyMethods.Count)
 }
 finally {
-    Remove-Item -Path $generatedDirectory -Recurse -Force -ErrorAction SilentlyContinue
+    if (-not $keepGeneratedDocs) {
+        Remove-Item -Path $generatedDirectory -Recurse -Force -ErrorAction SilentlyContinue
+    }
 }

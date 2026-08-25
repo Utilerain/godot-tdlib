@@ -249,7 +249,17 @@ jobs:
           }
           Write-Host "Using GDExtension: $extension"
           Write-Host "Using binary: $binary"
-          .\scripts\check_docs.ps1 -GodotPath .\godot-ci\Godot_v4.5-stable_win64.exe
+          .\scripts\check_docs.ps1 `
+            -GodotPath .\godot-ci\Godot_v4.5-stable_win64.exe `
+            -GeneratedPath .\generated-docs
+
+      - name: Upload generated documentation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-godot-docs
+          path: generated-docs
+          if-no-files-found: warn
 
   android:
     name: Android build
