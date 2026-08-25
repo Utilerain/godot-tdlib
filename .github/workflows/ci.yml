@@ -58,7 +58,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: godot-tdlib-windows-debug
-          path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64
+          path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64/*
+          if-no-files-found: error
 
       - name: Download Godot
         shell: pwsh
@@ -71,7 +72,19 @@ jobs:
       - name: Run headless tests
         timeout-minutes: 5
         shell: pwsh
-        run: .\godot-ci\Godot_v4.5.2-stable_win64.exe --path .\tests --headless
+        run: |
+          $requiredFiles = @(
+            '.\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\godot_tdlib_debug.dll',
+            '.\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\libcrypto-3-x64.dll',
+            '.\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\libssl-3-x64.dll',
+            '.\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\tdjson.dll',
+            '.\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\z.dll'
+          )
+          $missingFiles = @($requiredFiles | Where-Object { -not (Test-Path $_) })
+          if ($missingFiles.Count -gt 0) {
+            throw "Windows GDExtension files are missing: $($missingFiles -join ', ')"
+          }
+          .\godot-ci\Godot_v4.5.2-stable_win64.exe --path .\tests --headless
 
   linux:
     name: Linux build and tests
@@ -110,11 +123,19 @@ jobs:
       - name: Upload include files of TDLib
         uses: actions/upload-artifact@v4
         with:
-          name: godot-tdlib-linux-debug
+          name: tdlib-linux-x86_64
           path: thirdparty/tdlib_linux_x86_64/include
+          if-no-files-found: error
 
       - name: Build GDExtension
         run: scons platform=linux target=template_debug
+
+      - name: Upload GDExtension
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-tdlib-linux-debug
+          path: addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/*
+          if-no-files-found: error
 
       - name: Download Godot
         run: |
@@ -125,7 +146,18 @@ jobs:
 
       - name: Run headless tests
         timeout-minutes: 5
-        run: ./godot-ci/Godot_v4.5.2-stable_linux.x86_64 --path ./tests --headless
+        run: |
+          required_files=(
+            addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so
+            addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.67
+          )
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Linux GDExtension file is missing: $file"
+              exit 1
+            fi
+          done
+          ./godot-ci/Godot_v4.5.2-stable_linux.x86_64 --path ./tests --headless
 
   docs:
     name: Check generated documentation
@@ -151,7 +183,12 @@ jobs:
 
       - name: Check generated documentation
         shell: pwsh
-        run: .\scripts\check_docs.ps1 -GodotPath .\godot-ci\Godot_v4.5.2-stable_win64.exe
+        run: |
+          $extension = Resolve-Path .\addons\godot-tdlib\telegram.gdextension
+          $binary = Resolve-Path .\addons\godot-tdlib\bin\godot_tdlib_win_x86_64\godot_tdlib_debug.dll
+          Write-Host "Using GDExtension: $extension"
+          Write-Host "Using binary: $binary"
+          .\scripts\check_docs.ps1 -GodotPath .\godot-ci\Godot_v4.5.2-stable_win64.exe
 
   android:
     name: Android build
@@ -180,6 +217,13 @@ jobs:
             echo "Using cached Android TDLib build"
           fi
 
+      - name: Upload Android TDLib
+        uses: actions/upload-artifact@v4
+        with:
+          name: tdlib-android
+          path: thirdparty/tdlib_android/builds/tdlib/libs/
+          if-no-files-found: error
+
       - name: Build Android GDExtension image
         run: docker build --tag godot-tdlib-android-builder .
 
@@ -199,3 +243,4 @@ jobs:
         with:
           name: godot-tdlib-android-debug-release
           path: addons/godot-tdlib/bin
+          if-no-files-found: error

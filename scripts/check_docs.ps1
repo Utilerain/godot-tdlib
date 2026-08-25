@@ -1,8 +1,8 @@
 [CmdletBinding()]
 param(
-    [string]$Path = "doc_classes/TdJson.xml",
-    [string]$GodotPath = "gen/godot.exe",
-    [string]$ProjectPath = "example"
+    [string]$Path = (Join-Path $PSScriptRoot "..\doc_classes\TdJson.xml"),
+    [string]$GodotPath = (Join-Path $PSScriptRoot "..\gen\godot.exe"),
+    [string]$ProjectPath = (Join-Path $PSScriptRoot "..\example")
 )
 
 function Get-PublicMethodNames([string]$XmlPath) {

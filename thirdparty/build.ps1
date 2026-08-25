@@ -48,7 +48,7 @@ try {
 	if ($LASTEXITCODE -ne 0) {
 		throw "TDLib CMake configuration failed with exit code $LASTEXITCODE"
 	}
-	cmake --build . --target install --config Release
+	cmake --build . --target install --config Release --parallel
 	if ($LASTEXITCODE -ne 0) {
 		throw "TDLib build failed with exit code $LASTEXITCODE"
 	}

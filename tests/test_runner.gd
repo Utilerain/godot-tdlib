@@ -31,16 +31,16 @@ func run_tests() -> void:
 	check(client.get_client_id() > 0, "client id is allocated")
 	check(client.is_running() == false, "polling is stopped by default")
 
-	var version := client.get_tdlib_version()
+	var version: String = client.get_tdlib_version()
 	check(not version.is_empty(), "TDLib version is available through execute")
 
-	var option := client.execute({"@type": "getOption", "name": "version"})
+	var option: Dictionary = client.execute({"@type": "getOption", "name": "version"})
 	check(option.get("@type", "") == "optionValueString", "execute returns a parsed TDLib object")
 	check(not String(option.get("value", "")).is_empty(), "execute preserves the response value")
 
 	client.request_received.connect(on_response)
 	client.send({"@type": "getOption", "name": "version", "@extra": "send-test"})
-	var response := client.receive(2.0)
+	var response: Dictionary = client.receive(2.0)
 	check(not response.is_empty(), "send and receive return a TDLib event")
 	await get_tree().process_frame
 	check(received_count == 1, "receive emits request_received once")
