@@ -41,7 +41,6 @@ jobs:
             thirdparty/vcpkg/installed
             thirdparty/vcpkg/packages
             thirdparty/vcpkg/downloads
-            thirdparty/td/build
             thirdparty/tdlib_win_x86_64
           key: tdlib-windows-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
 
@@ -52,12 +51,12 @@ jobs:
 
       - name: Build GDExtension
         shell: pwsh
-        run: scons target=template_debug
+        run: scons target=template_debug && scons target=template_release
 
       - name: Upload GDExtension
         uses: actions/upload-artifact@v4
         with:
-          name: godot-tdlib-windows-debug
+          name: godot-tdlib-windows-debug-release
           path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64/*
           if-no-files-found: error
 
@@ -112,13 +111,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            thirdparty/td/build
             thirdparty/tdlib_linux_x86_64
           key: tdlib-linux-${{ hashFiles('thirdparty/build.sh') }}-${{ hashFiles('thirdparty/td/CMakeLists.txt') }}
 
       - name: Build TDLib
         working-directory: thirdparty
-        run: bash ./build.sh
+        run: if [ ! -d tdlib_linux_x86_64 ]; then
+            bash ./build.sh \
+          else
+            echo "Using cached Linux TDLib build" \
+          fi
 
       - name: Upload include files of TDLib
         uses: actions/upload-artifact@v4
