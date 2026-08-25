@@ -57,3 +57,5 @@ func run_tests() -> void:
 	check(client.is_running() == false, "stop_poll is idempotent")
 	client.request_received.disconnect(on_response)
 	await get_tree().process_frame
+	client = null
+	await get_tree().process_frame

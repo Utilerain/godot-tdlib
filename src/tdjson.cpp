@@ -230,9 +230,28 @@ const double POLL_TIMEOUT = 10.0;
 
 void TdJson::_thread_poll()
 {
-    while (_is_running)
+    bool closing = false;
+    while (_is_running || closing)
     {
-        receive(POLL_TIMEOUT);
+        Dictionary response = receive(POLL_TIMEOUT);
+        if (response.get("@type", "") == "updateAuthorizationState")
+        {
+            Dictionary authorization_state = response.get("authorization_state", Dictionary());
+            String authorization_type = authorization_state.get("@type", "");
+            if (authorization_type == "authorizationStateClosing")
+            {
+                closing = true;
+            }
+            else if (authorization_type == "authorizationStateClosed")
+            {
+                closing = false;
+            }
+        }
+
+        if (!_is_running && !closing)
+        {
+            break;
+        }
     }
 }
 
@@ -275,10 +294,10 @@ void TdJson::stop_poll()
 {
     if (_is_running)
     {
-        _is_running = false;
         Dictionary _req;
         _req["@type"] = "close";
         send(_req);
+        _is_running = false;
 
         if (worker_thread.joinable())
         {
