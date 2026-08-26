@@ -50,8 +50,12 @@ if env["target"] in ["editor", "template_debug"]:
 
 # Debug symbols
 if env["target"] == "template_debug" or env["debug_symbols"] == "yes":
-    env.Append(CCFLAGS=["-g", "-O0"])
-    env.Append(LINKFLAGS=["-g"])
+    if env["platform"] == "windows":
+        env.Append(CCFLAGS=["/Zi", "/Od"])
+        env.Append(LINKFLAGS=["/DEBUG"])
+    else:
+        env.Append(CCFLAGS=["-g", "-O0"])
+        env.Append(LINKFLAGS=["-g"])
 
 library = env.SharedLibrary(
     target=target_lib,
