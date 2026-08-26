@@ -300,7 +300,7 @@ jobs:
               docker run --rm \
                 --volume "$GITHUB_WORKSPACE:/build" \
                 godot-tdlib-android-builder \
-                scons -j"$(nproc)" platform=android target="$target" arch="$arch"
+                scons -j"$(nproc)" platform=android target="$target" arch="$arch" debug_symbols="$debug_symbols"
             done
           done
 

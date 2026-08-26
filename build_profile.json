@@ -6,6 +6,7 @@
 		"UtilityFunctions",
 		"JSON",
         "OS",
-		"ProjectSettings"
+		"ProjectSettings",
+		"Thread"
 	]
 }

@@ -48,6 +48,15 @@ if env["target"] in ["editor", "template_debug"]:
     doc_data = env.GodotCPPDocData("src/gen/doc_data.gen.cpp", source=Glob("doc_classes/*.xml"))
     sources.append(doc_data)
 
+# Debug symbols
+if env["debug_symbols"] == "yes":
+    if env["platform"] == "windows":
+        env.Append(CCFLAGS=["/Zi", "/Od", "/FS"])
+        env.Append(LINKFLAGS=["/DEBUG"])
+    else:
+        env.Append(CCFLAGS=["-g", "-O0"])
+        env.Append(LINKFLAGS=["-g"])
+
 library = env.SharedLibrary(
     target=target_lib,
     source=sources,
