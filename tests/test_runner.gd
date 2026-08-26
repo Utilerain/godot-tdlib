@@ -59,3 +59,4 @@ func run_tests() -> void:
 	await get_tree().process_frame
 	client = null
 	await get_tree().process_frame
+	await get_tree().process_frame
