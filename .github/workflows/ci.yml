@@ -71,7 +71,12 @@ jobs:
       - name: Cache GDExtension
         uses: actions/cache@v4
         with:
-          path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64
+          path: | 
+            addons/godot-tdlib/bin/godot_tdlib_win_x86_64
+            ./.sconsign.dblite
+            ./src/*.obj
+            ./src/gen/*.cpp
+            ./src/gen/*.obj
           key: gdextension-windows-${{ hashFiles('./SConstruct') }}-${{ hashFiles('./build_profile.json') }}
 
       - name: Build GDExtension
@@ -172,7 +177,12 @@ jobs:
       - name: Cache GDExtension
         uses: actions/cache@v4
         with:
-          path: addons/godot-tdlib/bin/godot_tdlib_linux_x86_64
+          path: | 
+            addons/godot-tdlib/bin/godot_tdlib_linux_x86_64
+            ./.sconsign.dblite
+            ./src/*.so
+            ./src/gen/*.cpp
+            ./src/gen/*.so
           key: gdextension-linux-${{ hashFiles('./SConstruct') }}-${{ hashFiles('./build_profile.json') }}
       
       - name: Build GDExtension
