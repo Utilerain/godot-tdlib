@@ -49,9 +49,9 @@ if env["target"] in ["editor", "template_debug"]:
     sources.append(doc_data)
 
 # Debug symbols
-if env["target"] == "template_debug" or env["debug_symbols"] == "yes":
+if env["debug_symbols"] == "yes":
     if env["platform"] == "windows":
-        env.Append(CCFLAGS=["/Zi", "/Od"])
+        env.Append(CCFLAGS=["/Zi", "/Od", "/FS"])
         env.Append(LINKFLAGS=["/DEBUG"])
     else:
         env.Append(CCFLAGS=["-g", "-O0"])

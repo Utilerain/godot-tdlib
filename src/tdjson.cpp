@@ -4,14 +4,17 @@
 
 #include "tdjson.hpp"
 
+#include <atomic>
+
 #include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/os.hpp>
+#include <godot_cpp/classes/thread.hpp>
+
 #include <td/telegram/td_json_client.h>
-#include <atomic>
-#include <thread>
+
 
 using namespace godot;
 
@@ -231,7 +234,7 @@ const double POLL_TIMEOUT = 10.0;
 void TdJson::_thread_poll()
 {
     bool closing = false;
-    while (_is_running || closing)
+    while (_is_running.load() || closing)
     {
         Dictionary response = receive(POLL_TIMEOUT);
         if (response.get("@type", "") == "updateAuthorizationState")
@@ -248,7 +251,7 @@ void TdJson::_thread_poll()
             }
         }
 
-        if (!_is_running && !closing)
+        if (!_is_running.load() && !closing)
         {
             break;
         }
@@ -278,37 +281,42 @@ void godot::TdJson::_set_bot_token(Dictionary p_response, Dictionary p_parameter
 // Starts the TDLib client.
 void TdJson::start_poll()
 {
-    if (_is_running)
+    if (_is_running.load() || (worker_thread.is_valid() && worker_thread->is_alive()))
         return;
-    _is_running = true;
+    _is_running.store(true);
     Dictionary _req;
     _req["@type"] = "getOption";
     _req["name"] = "version";
     send(_req);
 
-    worker_thread = std::thread(&TdJson::_thread_poll, this);
+    if (worker_thread.is_null())
+    {
+        worker_thread.instantiate();
+    }
+
+    worker_thread->start(Callable(this, "_thread_poll"));
 }
 
 // Stops the TDLib client.
 void TdJson::stop_poll()
 {
-    if (_is_running)
+    if (_is_running.load() && !worker_thread.is_null())
     {
         Dictionary _req;
         _req["@type"] = "close";
         send(_req);
-        _is_running = false;
+        _is_running.store(false);
 
-        if (worker_thread.joinable())
+        if (worker_thread->is_alive())
         {
-            worker_thread.join();
+            worker_thread->wait_to_finish();
         }
     }
 }
 
 bool TdJson::is_running()
 {
-    return _is_running;
+    return _is_running.load();
 }
 
 // Sets the bot token for the TDLib client. Can be used instead of user authentication. The bot token can be obtained from @BotFather.
@@ -333,6 +341,7 @@ void TdJson::_bind_methods()
     ClassDB::bind_method(D_METHOD("set_log_callback", "callback"), &TdJson::set_log_callback);
     ClassDB::bind_method(D_METHOD("get_tdlib_version"), &TdJson::get_tdlib_version);
     ClassDB::bind_method(D_METHOD("start_poll"), &TdJson::start_poll);
+    ClassDB::bind_method(D_METHOD("_thread_poll"), &TdJson::_thread_poll);
     ClassDB::bind_method(D_METHOD("stop_poll"), &TdJson::stop_poll);
     ClassDB::bind_method(D_METHOD("is_running"), &TdJson::is_running);
     ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJson::set_bot_token);

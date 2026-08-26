@@ -1,5 +1,5 @@
 #include <godot_cpp/classes/ref_counted.hpp>
-#include <thread>
+#include <godot_cpp/classes/thread.hpp>
 #include <atomic>
 
 namespace godot
@@ -47,7 +47,7 @@ namespace godot
         void _thread_poll();
         void _set_bot_token(Dictionary p_response, Dictionary p_parameters);
         static Callable *log_callback;
-        std::thread worker_thread;
+        Ref<Thread> worker_thread;
         std::atomic<bool> _is_running{false};
     };
 }
