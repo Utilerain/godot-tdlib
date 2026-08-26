@@ -237,25 +237,6 @@ jobs:
           path: generated-docs
           if-no-files-found: warn
 
-  docs_linux:
-    name: Check generated documentation (Linux)
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Check documentation API
-        run: |
-          pwsh ./scripts/check_docs.ps1 -GeneratedPath ./generated-docs
-
-      - name: Upload generated Linux documentation
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: generated-godot-docs-linux
-          path: generated-docs
-          if-no-files-found: warn
-
   android:
     name: Android build
     runs-on: ubuntu-22.04
