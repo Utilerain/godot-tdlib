@@ -5,8 +5,7 @@ var received_count := 0
 var last_response: Dictionary
 
 func _ready() -> void:
-	await run_tests()
-	get_tree().quit(1 if failures > 0 else 0)
+	run_tests()
 
 func check(condition: bool, message: String) -> void:
 	if condition:
@@ -60,3 +59,5 @@ func run_tests() -> void:
 	client = null
 	await get_tree().process_frame
 	await get_tree().process_frame
+
+	get_tree().quit(1 if failures > 0 else 0)
