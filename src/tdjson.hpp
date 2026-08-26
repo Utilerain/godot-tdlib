@@ -1,6 +1,7 @@
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/classes/thread.hpp>
 #include <atomic>
+#include <mutex>
 
 namespace godot
 {
@@ -49,5 +50,6 @@ namespace godot
         static Callable *log_callback;
         Ref<Thread> worker_thread;
         std::atomic<bool> _is_running{false};
+        std::mutex _mutex;
     };
 }

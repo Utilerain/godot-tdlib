@@ -70,8 +70,11 @@ Dictionary TdJson::receive(double timeout)
         return Dictionary();
     }
 
+    _mutex.lock();
+
     Dictionary parsed_response = Dictionary(JSON::parse_string(String(response)));
     call_deferred("emit_signal", "request_received", parsed_response);
+    _mutex.unlock();
     return parsed_response;
 }
 
@@ -281,8 +284,12 @@ void godot::TdJson::_set_bot_token(Dictionary p_response, Dictionary p_parameter
 // Starts the TDLib client.
 void TdJson::start_poll()
 {
-    if (_is_running.load() || (worker_thread.is_valid() && worker_thread->is_alive()))
+    if (_is_running.load()) {
         return;
+    }
+    if (worker_thread.is_valid() && worker_thread->is_started()) {
+        return;
+    }
     _is_running.store(true);
     Dictionary _req;
     _req["@type"] = "getOption";
