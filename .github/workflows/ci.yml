@@ -51,12 +51,6 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          tools: none
-
       - name: Install SCons
         shell: pwsh
         run: python -m pip install scons
@@ -221,7 +215,7 @@ jobs:
             exit 1
           fi
           export LD_LIBRARY_PATH="$extension_dir${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          ./godot-ci/Godot_v4.5-stable_linux.x86_64 --path ./tests --headless --audio-driver Dummy --display-driver headless
+          ./godot-ci/Godot_v4.5-stable_linux.x86_64 --path ./tests --headless --audio-driver Dummy --display-driver headless -v
 
   docs:
     name: Check generated documentation
