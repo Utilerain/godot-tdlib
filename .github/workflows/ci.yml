@@ -297,12 +297,10 @@ jobs:
         run: |
           for target in template_debug template_release; do
             for arch in x86_32 x86_64 arm32 arm64; do
-              for debug_symbols in yes no; do
               docker run --rm \
                 --volume "$GITHUB_WORKSPACE:/build" \
                 godot-tdlib-android-builder \
                 scons -j"$(nproc)" platform=android target="$target" arch="$arch" debug_symbols="$debug_symbols"
-              done
             done
           done
 
