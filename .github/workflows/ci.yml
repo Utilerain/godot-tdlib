@@ -73,6 +73,12 @@ jobs:
             thirdparty/tdlib_win_x86_64
           key: tdlib-windows-v2-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
           fail-on-cache-miss: true
+      
+      - name: Cache GDExtension
+        uses: actions/cache@v4
+        with:
+          path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64
+          key: gdextension-windows-${{ hashFiles('./SConstruct') }}-${{ hashFiles('./build_profile.json') }}
 
       - name: Build GDExtension
         shell: pwsh
@@ -84,12 +90,6 @@ jobs:
           name: godot-tdlib-windows-debug-release
           path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64/*
           if-no-files-found: error
-
-      - name: Cache GDExtension for documentation
-        uses: actions/cache/save@v4
-        with:
-          path: addons/godot-tdlib/bin/godot_tdlib_win_x86_64
-          key: gdextension-windows-${{ github.sha }}
 
       - name: Download Godot
         shell: pwsh
@@ -175,6 +175,12 @@ jobs:
           path: thirdparty/tdlib_linux_x86_64
           key: tdlib-linux-${{ hashFiles('thirdparty/build.sh') }}-${{ hashFiles('thirdparty/td/CMakeLists.txt') }}
 
+      - name: Cache GDExtension
+        uses: actions/cache@v4
+        with:
+          path: addons/godot-tdlib/bin/godot_tdlib_linux_x86_64
+          key: gdextension-linux-${{ hashFiles('./SConstruct') }}-${{ hashFiles('./build_profile.json') }}
+      
       - name: Build GDExtension
         run: |
           scons -j"$(nproc)" platform=linux target=template_debug
@@ -233,7 +239,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: generated-godot-docs
+          name: generation-check-results
           path: generated-docs
           if-no-files-found: warn
 
