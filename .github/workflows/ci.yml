@@ -225,8 +225,7 @@ jobs:
             exit 1
           fi
           export LD_LIBRARY_PATH="$extension_dir${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          ./godot-ci/Godot_v4.5-stable_linux.x86_64 --path ./tests --headless --audio-driver Dummy --display-driver headless
-          LASTERRCODE=$?
+          ./godot-ci/Godot_v4.5-stable_linux.x86_64 --path ./tests --headless --audio-driver Dummy --display-driver headless || LASTERRCODE=$?
           if [$LASTERRCODE -eq 134]; then
             echo "Warning: catched error 134 on exit"
             exit 0
