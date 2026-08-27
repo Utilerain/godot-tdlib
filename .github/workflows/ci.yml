@@ -68,17 +68,6 @@ jobs:
           key: tdlib-windows-v2-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
           fail-on-cache-miss: true
       
-      - name: Cache GDExtension
-        uses: actions/cache@v4
-        with:
-          path: | 
-            addons/godot-tdlib/bin/godot_tdlib_win_x86_64
-            ./.sconsign.dblite
-            ./src/*.obj
-            ./src/gen/*.cpp
-            ./src/gen/*.obj
-          key: gdextension-windows-${{ hashFiles('./SConstruct') }}-${{ hashFiles('./build_profile.json') }}
-
       - name: Build GDExtension
         shell: pwsh
         run: scons target=template_debug && scons target=template_release
@@ -173,17 +162,6 @@ jobs:
         with:
           path: thirdparty/tdlib_linux_x86_64
           key: tdlib-linux-${{ hashFiles('thirdparty/build.sh') }}-${{ hashFiles('thirdparty/td/CMakeLists.txt') }}
-
-      - name: Cache GDExtension
-        uses: actions/cache@v4
-        with:
-          path: | 
-            addons/godot-tdlib/bin/godot_tdlib_linux_x86_64
-            ./.sconsign.dblite
-            ./src/*.so
-            ./src/gen/*.cpp
-            ./src/gen/*.so
-          key: gdextension-linux-${{ hashFiles('./SConstruct') }}-${{ hashFiles('./build_profile.json') }}
       
       - name: Build GDExtension
         run: |
@@ -226,11 +204,12 @@ jobs:
           fi
           export LD_LIBRARY_PATH="$extension_dir${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           ./godot-ci/Godot_v4.5-stable_linux.x86_64 --path ./tests --headless --audio-driver Dummy --display-driver headless || LASTERRCODE=$?
-          if [ $LASTERRCODE -eq 134 ]; then
+
+          if [ "${LASTERRCODE:-0}" -eq 134 ]; then
             echo "Warning: catched error 134 on exit"
             exit 0
           else
-            exit $LASTERRCODE
+            exit ${LASTERRCODE:-0}
           fi
 
   docs:
