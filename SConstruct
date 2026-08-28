@@ -101,7 +101,7 @@ elif env["platform"] == "linux":
 elif env["platform"] == "android":
     source_lib = "thirdparty/tdlib_android/builds/tdlib/libs/{}/libtdjson.so".format(android_archs[env["arch"]])
 
-    env.Append(LINKFLAGS=["-Wl,-rpath,'$$ORIGIN'"])
+    env.Append(LINKFLAGS=["-Wl,-rpath,'$$ORIGIN'", "-Wl,-z,max-page-size=65536", "-Wl,-z,common-page-size=16384"])
 
     inst_bin = env.Install(dest_dir, source_lib)
     env.Depends(library, inst_bin)
