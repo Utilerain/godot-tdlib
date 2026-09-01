@@ -271,14 +271,8 @@ jobs:
 
       - name: Build Android GDExtension
         run: |
-          for target in template_debug template_release; do
-            for arch in x86_32 x86_64 arm32 arm64; do
-              docker run --rm \
-                --volume "$GITHUB_WORKSPACE:/build" \
-                godot-tdlib-android-builder \
-                scons -j"$(nproc)" platform=android target="$target" arch="$arch"
-            done
-          done
+          sh ./scripts/android/build_release_allarchs.sh
+          sh ./scripts/android/build_debug_allarchs.sh
 
       - name: Upload Android GDExtension
         uses: actions/upload-artifact@v4
