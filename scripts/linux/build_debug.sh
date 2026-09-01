@@ -1,1 +1,1 @@
-scons target=template_release
+scons target=template_debug
