@@ -319,6 +319,8 @@ void TdJson::stop_poll()
             worker_thread->wait_to_finish();
         }
     }
+
+    worker_thread.unref();
 }
 
 bool TdJson::is_running()
