@@ -63,18 +63,16 @@ Dictionary TdJson::execute(Dictionary request)
  */
 Dictionary TdJson::receive(double timeout)
 {
+    _mutex->lock();
     const char *response = td_receive(timeout);
 
     if (response == nullptr)
     {
         return Dictionary();
     }
-
-    _mutex.lock();
-
     Dictionary parsed_response = Dictionary(JSON::parse_string(String(response)));
     call_deferred("emit_signal", "request_received", parsed_response);
-    _mutex.unlock();
+    _mutex->unlock();
     return parsed_response;
 }
 
@@ -131,6 +129,7 @@ TdJson::TdJson()
 {
     client_id = td_create_client_id();
     _set_log_message_callback();
+    _mutex.instantiate();
 }
 
 int TdJson::get_client_id()
