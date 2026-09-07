@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   windows_tdlib:
-    name: Windows TDLib
+    name: Windows TDLib build
     runs-on: windows-latest
     steps:
       - name: Checkout submodules
@@ -44,7 +44,7 @@ jobs:
           name: tdlib-windows
 
   windows:
-    name: Windows extension and tests
+    name: Windows GDExtension build and tests
     needs: windows_tdlib
     runs-on: windows-latest
     steps:
@@ -112,7 +112,7 @@ jobs:
           .\godot-ci\Godot_v4.5-stable_win64.exe --path .\tests --headless --audio-driver Dummy --display-driver headless
 
   linux_tdlib:
-    name: Linux TDLib
+    name: Linux TDLib build
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout submodules
@@ -148,7 +148,7 @@ jobs:
           name: tdlib-linux
 
   linux:
-    name: Linux extension and tests
+    name: Linux build GDExtension and tests
     needs: linux_tdlib
     runs-on: ubuntu-22.04
     steps:
@@ -246,7 +246,7 @@ jobs:
           if-no-files-found: warn
 
   android:
-    name: Android build
+    name: Android TDLib build (all archs)
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout submodules
