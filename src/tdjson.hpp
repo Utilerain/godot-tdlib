@@ -41,14 +41,14 @@ namespace godot
         void set_bot_token(String bot_token);
 
     private:
-        int client_id;
+        int _client_id;
         void _set_log_message_callback();
-        int max_verbosity_level = 4;
+        int _max_verbosity_level = 4;
         void _set_tdlib_parameters(Dictionary p_response, Dictionary p_parameters);
         void _thread_poll();
         void _set_bot_token(Dictionary p_response, Dictionary p_parameters);
-        static Callable *log_callback;
-        Ref<Thread> worker_thread;
+        static Callable *_log_callback;
+        Ref<Thread> _worker_thread;
         std::atomic<bool> _is_running{false};
         Ref<Mutex> _mutex;
     };
