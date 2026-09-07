@@ -36,6 +36,13 @@ jobs:
         shell: pwsh
         working-directory: thirdparty
         run: .\build.ps1
+      
+      - name: Upload TDLib
+        uses: actions/upload-artifact@v4
+        with:
+          path: thirdparty/tdlib_win_x86_64
+          name: tdlib-windows
+
   windows:
     name: Windows extension and tests
     needs: windows_tdlib
@@ -133,6 +140,12 @@ jobs:
           else
             echo "Using cached Linux TDLib build"
           fi
+      
+      - name: Upload TDLib
+        uses: actions/upload-artifact@v4
+        with:
+          path: thirdparty/tdlib_linux_x86_64
+          name: tdlib-linux
 
   linux:
     name: Linux extension and tests
@@ -264,19 +277,4 @@ jobs:
         with:
           name: tdlib-android
           path: thirdparty/tdlib_android/builds/tdlib/libs/
-          if-no-files-found: error
-
-      - name: Build Android GDExtension image
-        run: docker build --tag godot-tdlib-android-builder .
-
-      - name: Build Android GDExtension
-        run: |
-          sh ./scripts/android/build_release_allarchs.sh
-          sh ./scripts/android/build_debug_allarchs.sh
-
-      - name: Upload Android GDExtension
-        uses: actions/upload-artifact@v4
-        with:
-          name: godot-tdlib-android-debug-release
-          path: addons/godot-tdlib/bin
           if-no-files-found: error
