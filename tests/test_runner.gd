@@ -1,5 +1,6 @@
 extends Node
 
+const TDLIB_VERSION = "1.8.67"
 var failures := 0
 var received_count := 0
 var last_response: Dictionary
@@ -29,6 +30,7 @@ func run_tests() -> void:
 	client.set_verbosity_level(0)
 	check(client.get_client_id() > 0, "client id is allocated")
 	check(client.is_running() == false, "polling is stopped by default")
+	check(client.get_tdlib_version() == TDLIB_VERSION, "TDLib version is valid")
 
 	var version: String = client.get_tdlib_version()
 	check(not version.is_empty(), "TDLib version is available through execute")
