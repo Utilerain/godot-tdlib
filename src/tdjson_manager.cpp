@@ -2,7 +2,7 @@
  * Most of the comments are taken from include\td\telegram\td_json_client.h
  */
 
-#include "tdjson.hpp"
+#include "tdjson_manager.hpp"
 
 #include <atomic>
 
@@ -22,7 +22,7 @@ using namespace godot;
  * Sends request to the TDLib client. May be called from any thread.
  * \param[in] request JSON-serialized null-terminated request to TDLib.
  */
-void TdJson::send(Dictionary p_request)
+void TdJsonManager::send(Dictionary p_request)
 {
     String _req = JSON::stringify(p_request);
     td_send(_client_id, _req.utf8().get_data());
@@ -35,7 +35,7 @@ void TdJson::send(Dictionary p_request)
  * \param[in] request JSON-serialized null-terminated request to TDLib.
  * \return JSON-serialized null-terminated request response.
  */
-Dictionary TdJson::execute(Dictionary p_request)
+Dictionary TdJsonManager::execute(Dictionary p_request)
 {
     String _req = JSON::stringify(p_request);
     const char *_resp = td_execute(_req.utf8().get_data());
@@ -61,7 +61,7 @@ Dictionary TdJson::execute(Dictionary p_request)
  * \return JSON-serialized null-terminated incoming update or request response. May be NULL if the timeout expires.
  * \attention This function will crash your program without creating thread. So you should use function Thread.start()
  */
-Dictionary TdJson::receive(double p_timeout)
+Dictionary TdJsonManager::receive(double p_timeout)
 {
     _mutex->lock();
     const char *_resp = td_receive(p_timeout);
@@ -77,7 +77,7 @@ Dictionary TdJson::receive(double p_timeout)
 }
 
 // Logs message output for godot console
-void TdJson::_set_log_message_callback()
+void TdJsonManager::_set_log_message_callback()
 {
     td_set_log_message_callback(_max_verbosity_level, [](int verbosity_level, const char *message)
                                 {
@@ -88,11 +88,11 @@ void TdJson::_set_log_message_callback()
         } });
 }
 
-Callable *TdJson::_log_callback;
+Callable *TdJsonManager::_log_callback;
 
 // Sets the callback that will be called when a message is added to the internal TDLib log.
 // None of the TDLib methods can be called from the callback. By default the callback is set in set_log_message_callback
-void TdJson::set_log_callback(Callable p_callback)
+void TdJsonManager::set_log_callback(Callable p_callback)
 {
     if (_log_callback)
     {
@@ -109,14 +109,14 @@ void TdJson::set_log_callback(Callable p_callback)
 }
 
 // Sets the maximum verbosity level for TDLib log messages. Can be called from any thread.
-void TdJson::set_max_verbosity_level(int p_verbosity_level)
+void TdJsonManager::set_max_verbosity_level(int p_verbosity_level)
 {
     _max_verbosity_level = p_verbosity_level;
     _set_log_message_callback();
 }
 
 // Sets the verbosity level for TDLib log messages. Can be called from any thread.
-void TdJson::set_verbosity_level(int p_new_verbosity_level)
+void TdJsonManager::set_verbosity_level(int p_new_verbosity_level)
 {
     Dictionary _dict;
     _dict["@type"] = "setLogVerbosityLevel";
@@ -125,14 +125,14 @@ void TdJson::set_verbosity_level(int p_new_verbosity_level)
     td_execute(_req.utf8().get_data());
 }
 
-TdJson::TdJson()
+TdJsonManager::TdJsonManager()
 {
     _client_id = td_create_client_id();
     _set_log_message_callback();
     _mutex.instantiate();
 }
 
-int TdJson::get_client_id()
+int TdJsonManager::get_client_id()
 {
     return _client_id;
 }
@@ -152,7 +152,7 @@ int TdJson::get_client_id()
  * \param[in] system_language_code IETF language tag of the user's operating system language; By default uses locale language of the OS.
  * \param[in] system_version Version of the operating system the application is being run on; by default uses OS version.
  */
-void TdJson::set_tdlib_parameters(
+void TdJsonManager::set_tdlib_parameters(
     int p_api_id,
     String p_api_hash,
     String p_application_version,
@@ -203,7 +203,7 @@ void TdJson::set_tdlib_parameters(
 }
 
 // \return Current version of the tdlib
-String TdJson::get_tdlib_version()
+String TdJsonManager::get_tdlib_version()
 {
     Dictionary _req;
     _req["@type"] = "getOption";
@@ -211,7 +211,7 @@ String TdJson::get_tdlib_version()
     return String(execute(_req).get("value", ""));
 }
 
-void TdJson::_set_tdlib_parameters(Dictionary p_response, Dictionary p_parameters)
+void TdJsonManager::_set_tdlib_parameters(Dictionary p_response, Dictionary p_parameters)
 {
     String _type = p_response.get("@type", "");
     if (_type != "updateAuthorizationState")
@@ -233,7 +233,7 @@ void TdJson::_set_tdlib_parameters(Dictionary p_response, Dictionary p_parameter
 
 const double POLL_TIMEOUT = 10.0;
 
-void TdJson::_thread_poll()
+void TdJsonManager::_thread_poll()
 {
     bool _closing = false;
     while (_is_running.load() || _closing)
@@ -260,7 +260,7 @@ void TdJson::_thread_poll()
     }
 }
 
-void godot::TdJson::_set_bot_token(Dictionary p_response, Dictionary p_parameters)
+void godot::TdJsonManager::_set_bot_token(Dictionary p_response, Dictionary p_parameters)
 {
     String _type = p_response.get("@type", "");
     if (_type != "updateAuthorizationState")
@@ -281,7 +281,7 @@ void godot::TdJson::_set_bot_token(Dictionary p_response, Dictionary p_parameter
 }
 
 // Starts the TDLib client.
-void TdJson::start_poll()
+void TdJsonManager::start_poll()
 {
     if (_is_running.load()) {
         return;
@@ -304,7 +304,7 @@ void TdJson::start_poll()
 }
 
 // Stops the TDLib client.
-void TdJson::stop_poll()
+void TdJsonManager::stop_poll()
 {
     if (_is_running.load() && !_worker_thread.is_null())
     {
@@ -322,13 +322,13 @@ void TdJson::stop_poll()
     _worker_thread.unref();
 }
 
-bool TdJson::is_running()
+bool TdJsonManager::is_running()
 {
     return _is_running.load();
 }
 
 // Sets the bot token for the TDLib client. Can be used instead of user authentication. The bot token can be obtained from @BotFather.
-void godot::TdJson::set_bot_token(String bot_token)
+void godot::TdJsonManager::set_bot_token(String bot_token)
 {
     Dictionary _req;
     _req["@type"] = "checkAuthenticationBotToken";
@@ -338,21 +338,21 @@ void godot::TdJson::set_bot_token(String bot_token)
 }
 
 // Bindings for godot
-void TdJson::_bind_methods()
+void TdJsonManager::_bind_methods()
 {
     // public methods
-    ClassDB::bind_method(D_METHOD("send", "request"), &TdJson::send);
-    ClassDB::bind_method(D_METHOD("receive", "timeout"), &TdJson::receive);
-    ClassDB::bind_method(D_METHOD("execute", "request"), &TdJson::execute);
-    ClassDB::bind_method(D_METHOD("set_max_verbosity_level", "verbosity_level"), &TdJson::set_max_verbosity_level);
-    ClassDB::bind_method(D_METHOD("get_client_id"), &TdJson::get_client_id);
-    ClassDB::bind_method(D_METHOD("set_verbosity_level", "new_verbosity_level"), &TdJson::set_verbosity_level);
-    ClassDB::bind_method(D_METHOD("set_log_callback", "callback"), &TdJson::set_log_callback);
-    ClassDB::bind_method(D_METHOD("get_tdlib_version"), &TdJson::get_tdlib_version);
-    ClassDB::bind_method(D_METHOD("start_poll"), &TdJson::start_poll);
-    ClassDB::bind_method(D_METHOD("stop_poll"), &TdJson::stop_poll);
-    ClassDB::bind_method(D_METHOD("is_running"), &TdJson::is_running);
-    ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJson::set_bot_token);
+    ClassDB::bind_method(D_METHOD("send", "request"), &TdJsonManager::send);
+    ClassDB::bind_method(D_METHOD("receive", "timeout"), &TdJsonManager::receive);
+    ClassDB::bind_method(D_METHOD("execute", "request"), &TdJsonManager::execute);
+    ClassDB::bind_method(D_METHOD("set_max_verbosity_level", "verbosity_level"), &TdJsonManager::set_max_verbosity_level);
+    ClassDB::bind_method(D_METHOD("get_client_id"), &TdJsonManager::get_client_id);
+    ClassDB::bind_method(D_METHOD("set_verbosity_level", "new_verbosity_level"), &TdJsonManager::set_verbosity_level);
+    ClassDB::bind_method(D_METHOD("set_log_callback", "callback"), &TdJsonManager::set_log_callback);
+    ClassDB::bind_method(D_METHOD("get_tdlib_version"), &TdJsonManager::get_tdlib_version);
+    ClassDB::bind_method(D_METHOD("start_poll"), &TdJsonManager::start_poll);
+    ClassDB::bind_method(D_METHOD("stop_poll"), &TdJsonManager::stop_poll);
+    ClassDB::bind_method(D_METHOD("is_running"), &TdJsonManager::is_running);
+    ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJsonManager::set_bot_token);
     ClassDB::bind_method(
         D_METHOD("set_tdlib_parameters",
                  "api_id",
@@ -367,7 +367,7 @@ void TdJson::_bind_methods()
                  "use_secret_chats",
                  "system_language_code",
                  "system_version"),
-        &TdJson::set_tdlib_parameters,
+        &TdJsonManager::set_tdlib_parameters,
         DEFVAL(String("user://tdlib_data")),
         DEFVAL(false),
         DEFVAL(String("")),
@@ -378,15 +378,15 @@ void TdJson::_bind_methods()
         DEFVAL(String("")));
 
     // private methods
-    ClassDB::bind_method(D_METHOD("_set_bot_token", "p_response", "p_parameters"), &TdJson::_set_bot_token);
-    ClassDB::bind_method(D_METHOD("_thread_poll"), &TdJson::_thread_poll);
-    ClassDB::bind_method(D_METHOD("_set_tdlib_parameters", "p_response", "p_parameters"), &TdJson::_set_tdlib_parameters);
+    ClassDB::bind_method(D_METHOD("_set_bot_token", "p_response", "p_parameters"), &TdJsonManager::_set_bot_token);
+    ClassDB::bind_method(D_METHOD("_thread_poll"), &TdJsonManager::_thread_poll);
+    ClassDB::bind_method(D_METHOD("_set_tdlib_parameters", "p_response", "p_parameters"), &TdJsonManager::_set_tdlib_parameters);
     
     // signals
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
 }
 
-TdJson::~TdJson()
+TdJsonManager::~TdJsonManager()
 {
     stop_poll();
     td_set_log_message_callback(0, nullptr);

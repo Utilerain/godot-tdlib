@@ -8,6 +8,7 @@
         "OS",
 		"ProjectSettings",
 		"Thread",
-		"Mutex"
+		"Mutex",
+		"Object"
 	]
 }

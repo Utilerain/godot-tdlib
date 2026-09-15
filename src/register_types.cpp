@@ -1,5 +1,5 @@
 #include "register_types.hpp"
-#include "tdjson.hpp"
+#include "tdjson_manager.hpp"
 #include <godot_cpp/godot.hpp>
 #include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>
@@ -11,7 +11,7 @@ void initialize_telegram_module(godot::ModuleInitializationLevel p_level)
         return;
     }
 
-    godot::ClassDB::register_class<godot::TdJson>();
+    godot::ClassDB::register_class<godot::TdJsonManager>();
 }
 
 void uninitialize_telegram_module(godot::ModuleInitializationLevel p_level)

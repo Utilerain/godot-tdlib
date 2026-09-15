@@ -1,19 +1,19 @@
-#include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/classes/thread.hpp>
 #include <atomic>
 #include <godot_cpp/classes/mutex.hpp>
 
 namespace godot
 {
-    class TdJson : public RefCounted
+    class TdJsonManager : public Object
     {
-        GDCLASS(TdJson, RefCounted)
+        GDCLASS(TdJsonManager, Object)
     protected:
         static void _bind_methods();
 
     public:
-        TdJson();
-        ~TdJson();
+        TdJsonManager();
+        ~TdJsonManager();
         void send(Dictionary request);
         Dictionary execute(Dictionary request);
         Dictionary receive(double timeout);
@@ -39,6 +39,7 @@ namespace godot
         void stop_poll();
         bool is_running();
         void set_bot_token(String bot_token);
+        
 
     private:
         int _client_id;
