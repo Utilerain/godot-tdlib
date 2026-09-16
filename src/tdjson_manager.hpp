@@ -14,13 +14,11 @@ namespace godot
     public:
         TdJsonManager();
         ~TdJsonManager();
-        void send(Dictionary request);
         Dictionary execute(Dictionary request);
         Dictionary receive(double timeout);
         void set_max_verbosity_level(int verbosity_level);
         void set_verbosity_level(int new_verbosity_level);
         void set_log_callback(Callable callback);
-        int get_client_id();
         void set_tdlib_parameters(
             int p_api_id,
             String p_api_hash,
@@ -38,19 +36,21 @@ namespace godot
         void start_poll();
         void stop_poll();
         bool is_running();
-        void set_bot_token(String bot_token);
-        
+        static TdJsonManager *get_singleton();
+        TdClient *create_client();
+        void register_client(TdClient *client);
+        void unregister_client(TdClient *client);
 
     private:
-        int _client_id;
         void _set_log_message_callback();
         int _max_verbosity_level = 4;
         void _set_tdlib_parameters(Dictionary p_response, Dictionary p_parameters);
         void _thread_poll();
-        void _set_bot_token(Dictionary p_response, Dictionary p_parameters);
         static Callable *_log_callback;
         Ref<Thread> _worker_thread;
         std::atomic<bool> _is_running{false};
         Ref<Mutex> _mutex;
+        static TdJsonManager *_instance;
+        std::unordered_map<int, TdClient*> _clients;
     };
 }

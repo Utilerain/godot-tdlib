@@ -19,16 +19,6 @@
 using namespace godot;
 
 /**
- * Sends request to the TDLib client. May be called from any thread.
- * \param[in] request JSON-serialized null-terminated request to TDLib.
- */
-void TdJsonManager::send(Dictionary p_request)
-{
-    String _req = JSON::stringify(p_request);
-    td_send(_client_id, _req.utf8().get_data());
-}
-
-/**
  * Synchronously executes a TDLib request.
  * A request can be executed synchronously, only if it is documented with "Can be called synchronously".
  * The returned pointer can be used until the next call to td_receive or td_execute, after which it will be deallocated by TDLib.
@@ -127,15 +117,11 @@ void TdJsonManager::set_verbosity_level(int p_new_verbosity_level)
 
 TdJsonManager::TdJsonManager()
 {
-    _client_id = td_create_client_id();
+    _instance = this;
     _set_log_message_callback();
     _mutex.instantiate();
 }
 
-int TdJsonManager::get_client_id()
-{
-    return _client_id;
-}
 
 /**
  * Alias to setTdlibParameters. Sets the parameters for TDLib initialization.
@@ -260,25 +246,7 @@ void TdJsonManager::_thread_poll()
     }
 }
 
-void godot::TdJsonManager::_set_bot_token(Dictionary p_response, Dictionary p_parameters)
-{
-    String _type = p_response.get("@type", "");
-    if (_type != "updateAuthorizationState")
-    {
-        return;
-    }
 
-    Dictionary _auth_state = p_response.get("authorization_state", Dictionary());
-    String _auth_type = _auth_state.get("@type", "");
-
-    if (_auth_type != "authorizationStateWaitPhoneNumber")
-    {
-        return;
-    }
-
-    send(p_parameters);
-    disconnect("request_received", Callable(this, "_set_bot_token"));
-}
 
 // Starts the TDLib client.
 void TdJsonManager::start_poll()
@@ -327,14 +295,9 @@ bool TdJsonManager::is_running()
     return _is_running.load();
 }
 
-// Sets the bot token for the TDLib client. Can be used instead of user authentication. The bot token can be obtained from @BotFather.
-void godot::TdJsonManager::set_bot_token(String bot_token)
+*godot::TdJsonManager::get_singleton()
 {
-    Dictionary _req;
-    _req["@type"] = "checkAuthenticationBotToken";
-    _req["token"] = bot_token;
-
-    connect("request_received", Callable(this, "_set_bot_token").bind(_req));
+    return _instance;
 }
 
 // Bindings for godot
