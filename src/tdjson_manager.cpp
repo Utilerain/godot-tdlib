@@ -213,7 +213,7 @@ void TdJsonManager::_set_tdlib_parameters(Dictionary p_response, Dictionary p_pa
         return;
     }
 
-    send(p_parameters);
+    _send(p_parameters);
     disconnect("request_received", Callable(this, "_set_tdlib_parameters"));
 }
 
@@ -248,7 +248,7 @@ void TdJsonManager::_thread_poll()
 
 void TdJsonManager::_send(Dictionary p_request)
 {
-
+    String _str_req = JSON::stringify(p_request);
     td_send(1, _str_req.utf8().get_data());
 }
 
@@ -265,7 +265,7 @@ void TdJsonManager::start_poll()
     Dictionary _req;
     _req["@type"] = "getOption";
     _req["name"] = "version";
-    send(_req);
+    _send(_req);
 
     if (_worker_thread.is_null())
     {
@@ -282,7 +282,7 @@ void TdJsonManager::stop_poll()
     {
         Dictionary _req;
         _req["@type"] = "close";
-        send(_req);
+        _send(_req);
         _is_running.store(false);
 
         if (_worker_thread->is_alive())

@@ -5,6 +5,7 @@
 
 namespace godot
 {
+
     class TdJsonManager : public Object
     {
         GDCLASS(TdJsonManager, Object)
@@ -45,6 +46,7 @@ namespace godot
         int _max_verbosity_level = 4;
         void _set_tdlib_parameters(Dictionary p_response, Dictionary p_parameters);
         void _thread_poll();
+        void _send(Dictionary p_request);
         static Callable *_log_callback;
         Ref<Thread> _worker_thread;
         std::atomic<bool> _is_running{false};
