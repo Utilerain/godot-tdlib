@@ -1,8 +1,12 @@
 #include "register_types.hpp"
 #include "tdjson_manager.hpp"
+#include "tdjson_client.hpp"
 #include <godot_cpp/godot.hpp>
 #include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/classes/engine.hpp>
+
+static godot::TdJsonManager *td_json_instance = nullptr;
 
 void initialize_telegram_module(godot::ModuleInitializationLevel p_level)
 {
@@ -13,6 +17,8 @@ void initialize_telegram_module(godot::ModuleInitializationLevel p_level)
 
     godot::ClassDB::register_class<godot::TdJsonManager>();
     godot::ClassDB::register_class<godot::TdJsonClient>();
+    td_json_instance = memnew(godot::TdJsonManager);
+    godot::Engine::get_singleton()->register_singleton("TdJsonManager", godot::TdJsonManager::get_singleton());
 }
 
 void uninitialize_telegram_module(godot::ModuleInitializationLevel p_level)
@@ -20,6 +26,12 @@ void uninitialize_telegram_module(godot::ModuleInitializationLevel p_level)
     if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE)
     {
         return;
+    }
+    godot::Engine::get_singleton()->unregister_singleton("TdJsonManager");
+    
+    if (td_json_instance) {
+        memdelete(td_json_instance);
+        td_json_instance = nullptr;
     }
 }
 

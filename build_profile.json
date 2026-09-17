@@ -9,6 +9,7 @@
 		"ProjectSettings",
 		"Thread",
 		"Mutex",
-		"Object"
+		"Object",
+		"Engine"
 	]
 }

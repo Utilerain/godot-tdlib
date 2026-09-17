@@ -246,7 +246,11 @@ void TdJsonManager::_thread_poll()
     }
 }
 
+void TdJsonManager::_send(Dictionary p_request)
+{
 
+    td_send(1, _str_req.utf8().get_data());
+}
 
 // Starts the TDLib client.
 void TdJsonManager::start_poll()
@@ -295,7 +299,7 @@ bool TdJsonManager::is_running()
     return _is_running.load();
 }
 
-*godot::TdJsonManager::get_singleton()
+TdJsonManager *TdJsonManager::get_singleton()
 {
     return _instance;
 }
@@ -366,5 +370,8 @@ TdJsonManager::~TdJsonManager()
     {
         memdelete(_log_callback);
         _log_callback = nullptr;
+    }
+    if (TdJsonManager::_instance == this) {
+        TdJsonManager::_instance = nullptr;
     }
 }
