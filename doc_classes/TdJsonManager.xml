@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TdJsonManager" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Manages the TDLib JSON client and its polling thread.
+	</brief_description>
+	<description>
+		Provides synchronous TDLib requests, logging configuration, TDLib initialization, and a background polling thread. Use [code]create_client[/code] to create a [code]TdJsonClient[/code] for sending requests and receiving responses.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="create_client">
+			<return type="TdJsonClient" />
+			<description>
+				Creates a TDLib client instance and returns it.
+			</description>
+		</method>
+		<method name="execute">
+			<return type="Dictionary" />
+			<param index="0" name="request" type="Dictionary" />
+			<description>
+				Synchronously executes a TDLib request. A request can be executed synchronously only if it is documented with "Can be called synchronously".
+			</description>
+		</method>
+		<method name="get_tdlib_version">
+			<return type="String" />
+			<description>
+				Returns the Tdlib version. This does not start TDLib.
+			</description>
+		</method>
+		<method name="is_running">
+			<return type="bool" />
+			<description>
+				Returns true if the TDLib client's poll is running.
+			</description>
+		</method>
+		<method name="receive">
+			<return type="Dictionary" />
+			<param index="0" name="timeout" type="float" />
+			<description>
+				Receives incoming updates and request responses. Must not be called simultaneously from two different threads.
+			</description>
+		</method>
+		<method name="remove_client">
+			<return type="void" />
+			<param index="0" name="client" type="TdJsonClient" />
+			<description>
+				Removes and destroys a TDLib client created by [code]create_client[/code].
+			</description>
+		</method>
+		<method name="set_log_callback">
+			<return type="void" />
+			<param index="0" name="callback" type="Callable" />
+			<description>
+				Sets the callback called when a message is added to the internal TDLib log. The callback must accept [code]verbosity_level[/code] and [code]message[/code].
+			</description>
+		</method>
+		<method name="set_max_verbosity_level">
+			<return type="void" />
+			<param index="0" name="verbosity_level" type="int" />
+			<description>
+				Sets the maximum verbosity level for TDLib log callbacks. Level 0 is fatal errors, level 1 errors, level 2 warnings, level 3 informational messages, level 4 debug, and level 5 verbose debug.
+			</description>
+		</method>
+		<method name="set_tdlib_parameters">
+			<return type="void" />
+			<param index="0" name="api_id" type="int" />
+			<param index="1" name="api_hash" type="String" />
+			<param index="2" name="application_version" type="String" />
+			<param index="3" name="device_model" type="String" />
+			<param index="4" name="database_directory" type="String" default="&quot;user://tdlib_data&quot;" />
+			<param index="5" name="use_test_dc" type="bool" default="false" />
+			<param index="6" name="files_directory" type="String" default="&quot;&quot;" />
+			<param index="7" name="use_file_database" type="bool" default="true" />
+			<param index="8" name="use_message_database" type="bool" default="true" />
+			<param index="9" name="use_secret_chats" type="bool" default="true" />
+			<param index="10" name="system_language_code" type="String" default="&quot;&quot;" />
+			<param index="11" name="system_version" type="String" default="&quot;&quot;" />
+			<description>
+				Sets the parameters for TDLib initialization. Activates on [code]authorizationStateWaitTdlibParameters[/code].
+			</description>
+		</method>
+		<method name="set_verbosity_level">
+			<return type="void" />
+			<param index="0" name="new_verbosity_level" type="int" />
+			<description>
+				Sets the verbosity level for TDLib logs.
+			</description>
+		</method>
+		<method name="start_poll">
+			<return type="void" />
+			<description>
+				Starts the TDLib client threaded poll.
+			</description>
+		</method>
+		<method name="stop_poll">
+			<return type="void" />
+			<description>
+				Stops the TDLib client threaded poll.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="request_received">
+			<param index="0" name="response" type="Dictionary" />
+			<description>
+				Emits when [code]receive[/code] receives a response.
+			</description>
+		</signal>
+	</signals>
+</class>

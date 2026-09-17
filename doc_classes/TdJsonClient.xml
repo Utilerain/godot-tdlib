@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TdJsonClient" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		A TDLib JSON client instance.
+	</brief_description>
+	<description>
+		Sends requests to an individual TDLib client and emits responses received by [code]TdJsonManager[/code].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_client_id">
+			<return type="int" />
+			<description>
+				Returns the client ID of the session.
+			</description>
+		</method>
+		<method name="send">
+			<return type="void" />
+			<param index="0" name="request" type="Dictionary" />
+			<description>
+				Sends a request to the TDLib client. May be called from any thread.
+			</description>
+		</method>
+		<method name="set_bot_token">
+			<return type="void" />
+			<param index="0" name="bot_token" type="String" />
+			<description>
+				Sets the authentication token of a bot and logs in when TDLib reaches [code]authorizationStateWaitPhoneNumber[/code].
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="response_received">
+			<param index="0" name="client_id" type="int" />
+			<param index="1" name="response" type="Dictionary" />
+			<description>
+				Emits when a response or update is received for this client.
+			</description>
+		</signal>
+	</signals>
+</class>
