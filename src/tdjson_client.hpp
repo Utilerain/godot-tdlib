@@ -17,7 +17,7 @@ namespace godot
         void set_bot_token(String p_bot_token);
     
     private:
-        int _client_id;
+        int _client_id = 0;
         void _set_bot_token(Dictionary p_response, Dictionary p_parameters);
-    }
+    };
 }

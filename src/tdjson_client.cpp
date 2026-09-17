@@ -1,8 +1,11 @@
 #include "tdjson_client.hpp"
 
 #include <godot_cpp/classes/json.hpp>
+#include <godot_cpp/godot.hpp>
 
 #include <td/telegram/td_json_client.h>
+
+using namespace godot;
 
 TdJsonClient::TdJsonClient(int p_client_id)
 {
@@ -27,11 +30,12 @@ int TdJsonClient::get_client_id()
 
 void TdJsonClient::_on_response(Dictionary p_response)
 {
-    if (_client_id != 0 && p_response.get("client_id", 0) != _client_id)
+    int _id = p_response.get("client_id", 0);
+    if (_client_id == 0 || _id != _client_id)
     {
         return;
     }
-    emit_signal("response_received", p_response);
+    emit_signal("response_received", _client_id, p_response);
 }
 
 void TdJsonClient::_set_bot_token(Dictionary p_response, Dictionary p_parameters)
@@ -70,4 +74,6 @@ void TdJsonClient::_bind_methods()
     ClassDB::bind_method(D_METHOD("get_client_id"), &TdJsonClient::get_client_id);
     ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJsonClient::set_bot_token);
     ClassDB::bind_method(D_METHOD("_set_bot_token", "p_response", "p_parameters"), &TdJsonClient::_set_bot_token);
+
+    ADD_SIGNAL(MethodInfo("response_received", PropertyInfo(Variant::INT, "client_id"), PropertyInfo(Variant::DICTIONARY, "response")));
 }
