@@ -300,22 +300,32 @@ bool TdJsonManager::is_running()
     return _instance;
 }
 
+TdJsonClient *TdJsonManager::create_client()
+{
+    TdJsonClient *client = memnew(TdJsonClient);
+    _clients[client->get_client_id()] = client;
+    return client;
+}
+
+void TdJsonManager::remove_client(TdJsonClient *client)
+{
+    _clients.erase(client->get_client_id());
+    memdelete(client);
+}
+
 // Bindings for godot
 void TdJsonManager::_bind_methods()
 {
     // public methods
-    ClassDB::bind_method(D_METHOD("send", "request"), &TdJsonManager::send);
     ClassDB::bind_method(D_METHOD("receive", "timeout"), &TdJsonManager::receive);
     ClassDB::bind_method(D_METHOD("execute", "request"), &TdJsonManager::execute);
     ClassDB::bind_method(D_METHOD("set_max_verbosity_level", "verbosity_level"), &TdJsonManager::set_max_verbosity_level);
-    ClassDB::bind_method(D_METHOD("get_client_id"), &TdJsonManager::get_client_id);
     ClassDB::bind_method(D_METHOD("set_verbosity_level", "new_verbosity_level"), &TdJsonManager::set_verbosity_level);
     ClassDB::bind_method(D_METHOD("set_log_callback", "callback"), &TdJsonManager::set_log_callback);
     ClassDB::bind_method(D_METHOD("get_tdlib_version"), &TdJsonManager::get_tdlib_version);
     ClassDB::bind_method(D_METHOD("start_poll"), &TdJsonManager::start_poll);
     ClassDB::bind_method(D_METHOD("stop_poll"), &TdJsonManager::stop_poll);
     ClassDB::bind_method(D_METHOD("is_running"), &TdJsonManager::is_running);
-    ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJsonManager::set_bot_token);
     ClassDB::bind_method(
         D_METHOD("set_tdlib_parameters",
                  "api_id",
@@ -341,7 +351,6 @@ void TdJsonManager::_bind_methods()
         DEFVAL(String("")));
 
     // private methods
-    ClassDB::bind_method(D_METHOD("_set_bot_token", "p_response", "p_parameters"), &TdJsonManager::_set_bot_token);
     ClassDB::bind_method(D_METHOD("_thread_poll"), &TdJsonManager::_thread_poll);
     ClassDB::bind_method(D_METHOD("_set_tdlib_parameters", "p_response", "p_parameters"), &TdJsonManager::_set_tdlib_parameters);
     

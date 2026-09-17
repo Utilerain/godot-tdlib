@@ -37,9 +37,8 @@ namespace godot
         void stop_poll();
         bool is_running();
         static TdJsonManager *get_singleton();
-        TdClient *create_client();
-        void register_client(TdClient *client);
-        void unregister_client(TdClient *client);
+        TdJsonClient *create_client();
+        void remove_client(TdJsonClient *client);
 
     private:
         void _set_log_message_callback();
