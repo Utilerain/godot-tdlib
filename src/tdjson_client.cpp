@@ -66,5 +66,8 @@ void TdJsonClient::set_bot_token(String bot_token)
 
 void TdJsonClient::_bind_methods()
 {
-    
+    ClassDB::bind_method(D_METHOD("send", "request"), &TdJsonClient::send);
+    ClassDB::bind_method(D_METHOD("get_client_id"), &TdJsonClient::get_client_id);
+    ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJsonClient::set_bot_token);
+    ClassDB::bind_method(D_METHOD("_set_bot_token", "p_response", "p_parameters"), &TdJsonClient::_set_bot_token);
 }
