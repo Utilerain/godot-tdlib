@@ -12,6 +12,7 @@ void initialize_telegram_module(godot::ModuleInitializationLevel p_level)
     }
 
     godot::ClassDB::register_class<godot::TdJsonManager>();
+    godot::ClassDB::register_class<godot::TdJsonClient>();
 }
 
 void uninitialize_telegram_module(godot::ModuleInitializationLevel p_level)
