@@ -5,6 +5,7 @@
 
 namespace godot
 {
+    class TdJsonClient;
 
     class TdJsonManager : public Object
     {
@@ -51,7 +52,7 @@ namespace godot
         Ref<Thread> _worker_thread;
         std::atomic<bool> _is_running{false};
         Ref<Mutex> _mutex;
-        static TdJsonManager *_instance;
-        std::unordered_map<int, TdClient*> _clients;
+        static inline TdJsonManager *_instance = nullptr;
+        std::unordered_map<int, TdJsonClient*> _clients;
     };
 }

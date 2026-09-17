@@ -3,6 +3,7 @@
  */
 
 #include "tdjson_manager.hpp"
+#include "tdjson_client.hpp"
 
 #include <atomic>
 
@@ -306,8 +307,10 @@ TdJsonManager *TdJsonManager::get_singleton()
 
 TdJsonClient *TdJsonManager::create_client()
 {
-    TdJsonClient *client = memnew(TdJsonClient);
+    TdJsonClient *client = memnew(TdJsonClient(td_create_client_id()));
     _clients[client->get_client_id()] = client;
+
+    connect("request_received", Callable(client, "_on_response"));
     return client;
 }
 
@@ -353,11 +356,13 @@ void TdJsonManager::_bind_methods()
         DEFVAL(true),
         DEFVAL(String("")),
         DEFVAL(String("")));
+    ClassDB::bind_method(D_METHOD("create_client"), &TdJsonManager::create_client);
+    ClassDB::bind_method(D_METHOD("remove_client", "client"), &TdJsonManager::remove_client);
 
     // private methods
     ClassDB::bind_method(D_METHOD("_thread_poll"), &TdJsonManager::_thread_poll);
     ClassDB::bind_method(D_METHOD("_set_tdlib_parameters", "p_response", "p_parameters"), &TdJsonManager::_set_tdlib_parameters);
-    
+
     // signals
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
 }
