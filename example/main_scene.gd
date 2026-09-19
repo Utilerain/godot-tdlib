@@ -74,4 +74,6 @@ func _logout():
 	})
 	var resp = await TdlibSingleton.search_for_state("ok", 3.0)
 	if not resp.is_empty():
+		TdJsonManager.remove_client(TdlibSingleton.client)
+		TdlibSingleton.client = TdJsonManager.create_client()
 		get_tree().change_scene_to_file("res://login_scene.tscn")

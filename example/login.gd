@@ -9,6 +9,7 @@ extends Control
 @onready var login_label := $LoginContainer/Label
 
 func _ready() -> void:
+	TdlibSingleton.client = TdJsonManager.create_client()
 	TdlibSingleton.wait_for_phone_number.connect(_phone_number_wait)
 	TdlibSingleton.wait_for_password.connect(_pass_wait)
 	TdlibSingleton.wait_for_auth_code.connect(_code_wait)
