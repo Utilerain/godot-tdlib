@@ -266,7 +266,10 @@ void TdJsonManager::start_poll()
     Dictionary _req;
     _req["@type"] = "getOption";
     _req["name"] = "version";
-    _send(_req);
+    for (auto &[client_id, client] : _clients)
+    {
+        client->send(_req);
+    }
 
     if (_worker_thread.is_null())
     {
@@ -283,7 +286,10 @@ void TdJsonManager::stop_poll()
     {
         Dictionary _req;
         _req["@type"] = "close";
-        _send(_req);
+        for (auto &[client_id, client] : _clients)
+        {
+            client->send(_req);
+        }
         _is_running.store(false);
 
         if (_worker_thread->is_alive())
@@ -311,13 +317,20 @@ TdJsonClient *TdJsonManager::create_client()
     _clients[client->get_client_id()] = client;
 
     connect("request_received", Callable(client, "_on_response"));
+    if (is_running())
+    {
+        Dictionary _req;
+        _req["@type"] = "getOption";
+        _req["name"] = "version";
+        client->send(_req);
+    }
     return client;
 }
 
 void TdJsonManager::remove_client(TdJsonClient *client)
 {
     _clients.erase(client->get_client_id());
-    memdelete(client);
+    client = nullptr;
 }
 
 // Bindings for godot
