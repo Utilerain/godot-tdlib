@@ -1,4 +1,6 @@
 #include "tdjson_client.hpp"
+#include "tdjson_manager.hpp"
+
 
 #include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/godot.hpp>
@@ -68,12 +70,24 @@ void TdJsonClient::set_bot_token(String bot_token)
     connect("request_received", Callable(this, "_set_bot_token").bind(_req));
 }
 
+void TdJsonClient::close_and_destroy()
+{
+    TdJsonManager::get_singleton()->remove_client(this);
+}
+
+TdJsonClient *godot::TdJsonClient::create()
+{
+    return TdJsonManager::get_singleton()->create_client();
+}
+
 void TdJsonClient::_bind_methods()
 {
     ClassDB::bind_method(D_METHOD("send", "request"), &TdJsonClient::send);
     ClassDB::bind_method(D_METHOD("get_client_id"), &TdJsonClient::get_client_id);
     ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJsonClient::set_bot_token);
     ClassDB::bind_method(D_METHOD("_set_bot_token", "p_response", "p_parameters"), &TdJsonClient::_set_bot_token);
+    ClassDB::bind_method(D_METHOD("close_and_destroy"), &TdJsonClient::close_and_destroy);
+    ClassDB::bind_static_method("TdJsonClient", D_METHOD("create"), &TdJsonClient::create);
 
     ADD_SIGNAL(MethodInfo("response_received", PropertyInfo(Variant::INT, "client_id"), PropertyInfo(Variant::DICTIONARY, "response")));
 }

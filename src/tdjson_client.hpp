@@ -15,6 +15,8 @@ namespace godot
         int get_client_id();
         void _on_response(Dictionary p_response); // used for getting updates from TdJsonManager
         void set_bot_token(String p_bot_token);
+        void close_and_destroy();
+        static TdJsonClient *create();
     
     private:
         int _client_id = 0;
