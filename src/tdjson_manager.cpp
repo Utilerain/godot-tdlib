@@ -63,6 +63,10 @@ Dictionary TdJsonManager::receive(double p_timeout)
     }
     Dictionary _resp_parsed = Dictionary(JSON::parse_string(String(_resp)));
     call_deferred("emit_signal", "request_received", _resp_parsed);
+    for (auto &client : _clients)
+    {
+        client.second->_on_response(_resp_parsed);
+    }
     _mutex->unlock();
     return _resp_parsed;
 }
@@ -311,12 +315,13 @@ TdJsonManager *TdJsonManager::get_singleton()
     return _instance;
 }
 
-TdJsonClient *TdJsonManager::create_client()
+Ref<TdJsonClient> TdJsonManager::create_client()
 {
-    TdJsonClient *client = memnew(TdJsonClient(td_create_client_id()));
+    Ref<TdJsonClient> client = memnew(TdJsonClient);
+    client->_setup(td_create_client_id());
+
     _clients[client->get_client_id()] = client;
 
-    connect("request_received", Callable(client, "_on_response"));
     if (is_running())
     {
         Dictionary _req;
@@ -327,10 +332,18 @@ TdJsonClient *TdJsonManager::create_client()
     return client;
 }
 
-void TdJsonManager::remove_client(TdJsonClient *client)
+void TdJsonManager::remove_client(Ref<TdJsonClient> p_client)
 {
-    _clients.erase(client->get_client_id());
-    client = nullptr;
+    int _id = p_client->get_client_id();
+    if (_clients.find(_id) == _clients.end() || _id == 0)
+    {
+        return;
+    }
+    Dictionary _req;
+    _req["@type"] = "close";
+    p_client->send(_req);
+    _clients.erase(_id);
+    p_client->_setup(0);
 }
 
 // Bindings for godot

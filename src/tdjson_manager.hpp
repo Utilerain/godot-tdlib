@@ -39,8 +39,8 @@ namespace godot
         void stop_poll();
         bool is_running();
         static TdJsonManager *get_singleton();
-        TdJsonClient *create_client();
-        void remove_client(TdJsonClient *client);
+        Ref<TdJsonClient> create_client();
+        void remove_client(Ref<TdJsonClient> client);
 
     private:
         void _set_log_message_callback();
@@ -53,6 +53,6 @@ namespace godot
         std::atomic<bool> _is_running{false};
         Ref<Mutex> _mutex;
         static inline TdJsonManager *_instance = nullptr;
-        std::unordered_map<int, TdJsonClient*> _clients;
+        std::unordered_map<int, Ref<TdJsonClient>> _clients;
     };
 }

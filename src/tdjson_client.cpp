@@ -9,11 +9,6 @@
 
 using namespace godot;
 
-TdJsonClient::TdJsonClient(int p_client_id)
-{
-    _client_id = p_client_id;
-}
-
 /**
  * Sends request to the TDLib client. May be called from any thread.
  * \param[in] request JSON-serialized null-terminated request to TDLib.
@@ -57,17 +52,17 @@ void TdJsonClient::_set_bot_token(Dictionary p_response, Dictionary p_parameters
     }
 
     send(p_parameters);
-    disconnect("request_received", Callable(this, "_set_bot_token"));
+    disconnect("response_received", Callable(this, "_set_bot_token"));
 }
 
 // Sets the bot token for the TDLib client. Can be used instead of user authentication. The bot token can be obtained from @BotFather.
-void TdJsonClient::set_bot_token(String bot_token)
+void TdJsonClient::set_bot_token(String p_bot_token)
 {
     Dictionary _req;
     _req["@type"] = "checkAuthenticationBotToken";
-    _req["token"] = bot_token;
+    _req["token"] = p_bot_token;
 
-    connect("request_received", Callable(this, "_set_bot_token").bind(_req));
+    connect("response_received", Callable(this, "_set_bot_token").bind(_req));
 }
 
 void TdJsonClient::close_and_destroy()
@@ -75,9 +70,14 @@ void TdJsonClient::close_and_destroy()
     TdJsonManager::get_singleton()->remove_client(this);
 }
 
-TdJsonClient *godot::TdJsonClient::create()
+Ref<TdJsonClient> godot::TdJsonClient::create()
 {
     return TdJsonManager::get_singleton()->create_client();
+}
+
+void TdJsonClient::_setup(int client_id)
+{
+    _client_id = client_id;
 }
 
 void TdJsonClient::_bind_methods()
