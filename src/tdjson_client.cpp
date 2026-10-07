@@ -75,7 +75,7 @@ Ref<TdJsonClient> TdJsonClient::create()
     return TdJsonManager::get_singleton()->create_client();
 }
 
-void TdJsonClient::_setup(int client_id)
+void TdJsonClient::_set_client_id(int client_id)
 {
     _client_id = client_id;
 }

@@ -16,7 +16,7 @@ namespace godot
         void set_bot_token(String p_bot_token);
         void close_and_destroy();
         static Ref<TdJsonClient> create();
-        void _setup(int client_id = 0);
+        void _set_client_id(int client_id = 0);
     
     private:
         int _client_id = 0;

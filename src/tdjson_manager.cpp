@@ -84,7 +84,7 @@ void TdJsonManager::_set_log_message_callback()
         if (verbosity_level > 0) {
             print_line(String("[TDLib] ") + String(message));
         } else {
-            print_error(String("[TDLib] [FATAL!!!] ") + String(message), __FILE__, __LINE__);
+            print_error(String("[TDLib] [FATAL!!!] ") + String(message));
         } });
 }
 
@@ -321,7 +321,7 @@ TdJsonManager *TdJsonManager::get_singleton()
 Ref<TdJsonClient> TdJsonManager::create_client()
 {
     Ref<TdJsonClient> client = memnew(TdJsonClient);
-    client->_setup(td_create_client_id());
+    client->_set_client_id(td_create_client_id());
 
     _clients[client->get_client_id()] = client;
 
@@ -346,7 +346,7 @@ void TdJsonManager::remove_client(Ref<TdJsonClient> p_client)
     _req["@type"] = "close";
     p_client->send(_req);
     _clients.erase(_id);
-    p_client->_setup(0);
+    p_client->_set_client_id(0);
 }
 
 // Bindings for godot
