@@ -70,7 +70,7 @@ void TdJsonClient::close_and_destroy()
     TdJsonManager::get_singleton()->remove_client(this);
 }
 
-Ref<TdJsonClient> godot::TdJsonClient::create()
+Ref<TdJsonClient> TdJsonClient::create()
 {
     return TdJsonManager::get_singleton()->create_client();
 }

@@ -54,6 +54,11 @@ Dictionary TdJsonManager::execute(Dictionary p_request)
  */
 Dictionary TdJsonManager::receive(double p_timeout)
 {
+    if (is_running())
+    {
+        print_error("Function receive cannot be called while polling is running. Use signal request_received instead.", __FILE__, __LINE__);
+        return Dictionary();
+    }
     _mutex->lock();
     const char *_resp = td_receive(p_timeout);
 
@@ -219,7 +224,6 @@ void TdJsonManager::_set_tdlib_parameters(Dictionary p_response, Dictionary p_pa
     }
 
     _send(p_parameters);
-    disconnect("request_received", Callable(this, "_set_tdlib_parameters"));
 }
 
 const double POLL_TIMEOUT = 10.0;
@@ -253,8 +257,10 @@ void TdJsonManager::_thread_poll()
 
 void TdJsonManager::_send(Dictionary p_request)
 {
-    String _str_req = JSON::stringify(p_request);
-    td_send(1, _str_req.utf8().get_data());
+    for (auto &[client_id, client] : _clients)
+    {
+        client->send(p_request);
+    }
 }
 
 // Starts the TDLib client.
@@ -270,10 +276,7 @@ void TdJsonManager::start_poll()
     Dictionary _req;
     _req["@type"] = "getOption";
     _req["name"] = "version";
-    for (auto &[client_id, client] : _clients)
-    {
-        client->send(_req);
-    }
+    _send(_req);
 
     if (_worker_thread.is_null())
     {
