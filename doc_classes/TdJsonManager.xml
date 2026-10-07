@@ -5,6 +5,19 @@
 	</brief_description>
 	<description>
 		Provides synchronous TDLib requests, logging configuration, TDLib initialization, and a background polling thread. Use [code]create_client[/code] to create a [code]TdJsonClient[/code] for sending requests and receiving responses.
+		General pattern of usage:
+		[codeblocks]
+		[gdscript]
+		var client := TdJsonManager.create_client()
+		# or
+		var client := TdJsonClient.create()
+
+		client.request_received.connect(_on_request_received)
+		client.start_poll()
+		func _on_request_received(response):
+			# parse the response as a JSON object and process it as an incoming update or the answer to a previously sent request
+			pass
+		[/gdscript]
 	</description>
 	<tutorials>
 	</tutorials>
@@ -25,13 +38,13 @@
 		<method name="get_tdlib_version">
 			<return type="String" />
 			<description>
-				Returns the Tdlib version. This does not start TDLib.
+				Returns the Tdlib version.
 			</description>
 		</method>
 		<method name="is_running">
 			<return type="bool" />
 			<description>
-				Returns true if the TDLib client's poll is running.
+				Returns true if the poll is running.
 			</description>
 		</method>
 		<method name="receive">
@@ -45,7 +58,7 @@
 			<return type="void" />
 			<param index="0" name="client" type="TdJsonClient" />
 			<description>
-				Removes and destroys a TDLib client created by [code]create_client[/code].
+				Removes and destroys a TDLib client created by [code]create_client[/code] or [code]TdJsonClient.create()[/code].
 			</description>
 		</method>
 		<method name="set_log_callback">
@@ -59,7 +72,14 @@
 			<return type="void" />
 			<param index="0" name="verbosity_level" type="int" />
 			<description>
-				Sets the maximum verbosity level for TDLib log callbacks. Level 0 is fatal errors, level 1 errors, level 2 warnings, level 3 informational messages, level 4 debug, and level 5 verbose debug.
+				Sets the max verbosity level for log callbacks:
+				- Level 0 = fatal errors
+				- Level 1 = errors
+				- Level 2 = warnings and debug warnings
+				- Level 3 = informational
+				- Level 4 = debug
+				- Level 5 = verbose debug
+				- Level 6+ = even more detailed logging (your own verbosity)
 			</description>
 		</method>
 		<method name="set_tdlib_parameters">
@@ -78,25 +98,43 @@
 			<param index="11" name="system_version" type="String" default="&quot;&quot;" />
 			<description>
 				Sets the parameters for TDLib initialization. Activates on [code]authorizationStateWaitTdlibParameters[/code].
+				- [code]api_id[/code] - Application identifier for Telegram API access, which can be obtained at [url=https://my.telegram.org]https://my.telegram.org[/url].
+				- [code]api_hash[/code] - Application identifier hash for Telegram API access, which can be obtained at [url=https://my.telegram.org]https://my.telegram.org[/url].
+				- [code]application_version[/code] - Application version; must be non-empty.
+				- [code]device_model[/code] - Model of the device the application is being run on; must be non-empty.
+				- [code]database_directory[/code] - Path to the directory for the persistent database; by default uses user data directory ([code]"user://tdlib_data/"[/code]).
+				- [code]use_test_dc[/code] - If true, the Telegram test environment will be used instead of the production environment.
+				- [code]files_directory[/code] - Path to the directory for storing files; by default uses [code]database_directory[/code].
+				- [code]use_file_database[/code] - If true, information about downloaded and uploaded files will be saved between application restarts.
+				- [code]use_message_database[/code] - If true, the local database will be used for storing chats and messages between application restarts.
+				- [code]use_secret_chats[/code] - If true, support for secret chats will be enabled.
+				- [code]system_language_code[/code] - IETF language tag of the user's operating system language; By default uses locale language of the OS.
+				- [code]system_version[/code] - Version of the user's operating system; By default uses the version of the OS.
 			</description>
 		</method>
 		<method name="set_verbosity_level">
 			<return type="void" />
 			<param index="0" name="new_verbosity_level" type="int" />
 			<description>
-				Sets the verbosity level for TDLib logs.
+				Sets the verbosity level for Tdlib logs. Can be also used as:
+				[codeblocks]
+				[gdscript]
+				{
+					"@type": "setLogVerbosityLevel",
+					"new_verbosity_level": new_verbosity_level
+				}
+				[/gdscript]
+				[/codeblocks]
 			</description>
 		</method>
 		<method name="start_poll">
 			<return type="void" />
 			<description>
-				Starts the TDLib client threaded poll.
 			</description>
 		</method>
 		<method name="stop_poll">
 			<return type="void" />
 			<description>
-				Stops the TDLib client threaded poll.
 			</description>
 		</method>
 	</methods>

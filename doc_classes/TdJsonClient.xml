@@ -4,11 +4,23 @@
 		A TDLib JSON client instance.
 	</brief_description>
 	<description>
-		Sends requests to an individual TDLib client and emits responses received by [code]TdJsonManager[/code].
+		An instance of a TDLib client. Use [code]TdJsonManager.create_client()[/code] or [code]TdJsonClient.create()[/code] to create a new instance. Use [code]send[/code] to send requests and receive responses via the [signal]response_received[/signal] signal.
 	</description>
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="close_and_destroy">
+			<return type="void" />
+			<description>
+				Safely closes and destroys the TDLib client instance. After calling this method, the client id of instance will be 0.
+			</description>
+		</method>
+		<method name="create" qualifiers="static">
+			<return type="TdJsonClient" />
+			<description>
+				Creates a TDLib client instance and returns it.
+			</description>
+		</method>
 		<method name="get_client_id">
 			<return type="int" />
 			<description>

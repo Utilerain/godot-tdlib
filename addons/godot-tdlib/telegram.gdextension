@@ -5,7 +5,8 @@ compatibility_minimum = 4.5
 reloadable = true
 
 [icons]
-TdJson = "icons/telegram.png"
+TdJsonManager = "icons/telegram.png"
+TdJsonClient = "icons/telegram.png"
 
 [libraries]
 
