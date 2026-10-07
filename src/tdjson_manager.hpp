@@ -54,5 +54,6 @@ namespace godot
         Ref<Mutex> _mutex;
         static inline TdJsonManager *_instance = nullptr;
         std::unordered_map<int, Ref<TdJsonClient>> _clients;
+        uint64_t _worker_thread_id = 0;
     };
 }

@@ -54,11 +54,12 @@ Dictionary TdJsonManager::execute(Dictionary p_request)
  */
 Dictionary TdJsonManager::receive(double p_timeout)
 {
-    if (is_running())
+    if (is_running() && _worker_thread_id != godot::OS::get_singleton()->get_thread_caller_id())
     {
-        print_error("Function receive cannot be called while polling is running. Use signal request_received instead.", __FILE__, __LINE__);
+        print_error("TdJsonManager::receive() should not be called from multiple threads simultaneously. Did you use TdJsonManager::start_poll() and TdJsonManager::receive() at the same time?");
         return Dictionary();
     }
+
     _mutex->lock();
     const char *_resp = td_receive(p_timeout);
 
@@ -284,6 +285,8 @@ void TdJsonManager::start_poll()
     }
 
     _worker_thread->start(Callable(this, "_thread_poll"));
+    _worker_thread_id = _worker_thread->get_id().to_int();
+    
 }
 
 // Stops the TDLib client.
@@ -305,6 +308,7 @@ void TdJsonManager::stop_poll()
         }
     }
 
+    _worker_thread_id = 0;
     _worker_thread.unref();
 }
 
