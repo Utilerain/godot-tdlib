@@ -8,16 +8,26 @@ extends Control
 @onready var _passw := $LoginContainer/PassContainer/PasswordEdit
 @onready var login_label := $LoginContainer/Label
 
+
 func _ready() -> void:
-	TdlibSingleton.client = TdJsonManager.create_client()
-	TdlibSingleton.wait_for_phone_number.connect(_phone_number_wait)
-	TdlibSingleton.wait_for_password.connect(_pass_wait)
-	TdlibSingleton.wait_for_auth_code.connect(_code_wait)
-	TdlibSingleton.login_completed.connect(_login_completed)
+	TdlibSingleton.wait_for_phone_number.connect(_phone_number_wait, CONNECT_ONE_SHOT)
+	TdlibSingleton.wait_for_password.connect(_pass_wait, CONNECT_ONE_SHOT)
+	TdlibSingleton.wait_for_auth_code.connect(_code_wait, CONNECT_ONE_SHOT)
+	TdlibSingleton.login_completed.connect(_login_completed, CONNECT_ONE_SHOT)
 	
 	phone_btn.pressed.connect(_phone_number_receive)
 	code_btn.pressed.connect(_code_receive)
 	pass_btn.pressed.connect(_pass_receive)
+	
+	match TdlibSingleton.current_auth_state.get("@type", ""):
+		"authorizationStateWaitPhoneNumber":
+			_phone_number_wait()
+		"authorizationStateWaitCode":
+			_code_wait()
+		"authorizationStateWaitPassword":
+			_pass_wait()
+		"authorizationStateReady":
+			_login_completed()
 
 func _login_completed():
 	login_label.show()

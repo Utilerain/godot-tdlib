@@ -10,6 +10,7 @@ var api_id := 94575
 var bot_token := "abcdefg"
 
 var response: Dictionary
+var current_auth_state := {}
 
 var USR_PATH = OS.get_user_data_dir()
 signal wait_for_phone_number
@@ -17,7 +18,7 @@ signal wait_for_auth_code
 signal wait_for_password
 signal login_completed
 signal state_changed
-
+signal logout_completed
 
 func _ready() -> void:
 	TdJsonManager.set_max_verbosity_level(4)
@@ -28,9 +29,7 @@ func _ready() -> void:
 		"1.0.0",
 		"Desktop", "user://tdlib_test_data", true)
 	# client.set_bot_token(bot_token)
-	var client = TdJsonClient.create()
-	client.close_and_destroy()
-	print(client.get_client_id())
+	client = TdJsonClient.create()
 	TdJsonManager.start_poll()
 	
 func receive_signal(_response: Dictionary): 
@@ -46,9 +45,11 @@ func update_state(response):
 	if event_type == "updateAuthorizationState":
 		var auth_state = response["authorization_state"]
 		var auth_type = auth_state["@type"]
-		
+		current_auth_state = auth_state
+
 		if auth_type == "authorizationStateClosed":
-			return
+			reset_client()
+			logout_completed.emit()
 		
 		# Deprecated: use TdJsonManager.set_tdlib_parameters() instead
 		#elif auth_type == "authorizationStateWaitTdlibParameters": 
@@ -119,3 +120,10 @@ func search_for_state(event_type: String, timeout_sec: float = 3.0) -> Dictionar
 		await TdlibSingleton.state_changed
 	
 	return {}
+
+func reset_client() -> void:
+	if client:
+		# client.close_and_destroy()
+		client = null
+	
+	client = TdJsonClient.create()

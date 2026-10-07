@@ -2,6 +2,8 @@ extends Control
 
 var user := {}
 var chats_map := {} 
+var is_logged_out := false
+
 
 func _ready() -> void:
 	TdlibSingleton.client.send({
@@ -15,6 +17,7 @@ func _ready() -> void:
 		
 	%LogOutCommand.pressed.connect(_logout)
 	get_chats_list(10)
+
 
 func _get_me():
 	TdlibSingleton.client.send({
@@ -69,11 +72,26 @@ func _on_item_click(sender):
 	%Output.text += JSON.stringify(chat_info, "\t") + "\n"
 
 func _logout():
+	%LogOutCommand.disabled = true
 	TdlibSingleton.client.send({
 		"@type": "logOut"
 	})
-	var resp = await TdlibSingleton.search_for_state("ok", 3.0)
-	if not resp.is_empty():
-		TdJsonManager.remove_client(TdlibSingleton.client)
-		TdlibSingleton.client = TdJsonManager.create_client()
+	
+	var timeout_timer = get_tree().create_timer(10.0)
+	
+	
+	var on_logout = func(): 
+		self.is_logged_out = true
+		
+	TdlibSingleton.logout_completed.connect(on_logout, CONNECT_ONE_SHOT)
+	
+	while not is_logged_out and timeout_timer.time_left > 0:
+		await get_tree().process_frame
+		
+	if is_logged_out:
 		get_tree().change_scene_to_file("res://login_scene.tscn")
+	else:
+		if TdlibSingleton.logout_completed.is_connected(on_logout):
+			TdlibSingleton.logout_completed.disconnect(on_logout)
+		%LogOutCommand.disabled = false
+		%Output.text += "Logout failed or timed out.\n"
