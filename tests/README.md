@@ -10,11 +10,12 @@ Run from the repository root:
 
 The process exits with code `0` when all checks pass. The suite covers:
 
-- client creation and unique client id;
-- `get_tdlib_version` and synchronous `execute` parsing;
-- `send`/`receive` delivery of a TDLib event;
-- `request_received` signal payload and delivery;
-- `start_poll`/`stop_poll`, including repeated calls.
+- `TdJsonManager` creation, polling state, version lookup, and synchronous `execute` parsing;
+- `receive` timeout behavior and manager `request_received` delivery;
+- `TdJsonClient.create` and `TdJsonManager.create_client` creation with unique client IDs;
+- `send`/`receive` delivery to each connected client and correct client ID routing;
+- `remove_client` cleanup and client ID invalidation;
+- `start_poll`/`stop_poll`, including repeated calls and cleanup.
 
 ## Documentation check
 
