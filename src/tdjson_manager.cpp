@@ -69,6 +69,7 @@ Dictionary TdJsonManager::receive(double p_timeout)
     }
     Dictionary _resp_parsed = Dictionary(JSON::parse_string(String(_resp)));
     call_deferred("emit_signal", "request_received", _resp_parsed);
+    godot::UtilityFunctions::print_verbose("TdJsonManager::receive: ", _resp_parsed);
     for (auto &client : _clients)
     {
         client.second->_on_response(_resp_parsed);

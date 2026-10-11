@@ -27,7 +27,8 @@ int TdJsonClient::get_client_id()
 
 void TdJsonClient::_on_response(Dictionary p_response)
 {
-    int _id = p_response.get("client_id", 0);
+    godot::UtilityFunctions::print_verbose("TdJsonClient::_on_response: ", p_response);
+    int _id = p_response.get("@client_id", 0);
     if (_client_id == 0 || _id != _client_id)
     {
         return;
