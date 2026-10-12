@@ -1302,6 +1302,8 @@ class animatedEmoji final : public Object {
   int32 fitzpatrick_type_;
   /// File containing the sound to be played when the sticker is clicked; may be null. The sound is encoded with the Opus codec, and stored inside an OGG container.
   object_ptr<file> sound_;
+  /// True, if the emoji is a regular emoji.
+  bool is_regular_emoji_;
 
   /**
    * Describes an animated or custom representation of an emoji.
@@ -1316,11 +1318,12 @@ class animatedEmoji final : public Object {
    * \param[in] sticker_height_ Expected height of the sticker, which can be used if the sticker is null.
    * \param[in] fitzpatrick_type_ Emoji modifier fitzpatrick type; 0-6; 0 if none.
    * \param[in] sound_ File containing the sound to be played when the sticker is clicked; may be null. The sound is encoded with the Opus codec, and stored inside an OGG container.
+   * \param[in] is_regular_emoji_ True, if the emoji is a regular emoji.
    */
-  animatedEmoji(object_ptr<sticker> &&sticker_, int32 sticker_width_, int32 sticker_height_, int32 fitzpatrick_type_, object_ptr<file> &&sound_);
+  animatedEmoji(object_ptr<sticker> &&sticker_, int32 sticker_width_, int32 sticker_height_, int32 fitzpatrick_type_, object_ptr<file> &&sound_, bool is_regular_emoji_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1378918079;
+  static const std::int32_t ID = 664777067;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -4945,7 +4948,7 @@ class botVerification final : public Object {
   int53 bot_user_id_;
   /// Identifier of the custom emoji that is used as the verification sign.
   int64 icon_custom_emoji_id_;
-  /// Custom description of verification reason set by the bot. Can contain only Mention, Hashtag, Cashtag, PhoneNumber, BankCardNumber, Url, and EmailAddress entities.
+  /// Custom description of verification reason set by the bot. Can contain only Mention, Hashtag, Cashtag, PhoneNumber, BankCardNumber, TonAddress, Url, and EmailAddress entities.
   object_ptr<formattedText> custom_description_;
 
   /**
@@ -4958,7 +4961,7 @@ class botVerification final : public Object {
    *
    * \param[in] bot_user_id_ Identifier of the bot that provided the verification.
    * \param[in] icon_custom_emoji_id_ Identifier of the custom emoji that is used as the verification sign.
-   * \param[in] custom_description_ Custom description of verification reason set by the bot. Can contain only Mention, Hashtag, Cashtag, PhoneNumber, BankCardNumber, Url, and EmailAddress entities.
+   * \param[in] custom_description_ Custom description of verification reason set by the bot. Can contain only Mention, Hashtag, Cashtag, PhoneNumber, BankCardNumber, TonAddress, Url, and EmailAddress entities.
    */
   botVerification(int53 bot_user_id_, int64 icon_custom_emoji_id_, object_ptr<formattedText> &&custom_description_);
 
@@ -12030,7 +12033,7 @@ class chatEventProfileAccentColorChanged final : public ChatEventAction {
 };
 
 /**
- * The has_protected_content setting of a channel was toggled.
+ * The has_protected_content setting of a chat was toggled.
  */
 class chatEventHasProtectedContentToggled final : public ChatEventAction {
   /**
@@ -12046,12 +12049,12 @@ class chatEventHasProtectedContentToggled final : public ChatEventAction {
   bool has_protected_content_;
 
   /**
-   * The has_protected_content setting of a channel was toggled.
+   * The has_protected_content setting of a chat was toggled.
    */
   chatEventHasProtectedContentToggled();
 
   /**
-   * The has_protected_content setting of a channel was toggled.
+   * The has_protected_content setting of a chat was toggled.
    *
    * \param[in] has_protected_content_ New value of has_protected_content.
    */
@@ -12624,7 +12627,7 @@ class chatEventVideoChatParticipantVolumeLevelChanged final : public ChatEventAc
 };
 
 /**
- * The is_forum setting of a channel was toggled.
+ * The is_forum setting of a supergroup was toggled.
  */
 class chatEventIsForumToggled final : public ChatEventAction {
   /**
@@ -12640,12 +12643,12 @@ class chatEventIsForumToggled final : public ChatEventAction {
   bool is_forum_;
 
   /**
-   * The is_forum setting of a channel was toggled.
+   * The is_forum setting of a supergroup was toggled.
    */
   chatEventIsForumToggled();
 
   /**
-   * The is_forum setting of a channel was toggled.
+   * The is_forum setting of a supergroup was toggled.
    *
    * \param[in] is_forum_ New value of is_forum.
    */
@@ -13422,7 +13425,7 @@ class chatInviteLink final : public Object {
   int32 pending_join_request_count_;
   /// True, if the link only creates join request. If true, total number of joining members will be unlimited.
   bool creates_join_request_;
-  /// True, if the link is primary. Primary invite link can't have name, expiration date, or usage limit. There is exactly one primary invite link for each administrator with can_invite_users right at a given time.
+  /// True, if the link is primary. Primary invite link can't have name, expiration date, or usage limit. Primary link can create join requests only if this is set up using toggleSupergroupJoinByRequest. There is exactly one primary invite link for each administrator with can_invite_users right at a given time.
   bool is_primary_;
   /// True, if the link was revoked.
   bool is_revoked_;
@@ -13447,7 +13450,7 @@ class chatInviteLink final : public Object {
    * \param[in] expired_member_count_ Number of chat members, which joined the chat using the link, but have already left because of expired subscription; for subscription links only.
    * \param[in] pending_join_request_count_ Number of pending join requests created using this link.
    * \param[in] creates_join_request_ True, if the link only creates join request. If true, total number of joining members will be unlimited.
-   * \param[in] is_primary_ True, if the link is primary. Primary invite link can't have name, expiration date, or usage limit. There is exactly one primary invite link for each administrator with can_invite_users right at a given time.
+   * \param[in] is_primary_ True, if the link is primary. Primary invite link can't have name, expiration date, or usage limit. Primary link can create join requests only if this is set up using toggleSupergroupJoinByRequest. There is exactly one primary invite link for each administrator with can_invite_users right at a given time.
    * \param[in] is_revoked_ True, if the link was revoked.
    */
   chatInviteLink(string const &invite_link_, string const &name_, int53 creator_user_id_, int32 date_, int32 edit_date_, int32 expiration_date_, object_ptr<starSubscriptionPricing> &&subscription_pricing_, int32 member_limit_, int32 member_count_, int32 expired_member_count_, int32 pending_join_request_count_, bool creates_join_request_, bool is_primary_, bool is_revoked_);
@@ -15640,7 +15643,7 @@ class chatRevenueStatistics final : public Object {
   object_ptr<StatisticalGraph> revenue_graph_;
   /// Amount of earned revenue.
   object_ptr<chatRevenueAmount> revenue_amount_;
-  /// Current conversion rate of the cryptocurrency in which revenue is calculated to USD.
+  /// Current exchange rate of the cryptocurrency in which revenue is calculated to USD.
   double usd_rate_;
 
   /**
@@ -15654,7 +15657,7 @@ class chatRevenueStatistics final : public Object {
    * \param[in] revenue_by_hour_graph_ A graph containing amount of revenue in a given hour.
    * \param[in] revenue_graph_ A graph containing amount of revenue.
    * \param[in] revenue_amount_ Amount of earned revenue.
-   * \param[in] usd_rate_ Current conversion rate of the cryptocurrency in which revenue is calculated to USD.
+   * \param[in] usd_rate_ Current exchange rate of the cryptocurrency in which revenue is calculated to USD.
    */
   chatRevenueStatistics(object_ptr<StatisticalGraph> &&revenue_by_hour_graph_, object_ptr<StatisticalGraph> &&revenue_graph_, object_ptr<chatRevenueAmount> &&revenue_amount_, double usd_rate_);
 
@@ -18648,6 +18651,128 @@ class createdBasicGroupChat final : public Object {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -20417068;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Represents a list of currencies.
+ */
+class currencies final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// A list of ISO 4217 currency codes.
+  array<string> currencies_;
+
+  /**
+   * Represents a list of currencies.
+   */
+  currencies();
+
+  /**
+   * Represents a list of currencies.
+   *
+   * \param[in] currencies_ A list of ISO 4217 currency codes.
+   */
+  explicit currencies(array<string> &&currencies_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1505110915;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Describes exchange rate of a currency to USD.
+ */
+class currencyExchangeRate final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// ISO 4217 currency code of the payment currency.
+  string currency_;
+  /// Exchange rate of the currency to USD.
+  double rate_;
+
+  /**
+   * Describes exchange rate of a currency to USD.
+   */
+  currencyExchangeRate();
+
+  /**
+   * Describes exchange rate of a currency to USD.
+   *
+   * \param[in] currency_ ISO 4217 currency code of the payment currency.
+   * \param[in] rate_ Exchange rate of the currency to USD.
+   */
+  currencyExchangeRate(string const &currency_, double rate_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1584927178;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class currencyExchangeRate;
+
+/**
+ * Represents a list of currency exchange rates.
+ */
+class currencyExchangeRates final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// A list of currency exchange rates.
+  array<object_ptr<currencyExchangeRate>> rates_;
+
+  /**
+   * Represents a list of currency exchange rates.
+   */
+  currencyExchangeRates();
+
+  /**
+   * Represents a list of currency exchange rates.
+   *
+   * \param[in] rates_ A list of currency exchange rates.
+   */
+  explicit currencyExchangeRates(array<object_ptr<currencyExchangeRate>> &&rates_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -443719949;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -25753,7 +25878,7 @@ class gramRevenueStatistics final : public Object {
   object_ptr<StatisticalGraph> revenue_by_day_graph_;
   /// Amount of earned revenue.
   object_ptr<gramRevenueStatus> status_;
-  /// Current conversion rate of nanogram to USD cents.
+  /// Current exchange rate of nanogram to USD cents.
   double usd_rate_;
 
   /**
@@ -25766,7 +25891,7 @@ class gramRevenueStatistics final : public Object {
    *
    * \param[in] revenue_by_day_graph_ A graph containing amount of revenue in a given day.
    * \param[in] status_ Amount of earned revenue.
-   * \param[in] usd_rate_ Current conversion rate of nanogram to USD cents.
+   * \param[in] usd_rate_ Current exchange rate of nanogram to USD cents.
    */
   gramRevenueStatistics(object_ptr<StatisticalGraph> &&revenue_by_day_graph_, object_ptr<gramRevenueStatus> &&status_, double usd_rate_);
 
@@ -35581,6 +35706,8 @@ class StoryContentType;
 
 class TargetChat;
 
+class TonWalletTransferReceiver;
+
 class WebAppOpenMode;
 
 class chatAdministratorRights;
@@ -35588,6 +35715,8 @@ class chatAdministratorRights;
 class formattedText;
 
 class proxy;
+
+class tonConnectConnectRequest;
 
 /**
  * This class is an abstract base class.
@@ -37190,7 +37319,7 @@ class internalLinkTypeRequestManagedBot final : public InternalLinkType {
  public:
   /// Username of the bot which will manage the new bot.
   string manager_bot_username_;
-  /// Suggested username for the bot; always ends with &quot;bot&quot; case-insensitive.
+  /// Suggested username for the bot; always ends with &quot;bot&quot; or a string from updateAllowedBotUsernamePremiumSuffixes case-insensitive.
   string suggested_bot_username_;
   /// Suggested name for the bot; may be empty if not specified.
   string suggested_bot_name_;
@@ -37204,7 +37333,7 @@ class internalLinkTypeRequestManagedBot final : public InternalLinkType {
    * The link is a link to a dialog for creating of a managed bot. Call searchPublicChat with the given manager bot username. If the chat is found, the chat is a chat with a bot and the bot has can_manage_bots == true, then show bot creation confirmation dialog with the given suggested_bot_username and suggested_bot_name. If user agrees, call createBot with via_link == true to create the bot.
    *
    * \param[in] manager_bot_username_ Username of the bot which will manage the new bot.
-   * \param[in] suggested_bot_username_ Suggested username for the bot; always ends with &quot;bot&quot; case-insensitive.
+   * \param[in] suggested_bot_username_ Suggested username for the bot; always ends with &quot;bot&quot; or a string from updateAllowedBotUsernamePremiumSuffixes case-insensitive.
    * \param[in] suggested_bot_name_ Suggested name for the bot; may be empty if not specified.
    */
   internalLinkTypeRequestManagedBot(string const &manager_bot_username_, string const &suggested_bot_username_, string const &suggested_bot_name_);
@@ -37586,6 +37715,102 @@ class internalLinkTypeTheme final : public InternalLinkType {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -200935417;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The link is a universal TON Connect link.
+ */
+class internalLinkTypeTonConnect final : public InternalLinkType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// TON Connect version.
+  int32 version_;
+  /// Hex-encoded public X25519 key of the dApp.
+  string dapp_client_id_;
+  /// TON Connect connect request.
+  object_ptr<tonConnectConnectRequest> connect_request_;
+  /// Request return strategy; one of &quot;back&quot;, &quot;none&quot;, or a URL to open.
+  string return_strategy_;
+  /// Embedded RPC request represented as base64url-encoded JSON.
+  string rpc_request_;
+  /// Identifier to trace the connection request.
+  string trace_id_;
+
+  /**
+   * The link is a universal TON Connect link.
+   */
+  internalLinkTypeTonConnect();
+
+  /**
+   * The link is a universal TON Connect link.
+   *
+   * \param[in] version_ TON Connect version.
+   * \param[in] dapp_client_id_ Hex-encoded public X25519 key of the dApp.
+   * \param[in] connect_request_ TON Connect connect request.
+   * \param[in] return_strategy_ Request return strategy; one of &quot;back&quot;, &quot;none&quot;, or a URL to open.
+   * \param[in] rpc_request_ Embedded RPC request represented as base64url-encoded JSON.
+   * \param[in] trace_id_ Identifier to trace the connection request.
+   */
+  internalLinkTypeTonConnect(int32 version_, string const &dapp_client_id_, object_ptr<tonConnectConnectRequest> &&connect_request_, string const &return_strategy_, string const &rpc_request_, string const &trace_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -637887696;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The link is a link for sending Grams from the user's TON wallet.
+ */
+class internalLinkTypeTonWalletTransfer final : public InternalLinkType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Chosen receiver of the transfer; may be null if none.
+  object_ptr<TonWalletTransferReceiver> receiver_;
+  /// The pre-filled amount of TON Grams to send; in the smallest units of the cryptocurrency.
+  int53 gram_amount_;
+
+  /**
+   * The link is a link for sending Grams from the user's TON wallet.
+   */
+  internalLinkTypeTonWalletTransfer();
+
+  /**
+   * The link is a link for sending Grams from the user's TON wallet.
+   *
+   * \param[in] receiver_ Chosen receiver of the transfer; may be null if none.
+   * \param[in] gram_amount_ The pre-filled amount of TON Grams to send; in the smallest units of the cryptocurrency.
+   */
+  internalLinkTypeTonWalletTransfer(object_ptr<TonWalletTransferReceiver> &&receiver_, int53 gram_amount_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1697768710;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -42310,6 +42535,8 @@ class SuggestedPostPrice;
 
 class SuggestedPostRefundReason;
 
+class TonConnectRequestState;
+
 class UpgradedGiftOrigin;
 
 class alternativeVideo;
@@ -45896,6 +46123,111 @@ class messageGiveawayPrizeStars final : public MessageContent {
 };
 
 /**
+ * Represents a transfer with the TON wallet of the current user.
+ */
+class messageTonWalletTransfer final : public MessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Sender of the transfer; 0 if unknown.
+  int53 sender_user_id_;
+  /// Unique identifier of the transaction; may be empty if the transfer isn't send yet. Use getTonWalletTransaction to get additional information about the transaction.
+  string transaction_id_;
+  /// Address in the TON blockchain of the transaction peer.
+  string peer_address_;
+  /// The amount of received cryptocurrency, in the smallest units of the cryptocurrency; negative for outgoing transactions.
+  int53 amount_;
+  /// Comment added to the transaction.
+  string comment_;
+  /// True, if the comment is encrypted and must be decrypted using the receiver's or sender's private key.
+  bool is_comment_encrypted_;
+
+  /**
+   * Represents a transfer with the TON wallet of the current user.
+   */
+  messageTonWalletTransfer();
+
+  /**
+   * Represents a transfer with the TON wallet of the current user.
+   *
+   * \param[in] sender_user_id_ Sender of the transfer; 0 if unknown.
+   * \param[in] transaction_id_ Unique identifier of the transaction; may be empty if the transfer isn't send yet. Use getTonWalletTransaction to get additional information about the transaction.
+   * \param[in] peer_address_ Address in the TON blockchain of the transaction peer.
+   * \param[in] amount_ The amount of received cryptocurrency, in the smallest units of the cryptocurrency; negative for outgoing transactions.
+   * \param[in] comment_ Comment added to the transaction.
+   * \param[in] is_comment_encrypted_ True, if the comment is encrypted and must be decrypted using the receiver's or sender's private key.
+   */
+  messageTonWalletTransfer(int53 sender_user_id_, string const &transaction_id_, string const &peer_address_, int53 amount_, string const &comment_, bool is_comment_encrypted_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1872034960;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A request from a dApp was received through TON Connect.
+ */
+class messageTonConnectRequest final : public MessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the TON Connect session.
+  int64 session_id_;
+  /// State of the request.
+  object_ptr<TonConnectRequestState> state_;
+  /// Name of the dApp; may be empty if unknown.
+  string dapp_name_;
+  /// Topic of the request; may be empty if none.
+  string topic_;
+  /// Identifier to trace the request; may be empty if none.
+  string trace_id_;
+
+  /**
+   * A request from a dApp was received through TON Connect.
+   */
+  messageTonConnectRequest();
+
+  /**
+   * A request from a dApp was received through TON Connect.
+   *
+   * \param[in] session_id_ Unique identifier of the TON Connect session.
+   * \param[in] state_ State of the request.
+   * \param[in] dapp_name_ Name of the dApp; may be empty if unknown.
+   * \param[in] topic_ Topic of the request; may be empty if none.
+   * \param[in] trace_id_ Identifier to trace the request; may be empty if none.
+   */
+  messageTonConnectRequest(int64 session_id_, object_ptr<TonConnectRequestState> &&state_, string const &dapp_name_, string const &topic_, string const &trace_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 405695624;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * A regular gift was received or sent by the current user, or the current user was notified about a channel gift.
  */
 class messageGift final : public MessageContent {
@@ -47943,6 +48275,8 @@ class messageProperties final : public Object {
   bool can_report_supergroup_spam_;
   /// True, if fact check for the message can be changed through setMessageFactCheck.
   bool can_set_fact_check_;
+  /// Identifiers of custom emoji used in the message.
+  array<int64> custom_emoji_ids_;
   /// True, if content of the message can't be saved locally, because it is protected by the current user; if true, then can_be_saved is false.
   bool has_protected_content_by_current_user_;
   /// True, if content of the message can't be saved locally, because it is protected by the other user; if true, then can_be_saved is false.
@@ -47994,14 +48328,15 @@ class messageProperties final : public Object {
    * \param[in] can_report_reactions_ True, if reactions on the message can be reported through reportMessageReactions.
    * \param[in] can_report_supergroup_spam_ True, if the message can be reported using reportSupergroupSpam.
    * \param[in] can_set_fact_check_ True, if fact check for the message can be changed through setMessageFactCheck.
+   * \param[in] custom_emoji_ids_ Identifiers of custom emoji used in the message.
    * \param[in] has_protected_content_by_current_user_ True, if content of the message can't be saved locally, because it is protected by the current user; if true, then can_be_saved is false.
    * \param[in] has_protected_content_by_other_user_ True, if content of the message can't be saved locally, because it is protected by the other user; if true, then can_be_saved is false.
    * \param[in] need_show_statistics_ True, if message statistics must be available from context menu of the message.
    */
-  messageProperties(bool can_add_offer_, bool can_add_tasks_, bool can_be_approved_, bool can_be_copied_, bool can_be_copied_to_secret_chat_, bool can_be_declined_, bool can_be_deleted_only_for_self_, bool can_be_deleted_for_all_users_, bool can_be_edited_, bool can_be_forwarded_, bool can_be_paid_, bool can_be_pinned_, bool can_be_replied_, bool can_be_replied_in_another_chat_, bool can_be_saved_, bool can_be_shared_in_story_, bool can_delete_reactions_, bool can_edit_media_, bool can_edit_scheduling_state_, bool can_edit_suggested_post_info_, bool can_get_author_, bool can_get_embedding_code_, bool can_get_link_, bool can_get_media_timestamp_links_, bool can_get_message_thread_, bool can_get_poll_vote_statistics_, bool can_get_read_date_, bool can_get_statistics_, bool can_get_video_advertisements_, bool can_get_viewers_, bool can_mark_tasks_as_done_, bool can_recognize_speech_, bool can_report_chat_, bool can_report_reactions_, bool can_report_supergroup_spam_, bool can_set_fact_check_, bool has_protected_content_by_current_user_, bool has_protected_content_by_other_user_, bool need_show_statistics_);
+  messageProperties(bool can_add_offer_, bool can_add_tasks_, bool can_be_approved_, bool can_be_copied_, bool can_be_copied_to_secret_chat_, bool can_be_declined_, bool can_be_deleted_only_for_self_, bool can_be_deleted_for_all_users_, bool can_be_edited_, bool can_be_forwarded_, bool can_be_paid_, bool can_be_pinned_, bool can_be_replied_, bool can_be_replied_in_another_chat_, bool can_be_saved_, bool can_be_shared_in_story_, bool can_delete_reactions_, bool can_edit_media_, bool can_edit_scheduling_state_, bool can_edit_suggested_post_info_, bool can_get_author_, bool can_get_embedding_code_, bool can_get_link_, bool can_get_media_timestamp_links_, bool can_get_message_thread_, bool can_get_poll_vote_statistics_, bool can_get_read_date_, bool can_get_statistics_, bool can_get_video_advertisements_, bool can_get_viewers_, bool can_mark_tasks_as_done_, bool can_recognize_speech_, bool can_report_chat_, bool can_report_reactions_, bool can_report_supergroup_spam_, bool can_set_fact_check_, array<int64> &&custom_emoji_ids_, bool has_protected_content_by_current_user_, bool has_protected_content_by_other_user_, bool need_show_statistics_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -688751636;
+  static const std::int32_t ID = 595813664;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -50849,6 +51184,355 @@ class ok final : public Object {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -722616727;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class onRampPaymentMethod;
+
+/**
+ * Describes availability of cryptocurrency purchase through an on-ramp provider.
+ */
+class onRampPaymentAvailability final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// True, if the current user can use the provider.
+  bool is_allowed_;
+  /// True, if the current user can purchase through the provider.
+  bool is_purchase_allowed_;
+  /// The list of available payment methods.
+  array<object_ptr<onRampPaymentMethod>> methods_;
+  /// A two-letter ISO 3166-1 alpha-2 country code of the current user's country.
+  string country_code_;
+  /// Code of the state of the current user; may be empty if unknown.
+  string state_;
+
+  /**
+   * Describes availability of cryptocurrency purchase through an on-ramp provider.
+   */
+  onRampPaymentAvailability();
+
+  /**
+   * Describes availability of cryptocurrency purchase through an on-ramp provider.
+   *
+   * \param[in] is_allowed_ True, if the current user can use the provider.
+   * \param[in] is_purchase_allowed_ True, if the current user can purchase through the provider.
+   * \param[in] methods_ The list of available payment methods.
+   * \param[in] country_code_ A two-letter ISO 3166-1 alpha-2 country code of the current user's country.
+   * \param[in] state_ Code of the state of the current user; may be empty if unknown.
+   */
+  onRampPaymentAvailability(bool is_allowed_, bool is_purchase_allowed_, array<object_ptr<onRampPaymentMethod>> &&methods_, string const &country_code_, string const &state_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1511244690;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Describes limits for an on-ramp purchase.
+ */
+class onRampPaymentLimits final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The payment method to be used.
+  string payment_method_;
+  /// The minimum allowed amount of the base currency.
+  string base_currency_min_amount_;
+  /// The maximum allowed amount of the base currency.
+  string base_currency_max_amount_;
+  /// The minimum allowed amount of the bought cryptocurrency.
+  string cryptocurrency_min_amount_;
+  /// The maximum allowed amount of the bought cryptocurrency.
+  string cryptocurrency_max_amount_;
+
+  /**
+   * Describes limits for an on-ramp purchase.
+   */
+  onRampPaymentLimits();
+
+  /**
+   * Describes limits for an on-ramp purchase.
+   *
+   * \param[in] payment_method_ The payment method to be used.
+   * \param[in] base_currency_min_amount_ The minimum allowed amount of the base currency.
+   * \param[in] base_currency_max_amount_ The maximum allowed amount of the base currency.
+   * \param[in] cryptocurrency_min_amount_ The minimum allowed amount of the bought cryptocurrency.
+   * \param[in] cryptocurrency_max_amount_ The maximum allowed amount of the bought cryptocurrency.
+   */
+  onRampPaymentLimits(string const &payment_method_, string const &base_currency_min_amount_, string const &base_currency_max_amount_, string const &cryptocurrency_min_amount_, string const &cryptocurrency_max_amount_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1052282492;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Describes a payment method of an on-ramp provider.
+ */
+class onRampPaymentMethod final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Name of the method.
+  string name_;
+  /// True, if the method is available to the user.
+  bool is_available_;
+
+  /**
+   * Describes a payment method of an on-ramp provider.
+   */
+  onRampPaymentMethod();
+
+  /**
+   * Describes a payment method of an on-ramp provider.
+   *
+   * \param[in] name_ Name of the method.
+   * \param[in] is_available_ True, if the method is available to the user.
+   */
+  onRampPaymentMethod(string const &name_, bool is_available_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 929694083;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Describes a quote for an on-ramp purchase.
+ */
+class onRampPaymentQuote final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The payment method to be used.
+  string payment_method_;
+  /// Point in time (Unix timestamp) when the quote will expire.
+  int32 expiration_date_;
+  /// Paid amount of the base currency.
+  string base_currency_amount_;
+  /// Purchased amount of the cryptocurrency.
+  string cryptocurrency_amount_;
+  /// The price of the cryptocurrency.
+  string cryptocurrency_price_;
+  /// Fee amount.
+  string fee_amount_;
+  /// Extra fee amount.
+  string extra_fee_amount_;
+  /// Network fee amount.
+  string network_fee_amount_;
+  /// Total paid amount.
+  string total_amount_;
+
+  /**
+   * Describes a quote for an on-ramp purchase.
+   */
+  onRampPaymentQuote();
+
+  /**
+   * Describes a quote for an on-ramp purchase.
+   *
+   * \param[in] payment_method_ The payment method to be used.
+   * \param[in] expiration_date_ Point in time (Unix timestamp) when the quote will expire.
+   * \param[in] base_currency_amount_ Paid amount of the base currency.
+   * \param[in] cryptocurrency_amount_ Purchased amount of the cryptocurrency.
+   * \param[in] cryptocurrency_price_ The price of the cryptocurrency.
+   * \param[in] fee_amount_ Fee amount.
+   * \param[in] extra_fee_amount_ Extra fee amount.
+   * \param[in] network_fee_amount_ Network fee amount.
+   * \param[in] total_amount_ Total paid amount.
+   */
+  onRampPaymentQuote(string const &payment_method_, int32 expiration_date_, string const &base_currency_amount_, string const &cryptocurrency_amount_, string const &cryptocurrency_price_, string const &fee_amount_, string const &extra_fee_amount_, string const &network_fee_amount_, string const &total_amount_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 583798655;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Describes a session for an on-ramp purchase.
+ */
+class onRampPaymentSession final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the session.
+  string session_id_;
+  /// Point in time (Unix timestamp) when the session will expire.
+  int32 expiration_date_;
+  /// HTTPS URL to be opened in a WebView to complete the purchase.
+  string url_;
+
+  /**
+   * Describes a session for an on-ramp purchase.
+   */
+  onRampPaymentSession();
+
+  /**
+   * Describes a session for an on-ramp purchase.
+   *
+   * \param[in] session_id_ Identifier of the session.
+   * \param[in] expiration_date_ Point in time (Unix timestamp) when the session will expire.
+   * \param[in] url_ HTTPS URL to be opened in a WebView to complete the purchase.
+   */
+  onRampPaymentSession(string const &session_id_, int32 expiration_date_, string const &url_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1419623629;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Describes an on-ramp provider.
+ */
+class onRampProvider final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the provider.
+  string id_;
+  /// Name of the provider.
+  string name_;
+  /// List of cryptocurrencies supported by the provider.
+  array<string> cryptocurrencies_;
+  /// True, if the provider supports base currencies and can be used in the method getOnRampProviderBaseCurrencies.
+  bool supports_base_currencies_;
+  /// True, if the provider supports limits retrieval using the method getOnRampPaymentLimits.
+  bool supports_limits_;
+  /// True, if the provider supports quote retrieval using the method getOnRampPaymentQuote.
+  bool supports_quote_;
+
+  /**
+   * Describes an on-ramp provider.
+   */
+  onRampProvider();
+
+  /**
+   * Describes an on-ramp provider.
+   *
+   * \param[in] id_ Unique identifier of the provider.
+   * \param[in] name_ Name of the provider.
+   * \param[in] cryptocurrencies_ List of cryptocurrencies supported by the provider.
+   * \param[in] supports_base_currencies_ True, if the provider supports base currencies and can be used in the method getOnRampProviderBaseCurrencies.
+   * \param[in] supports_limits_ True, if the provider supports limits retrieval using the method getOnRampPaymentLimits.
+   * \param[in] supports_quote_ True, if the provider supports quote retrieval using the method getOnRampPaymentQuote.
+   */
+  onRampProvider(string const &id_, string const &name_, array<string> &&cryptocurrencies_, bool supports_base_currencies_, bool supports_limits_, bool supports_quote_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -425745766;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class onRampProvider;
+
+/**
+ * Represents a list of on-ramp providers.
+ */
+class onRampProviders final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// A list of providers.
+  array<object_ptr<onRampProvider>> providers_;
+
+  /**
+   * Represents a list of on-ramp providers.
+   */
+  onRampProviders();
+
+  /**
+   * Represents a list of on-ramp providers.
+   *
+   * \param[in] providers_ A list of providers.
+   */
+  explicit onRampProviders(array<object_ptr<onRampProvider>> &&providers_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -258041669;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -61450,6 +62134,90 @@ class pushMessageContentGiveaway final : public PushMessageContent {
 };
 
 /**
+ * A message with a TON wallet transfer.
+ */
+class pushMessageContentTonWalletTransfer final : public PushMessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Sender of the transfer; 0 if unknown.
+  int53 sender_user_id_;
+  /// String representation of the received amount.
+  string amount_;
+  /// Comment added to the transaction if it is public.
+  string comment_;
+
+  /**
+   * A message with a TON wallet transfer.
+   */
+  pushMessageContentTonWalletTransfer();
+
+  /**
+   * A message with a TON wallet transfer.
+   *
+   * \param[in] sender_user_id_ Sender of the transfer; 0 if unknown.
+   * \param[in] amount_ String representation of the received amount.
+   * \param[in] comment_ Comment added to the transaction if it is public.
+   */
+  pushMessageContentTonWalletTransfer(int53 sender_user_id_, string const &amount_, string const &comment_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1170923657;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A message with a request from a dApp was received through TON Connect.
+ */
+class pushMessageContentTonConnectRequest final : public PushMessageContent {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Name of the dApp; may be empty if unknown.
+  string dapp_name_;
+
+  /**
+   * A message with a request from a dApp was received through TON Connect.
+   */
+  pushMessageContentTonConnectRequest();
+
+  /**
+   * A message with a request from a dApp was received through TON Connect.
+   *
+   * \param[in] dapp_name_ Name of the dApp; may be empty if unknown.
+   */
+  explicit pushMessageContentTonConnectRequest(string const &dapp_name_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1277626552;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * A message with a gift.
  */
 class pushMessageContentGift final : public PushMessageContent {
@@ -65663,6 +66431,48 @@ class richTextBankCardNumber final : public RichText {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = 1587991130;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * An address in the TON blockchain.
+ */
+class richTextTonAddress final : public RichText {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Text.
+  object_ptr<RichText> text_;
+  /// The address.
+  string address_;
+
+  /**
+   * An address in the TON blockchain.
+   */
+  richTextTonAddress();
+
+  /**
+   * An address in the TON blockchain.
+   *
+   * \param[in] text_ Text.
+   * \param[in] address_ The address.
+   */
+  richTextTonAddress(object_ptr<RichText> &&text_, string const &address_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1434939320;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -70234,7 +71044,7 @@ class starRevenueStatistics final : public Object {
   object_ptr<StatisticalGraph> revenue_by_day_graph_;
   /// Telegram Star revenue status.
   object_ptr<starRevenueStatus> status_;
-  /// Current conversion rate of a Telegram Star to USD.
+  /// Current exchange rate of a Telegram Star to USD.
   double usd_rate_;
 
   /**
@@ -70247,7 +71057,7 @@ class starRevenueStatistics final : public Object {
    *
    * \param[in] revenue_by_day_graph_ A graph containing amount of revenue in a given day.
    * \param[in] status_ Telegram Star revenue status.
-   * \param[in] usd_rate_ Current conversion rate of a Telegram Star to USD.
+   * \param[in] usd_rate_ Current exchange rate of a Telegram Star to USD.
    */
   starRevenueStatistics(object_ptr<StatisticalGraph> &&revenue_by_day_graph_, object_ptr<starRevenueStatus> &&status_, double usd_rate_);
 
@@ -76047,6 +76857,36 @@ class suggestedActionViewChecksHint final : public SuggestedAction {
 };
 
 /**
+ * Suggests the user to view a hint about receiving of the first TON wallet transfer.
+ */
+class suggestedActionViewFirstTonWalletTransferHint final : public SuggestedAction {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Suggests the user to view a hint about receiving of the first TON wallet transfer.
+   */
+  suggestedActionViewFirstTonWalletTransferHint();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 734140787;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * Suggests the user to convert specified supergroup to a broadcast group.
  */
 class suggestedActionConvertToBroadcastGroup final : public SuggestedAction {
@@ -77996,7 +78836,7 @@ class telegramPaymentPurposeStars final : public TelegramPaymentPurpose {
   int53 amount_;
   /// Number of bought Telegram Stars.
   int53 star_count_;
-  /// Identifier of the chat that is supposed to receive the Telegram Stars; pass 0 if none.
+  /// Identifier of the chat that is supposed to receive the Telegram Stars; pass 0 if none. If non-zero and getOption(&quot;star_top_up_disabled&quot;), then the payment isn't allowed and the user can't buy Telegram Stars in this place.
   int53 chat_id_;
 
   /**
@@ -78010,7 +78850,7 @@ class telegramPaymentPurposeStars final : public TelegramPaymentPurpose {
    * \param[in] currency_ ISO 4217 currency code of the payment currency.
    * \param[in] amount_ Paid amount, in the smallest units of the currency.
    * \param[in] star_count_ Number of bought Telegram Stars.
-   * \param[in] chat_id_ Identifier of the chat that is supposed to receive the Telegram Stars; pass 0 if none.
+   * \param[in] chat_id_ Identifier of the chat that is supposed to receive the Telegram Stars; pass 0 if none. If non-zero and getOption(&quot;star_top_up_disabled&quot;), then the payment isn't allowed and the user can't buy Telegram Stars in this place.
    */
   telegramPaymentPurposeStars(string const &currency_, int53 amount_, int53 star_count_, int53 chat_id_);
 
@@ -79016,6 +79856,36 @@ class textEntityTypeBankCardNumber final : public TextEntityType {
 };
 
 /**
+ * An address in the TON blockchain.
+ */
+class textEntityTypeTonAddress final : public TextEntityType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * An address in the TON blockchain.
+   */
+  textEntityTypeTonAddress();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 516305059;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * A bold text.
  */
 class textEntityTypeBold final : public TextEntityType {
@@ -79756,7 +80626,9 @@ class themeSettings final : public Object {
   object_ptr<BackgroundFill> outgoing_message_fill_;
   /// If true, the freeform gradient fill needs to be animated on every sent message.
   bool animate_outgoing_message_fill_;
-  /// Accent color of outgoing messages in ARGB format.
+  /// True, if there is chosen accent color for outgoing messages; otherwise, the color must be deduced from other theme settings.
+  bool has_outgoing_message_accent_color_;
+  /// Accent color of outgoing messages in ARGB format; must be ignored if has_outgoing_message_accent_color is false.
   int32 outgoing_message_accent_color_;
 
   /**
@@ -79772,12 +80644,13 @@ class themeSettings final : public Object {
    * \param[in] background_ The background to be used in chats; may be null.
    * \param[in] outgoing_message_fill_ The fill to be used as a background for outgoing messages; may be null if the fill from the base theme must be used instead.
    * \param[in] animate_outgoing_message_fill_ If true, the freeform gradient fill needs to be animated on every sent message.
-   * \param[in] outgoing_message_accent_color_ Accent color of outgoing messages in ARGB format.
+   * \param[in] has_outgoing_message_accent_color_ True, if there is chosen accent color for outgoing messages; otherwise, the color must be deduced from other theme settings.
+   * \param[in] outgoing_message_accent_color_ Accent color of outgoing messages in ARGB format; must be ignored if has_outgoing_message_accent_color is false.
    */
-  themeSettings(object_ptr<BuiltInTheme> &&base_theme_, int32 accent_color_, object_ptr<background> &&background_, object_ptr<BackgroundFill> &&outgoing_message_fill_, bool animate_outgoing_message_fill_, int32 outgoing_message_accent_color_);
+  themeSettings(object_ptr<BuiltInTheme> &&base_theme_, int32 accent_color_, object_ptr<background> &&background_, object_ptr<BackgroundFill> &&outgoing_message_fill_, bool animate_outgoing_message_fill_, bool has_outgoing_message_accent_color_, int32 outgoing_message_accent_color_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1935106938;
+  static const std::int32_t ID = -68123817;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -80134,6 +81007,1095 @@ class timeZones final : public Object {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -334655570;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Describes state of active stories posted by a chat.
+ */
+class TonCenterApiRequestType: public Object {
+ public:
+};
+
+/**
+ * A GET request.
+ */
+class tonCenterApiRequestTypeGet final : public TonCenterApiRequestType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// URL-encoded query of the request.
+  string query_;
+
+  /**
+   * A GET request.
+   */
+  tonCenterApiRequestTypeGet();
+
+  /**
+   * A GET request.
+   *
+   * \param[in] query_ URL-encoded query of the request.
+   */
+  explicit tonCenterApiRequestTypeGet(string const &query_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1645018545;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A POST request.
+ */
+class tonCenterApiRequestTypePost final : public TonCenterApiRequestType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Payload of the request.
+  string payload_;
+
+  /**
+   * A POST request.
+   */
+  tonCenterApiRequestTypePost();
+
+  /**
+   * A POST request.
+   *
+   * \param[in] payload_ Payload of the request.
+   */
+  explicit tonCenterApiRequestTypePost(string const &payload_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 114401332;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Contains an HTTP URL for TON Center Streaming API.
+ */
+class tonCenterStreamingApiUrl final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The URL.
+  string url_;
+  /// Time after which the URL expires.
+  int32 expires_in_;
+
+  /**
+   * Contains an HTTP URL for TON Center Streaming API.
+   */
+  tonCenterStreamingApiUrl();
+
+  /**
+   * Contains an HTTP URL for TON Center Streaming API.
+   *
+   * \param[in] url_ The URL.
+   * \param[in] expires_in_ Time after which the URL expires.
+   */
+  tonCenterStreamingApiUrl(string const &url_, int32 expires_in_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1824200355;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Represents a TON Connect challenge.
+ */
+class tonConnectChallenge final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// 104-byte challenge.
+  bytes challenge_;
+  /// Unique identifier of the first outgoing event.
+  int64 event_id_;
+
+  /**
+   * Represents a TON Connect challenge.
+   */
+  tonConnectChallenge();
+
+  /**
+   * Represents a TON Connect challenge.
+   *
+   * \param[in] challenge_ 104-byte challenge.
+   * \param[in] event_id_ Unique identifier of the first outgoing event.
+   */
+  tonConnectChallenge(bytes const &challenge_, int64 event_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1178935783;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Represents a data item to share with a dApp.
+ */
+class TonConnectConnectItem: public Object {
+ public:
+};
+
+/**
+ * Address of the wallet.
+ */
+class tonConnectConnectItemAddress final : public TonConnectConnectItem {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Stringified TON network global_id (e.g. &quot;-239&quot; for mainnet); may be empty.
+  string network_;
+
+  /**
+   * Address of the wallet.
+   */
+  tonConnectConnectItemAddress();
+
+  /**
+   * Address of the wallet.
+   *
+   * \param[in] network_ Stringified TON network global_id (e.g. &quot;-239&quot; for mainnet); may be empty.
+   */
+  explicit tonConnectConnectItemAddress(string const &network_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -931047459;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Proof of the wallet ownership.
+ */
+class tonConnectConnectItemProof final : public TonConnectConnectItem {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Payload to be used for the proof (e.g. nonce + expiration timestamp).
+  string payload_;
+
+  /**
+   * Proof of the wallet ownership.
+   */
+  tonConnectConnectItemProof();
+
+  /**
+   * Proof of the wallet ownership.
+   *
+   * \param[in] payload_ Payload to be used for the proof (e.g. nonce + expiration timestamp).
+   */
+  explicit tonConnectConnectItemProof(string const &payload_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -612391170;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class TonConnectConnectItem;
+
+/**
+ * Contains information about a request to connect the user's TON wallet to a dApp using TON Connect.
+ */
+class tonConnectConnectRequest final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// URL of the manifest of the dApp.
+  string manifest_url_;
+  /// Items requested from the wallet.
+  array<object_ptr<TonConnectConnectItem>> items_;
+
+  /**
+   * Contains information about a request to connect the user's TON wallet to a dApp using TON Connect.
+   */
+  tonConnectConnectRequest();
+
+  /**
+   * Contains information about a request to connect the user's TON wallet to a dApp using TON Connect.
+   *
+   * \param[in] manifest_url_ URL of the manifest of the dApp.
+   * \param[in] items_ Items requested from the wallet.
+   */
+  tonConnectConnectRequest(string const &manifest_url_, array<object_ptr<TonConnectConnectItem>> &&items_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1770854951;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class document;
+
+/**
+ * This class is an abstract base class.
+ * Describes manifest of the dApp that is being connected using TON Connect.
+ */
+class TonConnectManifest: public Object {
+ public:
+};
+
+/**
+ * The manifest is being downloaded.
+ */
+class tonConnectManifestPending final : public TonConnectManifest {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The manifest is being downloaded.
+   */
+  tonConnectManifestPending();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -471565541;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The manifest is available.
+ */
+class tonConnectManifestInfo final : public TonConnectManifest {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// URL of the dApp.
+  string url_;
+  /// Name of the dApp.
+  string name_;
+  /// App icon in PNG or ICO format.
+  object_ptr<document> icon_;
+
+  /**
+   * The manifest is available.
+   */
+  tonConnectManifestInfo();
+
+  /**
+   * The manifest is available.
+   *
+   * \param[in] url_ URL of the dApp.
+   * \param[in] name_ Name of the dApp.
+   * \param[in] icon_ App icon in PNG or ICO format.
+   */
+  tonConnectManifestInfo(string const &url_, string const &name_, object_ptr<document> &&icon_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -324655228;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The manifest has failed to download.
+ */
+class tonConnectManifestFailed final : public TonConnectManifest {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The manifest has failed to download.
+   */
+  tonConnectManifestFailed();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1698835386;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The manifest is invalid.
+ */
+class tonConnectManifestInvalid final : public TonConnectManifest {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The manifest is invalid.
+   */
+  tonConnectManifestInvalid();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -2095569200;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Represents a pending TON Connect request.
+ */
+class tonConnectRequest final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the session.
+  int64 session_id_;
+  /// Unique identifier of the service message in the chat 777000 with the request.
+  int53 message_id_;
+  /// Body of the request.
+  bytes body_;
+  /// Point in time (Unix timestamp) when the request will expire; 0 if never.
+  int32 expiration_date_;
+  /// Topic of the request; may be empty if none.
+  string topic_;
+  /// Identifier to trace the request; may be empty if none.
+  string trace_id_;
+
+  /**
+   * Represents a pending TON Connect request.
+   */
+  tonConnectRequest();
+
+  /**
+   * Represents a pending TON Connect request.
+   *
+   * \param[in] session_id_ Unique identifier of the session.
+   * \param[in] message_id_ Unique identifier of the service message in the chat 777000 with the request.
+   * \param[in] body_ Body of the request.
+   * \param[in] expiration_date_ Point in time (Unix timestamp) when the request will expire; 0 if never.
+   * \param[in] topic_ Topic of the request; may be empty if none.
+   * \param[in] trace_id_ Identifier to trace the request; may be empty if none.
+   */
+  tonConnectRequest(int64 session_id_, int53 message_id_, bytes const &body_, int32 expiration_date_, string const &topic_, string const &trace_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 212229183;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Describes state of a request received from a dApp through TON Connect.
+ */
+class TonConnectRequestState: public Object {
+ public:
+};
+
+/**
+ * The request must be accepted or rejected if it isn't expired yet.
+ */
+class tonConnectRequestStatePending final : public TonConnectRequestState {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Point in time (Unix timestamp) when the request will expire or has expired.
+  int32 expiration_date_;
+
+  /**
+   * The request must be accepted or rejected if it isn't expired yet.
+   */
+  tonConnectRequestStatePending();
+
+  /**
+   * The request must be accepted or rejected if it isn't expired yet.
+   *
+   * \param[in] expiration_date_ Point in time (Unix timestamp) when the request will expire or has expired.
+   */
+  explicit tonConnectRequestStatePending(int32 expiration_date_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -536401449;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The request was accepted.
+ */
+class tonConnectRequestStateAccepted final : public TonConnectRequestState {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The request was accepted.
+   */
+  tonConnectRequestStateAccepted();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 373585842;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The request was rejected.
+ */
+class tonConnectRequestStateRejected final : public TonConnectRequestState {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The request was rejected.
+   */
+  tonConnectRequestStateRejected();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -2016437734;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonConnectRequest;
+
+class tonConnectSession;
+
+/**
+ * Represents a session with its pending TON Connect requests.
+ */
+class tonConnectRequests final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The session.
+  object_ptr<tonConnectSession> session_;
+  /// The requests.
+  array<object_ptr<tonConnectRequest>> requests_;
+
+  /**
+   * Represents a session with its pending TON Connect requests.
+   */
+  tonConnectRequests();
+
+  /**
+   * Represents a session with its pending TON Connect requests.
+   *
+   * \param[in] session_ The session.
+   * \param[in] requests_ The requests.
+   */
+  tonConnectRequests(object_ptr<tonConnectSession> &&session_, array<object_ptr<tonConnectRequest>> &&requests_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1348359820;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class TonConnectManifest;
+
+class TonConnectSessionState;
+
+/**
+ * Represents a TON Connect session. See https://github.com/ton-blockchain/ton-connect/tree/main/spec for full TON Connect protocol documentation.
+ */
+class tonConnectSession final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the session.
+  int64 id_;
+  /// Hex-encoded public X25519 key of the dApp.
+  string dapp_client_id_;
+  /// Hex-encoded public X25519 key of the current user's application; may be empty if none.
+  string wallet_client_id_;
+  /// Point in time (Unix timestamp) when the session was created.
+  int32 creation_date_;
+  /// Manifest of the dApp.
+  object_ptr<TonConnectManifest> manifest_;
+  /// Nonce used for the session.
+  bytes nonce_;
+  /// Session state.
+  object_ptr<TonConnectSessionState> state_;
+
+  /**
+   * Represents a TON Connect session. See https://github.com/ton-blockchain/ton-connect/tree/main/spec for full TON Connect protocol documentation.
+   */
+  tonConnectSession();
+
+  /**
+   * Represents a TON Connect session. See https://github.com/ton-blockchain/ton-connect/tree/main/spec for full TON Connect protocol documentation.
+   *
+   * \param[in] id_ Unique identifier of the session.
+   * \param[in] dapp_client_id_ Hex-encoded public X25519 key of the dApp.
+   * \param[in] wallet_client_id_ Hex-encoded public X25519 key of the current user's application; may be empty if none.
+   * \param[in] creation_date_ Point in time (Unix timestamp) when the session was created.
+   * \param[in] manifest_ Manifest of the dApp.
+   * \param[in] nonce_ Nonce used for the session.
+   * \param[in] state_ Session state.
+   */
+  tonConnectSession(int64 id_, string const &dapp_client_id_, string const &wallet_client_id_, int32 creation_date_, object_ptr<TonConnectManifest> &&manifest_, bytes const &nonce_, object_ptr<TonConnectSessionState> &&state_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1444165653;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Represents identifier of an event in a TON Connect session.
+ */
+class tonConnectSessionEventId final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The event identifier.
+  int64 event_id_;
+
+  /**
+   * Represents identifier of an event in a TON Connect session.
+   */
+  tonConnectSessionEventId();
+
+  /**
+   * Represents identifier of an event in a TON Connect session.
+   *
+   * \param[in] event_id_ The event identifier.
+   */
+  explicit tonConnectSessionEventId(int64 event_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1316732711;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Describes state of a TON Connect session.
+ */
+class TonConnectSessionState: public Object {
+ public:
+};
+
+/**
+ * The session is pending.
+ */
+class tonConnectSessionStatePending final : public TonConnectSessionState {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The session is pending.
+   */
+  tonConnectSessionStatePending();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1839661231;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The session is ready.
+ */
+class tonConnectSessionStateReady final : public TonConnectSessionState {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The session is ready.
+   */
+  tonConnectSessionStateReady();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -2044966330;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The session is being closed.
+ */
+class tonConnectSessionStateClosing final : public TonConnectSessionState {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The session is being closed.
+   */
+  tonConnectSessionStateClosing();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1997033710;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The session is closed.
+ */
+class tonConnectSessionStateClosed final : public TonConnectSessionState {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The session is closed.
+   */
+  tonConnectSessionStateClosed();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1053881899;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonConnectSession;
+
+/**
+ * Contains a list of TON Connect sessions.
+ */
+class tonConnectSessions final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The list of sessions.
+  array<object_ptr<tonConnectSession>> sessions_;
+
+  /**
+   * Contains a list of TON Connect sessions.
+   */
+  tonConnectSessions();
+
+  /**
+   * Contains a list of TON Connect sessions.
+   *
+   * \param[in] sessions_ The list of sessions.
+   */
+  explicit tonConnectSessions(array<object_ptr<tonConnectSession>> &&sessions_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 842362001;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class JsonValue;
+
+class document;
+
+class photoSize;
+
+class sticker;
+
+class tonNftAttribute;
+
+/**
+ * Represents an NFT in the TON blockchain.
+ */
+class tonNft final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Address of the collection to which the NFT belongs; may be empty if unknown.
+  string collection_address_;
+  /// Address of the NFT.
+  string address_;
+  /// Address of the owner of the NFT.
+  string owner_address_;
+  /// Index of the NFT among all NFTs from the collection as a decimal number.
+  string index_;
+  /// Name of the NFT.
+  string name_;
+  /// Description of the NFT.
+  string description_;
+  /// Image of the NFT; may be null if none.
+  object_ptr<photoSize> image_;
+  /// Thumbnail of the NFT; may be null if none.
+  object_ptr<photoSize> thumbnail_;
+  /// Content of the NFT; may be null if none.
+  object_ptr<document> content_;
+  /// Sticker of the NFT; may be null if none.
+  object_ptr<sticker> sticker_;
+  /// Attributes of the NFT.
+  array<object_ptr<tonNftAttribute>> attributes_;
+  /// Additional data about the NFT; may be null if none.
+  object_ptr<JsonValue> extra_;
+
+  /**
+   * Represents an NFT in the TON blockchain.
+   */
+  tonNft();
+
+  /**
+   * Represents an NFT in the TON blockchain.
+   *
+   * \param[in] collection_address_ Address of the collection to which the NFT belongs; may be empty if unknown.
+   * \param[in] address_ Address of the NFT.
+   * \param[in] owner_address_ Address of the owner of the NFT.
+   * \param[in] index_ Index of the NFT among all NFTs from the collection as a decimal number.
+   * \param[in] name_ Name of the NFT.
+   * \param[in] description_ Description of the NFT.
+   * \param[in] image_ Image of the NFT; may be null if none.
+   * \param[in] thumbnail_ Thumbnail of the NFT; may be null if none.
+   * \param[in] content_ Content of the NFT; may be null if none.
+   * \param[in] sticker_ Sticker of the NFT; may be null if none.
+   * \param[in] attributes_ Attributes of the NFT.
+   * \param[in] extra_ Additional data about the NFT; may be null if none.
+   */
+  tonNft(string const &collection_address_, string const &address_, string const &owner_address_, string const &index_, string const &name_, string const &description_, object_ptr<photoSize> &&image_, object_ptr<photoSize> &&thumbnail_, object_ptr<document> &&content_, object_ptr<sticker> &&sticker_, array<object_ptr<tonNftAttribute>> &&attributes_, object_ptr<JsonValue> &&extra_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1595898089;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Represents an attribute of an NFT in the TON blockchain.
+ */
+class tonNftAttribute final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Trait type.
+  string trait_type_;
+  /// Value of the attribute.
+  string value_;
+
+  /**
+   * Represents an attribute of an NFT in the TON blockchain.
+   */
+  tonNftAttribute();
+
+  /**
+   * Represents an attribute of an NFT in the TON blockchain.
+   *
+   * \param[in] trait_type_ Trait type.
+   * \param[in] value_ Value of the attribute.
+   */
+  tonNftAttribute(string const &trait_type_, string const &value_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 413249030;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonNft;
+
+/**
+ * Represents a list of TON NFTs.
+ */
+class tonNfts final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// List of NFTs.
+  array<object_ptr<tonNft>> nfts_;
+  /// The offset for the next request. If empty, then there are no more results.
+  string next_offset_;
+
+  /**
+   * Represents a list of TON NFTs.
+   */
+  tonNfts();
+
+  /**
+   * Represents a list of TON NFTs.
+   *
+   * \param[in] nfts_ List of NFTs.
+   * \param[in] next_offset_ The offset for the next request. If empty, then there are no more results.
+   */
+  tonNfts(array<object_ptr<tonNft>> &&nfts_, string const &next_offset_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -361315291;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -80590,6 +82552,694 @@ class tonTransactions final : public Object {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -1391918595;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Represents state of gasless transfers for the current user.
+ */
+class tonWalletGaslessTransfersInfo final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Number of left gasless transfers. The daily available number of gasless transfers is available as getOption(&quot;ton_wallet_gasless_transfer_daily_count_max&quot;).
+  int32 left_count_;
+  /// Point in time (Unix timestamp) when the number of left transfers will be reset; 0 if never.
+  int32 reset_date_;
+  /// Address of the relayer for gasless transfers; may be empty if unavailable.
+  string relayer_address_;
+
+  /**
+   * Represents state of gasless transfers for the current user.
+   */
+  tonWalletGaslessTransfersInfo();
+
+  /**
+   * Represents state of gasless transfers for the current user.
+   *
+   * \param[in] left_count_ Number of left gasless transfers. The daily available number of gasless transfers is available as getOption(&quot;ton_wallet_gasless_transfer_daily_count_max&quot;).
+   * \param[in] reset_date_ Point in time (Unix timestamp) when the number of left transfers will be reset; 0 if never.
+   * \param[in] relayer_address_ Address of the relayer for gasless transfers; may be empty if unavailable.
+   */
+  tonWalletGaslessTransfersInfo(int32 left_count_, int32 reset_date_, string const &relayer_address_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 902660845;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Represents a proof of TON wallet ownership.
+ */
+class tonWalletOwnershipProof final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Public key of the wallet.
+  bytes public_key_;
+  /// The current UNIX timestamp which was used to create the proof.
+  int32 timestamp_;
+  /// The signature prooving the ownership.
+  bytes signature_;
+
+  /**
+   * Represents a proof of TON wallet ownership.
+   */
+  tonWalletOwnershipProof();
+
+  /**
+   * Represents a proof of TON wallet ownership.
+   *
+   * \param[in] public_key_ Public key of the wallet.
+   * \param[in] timestamp_ The current UNIX timestamp which was used to create the proof.
+   * \param[in] signature_ The signature prooving the ownership.
+   */
+  tonWalletOwnershipProof(bytes const &public_key_, int32 timestamp_, bytes const &signature_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1221462559;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Represents a challenge for TON wallet ownership proof.
+ */
+class tonWalletOwnershipProofChallenge final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Payload of the challenge.
+  string payload_;
+  /// Domain of the proof requester.
+  string domain_;
+
+  /**
+   * Represents a challenge for TON wallet ownership proof.
+   */
+  tonWalletOwnershipProofChallenge();
+
+  /**
+   * Represents a challenge for TON wallet ownership proof.
+   *
+   * \param[in] payload_ Payload of the challenge.
+   * \param[in] domain_ Domain of the proof requester.
+   */
+  tonWalletOwnershipProofChallenge(string const &payload_, string const &domain_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -794074177;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Describes state of the wallet of the current user in the TON blockchain.
+ */
+class tonWalletState final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Address of the wallet; may be empty if none.
+  string address_;
+  /// Public key of the wallet; may be empty if none.
+  bytes public_key_;
+  /// The total amount of owned TON Grams, in the smallest units of the cryptocurrency.
+  int53 gram_amount_;
+  /// True, if the wallet is being created.
+  bool is_being_created_;
+  /// True, if backup for the wallet key is enabled.
+  bool is_backup_enabled_;
+  /// True, if the user can enable backup for the wallet key.
+  bool can_enable_backup_;
+  /// True, if the wallet key can be exported using getTonWalletSecretPhrase.
+  bool can_export_phrase_;
+
+  /**
+   * Describes state of the wallet of the current user in the TON blockchain.
+   */
+  tonWalletState();
+
+  /**
+   * Describes state of the wallet of the current user in the TON blockchain.
+   *
+   * \param[in] address_ Address of the wallet; may be empty if none.
+   * \param[in] public_key_ Public key of the wallet; may be empty if none.
+   * \param[in] gram_amount_ The total amount of owned TON Grams, in the smallest units of the cryptocurrency.
+   * \param[in] is_being_created_ True, if the wallet is being created.
+   * \param[in] is_backup_enabled_ True, if backup for the wallet key is enabled.
+   * \param[in] can_enable_backup_ True, if the user can enable backup for the wallet key.
+   * \param[in] can_export_phrase_ True, if the wallet key can be exported using getTonWalletSecretPhrase.
+   */
+  tonWalletState(string const &address_, bytes const &public_key_, int53 gram_amount_, bool is_being_created_, bool is_backup_enabled_, bool can_enable_backup_, bool can_export_phrase_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -655546174;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class TonWalletTransactionState;
+
+class TonWalletTransactionType;
+
+/**
+ * Represents a transaction with the TON wallet of the current user.
+ */
+class tonWalletTransaction final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the transaction.
+  string id_;
+  /// Address in the TON blockchain of the transaction peer; may be empty if the transaction isn't a wallet transfer.
+  string peer_address_;
+  /// Identifier of the other user who participated in the transaction; 0 if unknown.
+  int53 peer_user_id_;
+  /// Identifier of the domain assigned to the peer address; may be empty if none.
+  string peer_domain_;
+  /// Point in time (Unix timestamp) when the transaction was completed.
+  int32 date_;
+  /// The fee amount paid for the transaction in TON Grams, in the smallest units of the cryptocurrency.
+  int53 fee_amount_;
+  /// State of the transaction.
+  object_ptr<TonWalletTransactionState> state_;
+  /// Type of the transaction.
+  object_ptr<TonWalletTransactionType> type_;
+
+  /**
+   * Represents a transaction with the TON wallet of the current user.
+   */
+  tonWalletTransaction();
+
+  /**
+   * Represents a transaction with the TON wallet of the current user.
+   *
+   * \param[in] id_ Unique identifier of the transaction.
+   * \param[in] peer_address_ Address in the TON blockchain of the transaction peer; may be empty if the transaction isn't a wallet transfer.
+   * \param[in] peer_user_id_ Identifier of the other user who participated in the transaction; 0 if unknown.
+   * \param[in] peer_domain_ Identifier of the domain assigned to the peer address; may be empty if none.
+   * \param[in] date_ Point in time (Unix timestamp) when the transaction was completed.
+   * \param[in] fee_amount_ The fee amount paid for the transaction in TON Grams, in the smallest units of the cryptocurrency.
+   * \param[in] state_ State of the transaction.
+   * \param[in] type_ Type of the transaction.
+   */
+  tonWalletTransaction(string const &id_, string const &peer_address_, int53 peer_user_id_, string const &peer_domain_, int32 date_, int53 fee_amount_, object_ptr<TonWalletTransactionState> &&state_, object_ptr<TonWalletTransactionType> &&type_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -2081280655;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Describes state of a transaction with a TON wallet.
+ */
+class TonWalletTransactionState: public Object {
+ public:
+};
+
+/**
+ * The transaction succeeded.
+ */
+class tonWalletTransactionStateSucceeded final : public TonWalletTransactionState {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Hash of the transaction.
+  string tx_hash_;
+
+  /**
+   * The transaction succeeded.
+   */
+  tonWalletTransactionStateSucceeded();
+
+  /**
+   * The transaction succeeded.
+   *
+   * \param[in] tx_hash_ Hash of the transaction.
+   */
+  explicit tonWalletTransactionStateSucceeded(string const &tx_hash_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1719049818;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The transaction failed.
+ */
+class tonWalletTransactionStateFailed final : public TonWalletTransactionState {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * The transaction failed.
+   */
+  tonWalletTransactionStateFailed();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 827481942;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonNft;
+
+/**
+ * This class is an abstract base class.
+ * Describes type of transaction with a TON wallet.
+ */
+class TonWalletTransactionType: public Object {
+ public:
+};
+
+/**
+ * The transaction is a deposit from an on-ramp provider.
+ */
+class tonWalletTransactionTypeOnRampDeposit final : public TonWalletTransactionType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The amount of received cryptocurrency, in the smallest units of the cryptocurrency.
+  int53 amount_;
+  /// Name of the on-ramp provider.
+  string provider_name_;
+
+  /**
+   * The transaction is a deposit from an on-ramp provider.
+   */
+  tonWalletTransactionTypeOnRampDeposit();
+
+  /**
+   * The transaction is a deposit from an on-ramp provider.
+   *
+   * \param[in] amount_ The amount of received cryptocurrency, in the smallest units of the cryptocurrency.
+   * \param[in] provider_name_ Name of the on-ramp provider.
+   */
+  tonWalletTransactionTypeOnRampDeposit(int53 amount_, string const &provider_name_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1570430820;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A transfer of TON Grams to or from the wallet.
+ */
+class tonWalletTransactionTypeTransfer final : public TonWalletTransactionType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The amount of received cryptocurrency, in the smallest units of the cryptocurrency; negative for outgoing transactions.
+  int53 amount_;
+  /// True, if the fee was paid by Telegram.
+  bool is_gasless_;
+  /// Comment added to the transaction.
+  string comment_;
+  /// True, if the comment is encrypted and must be decrypted using the user's private key.
+  bool is_comment_encrypted_;
+
+  /**
+   * A transfer of TON Grams to or from the wallet.
+   */
+  tonWalletTransactionTypeTransfer();
+
+  /**
+   * A transfer of TON Grams to or from the wallet.
+   *
+   * \param[in] amount_ The amount of received cryptocurrency, in the smallest units of the cryptocurrency; negative for outgoing transactions.
+   * \param[in] is_gasless_ True, if the fee was paid by Telegram.
+   * \param[in] comment_ Comment added to the transaction.
+   * \param[in] is_comment_encrypted_ True, if the comment is encrypted and must be decrypted using the user's private key.
+   */
+  tonWalletTransactionTypeTransfer(int53 amount_, bool is_gasless_, string const &comment_, bool is_comment_encrypted_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -2077618700;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A transfer of a TON NFT to or from the wallet.
+ */
+class tonWalletTransactionTypeNftTransfer final : public TonWalletTransactionType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The transferred NFT.
+  object_ptr<tonNft> nft_;
+  /// True, if the transfer is outgoing.
+  bool is_outgoing_;
+  /// Comment added to the transaction.
+  string comment_;
+  /// True, if the comment is encrypted and must be decrypted using the user's private key.
+  bool is_comment_encrypted_;
+
+  /**
+   * A transfer of a TON NFT to or from the wallet.
+   */
+  tonWalletTransactionTypeNftTransfer();
+
+  /**
+   * A transfer of a TON NFT to or from the wallet.
+   *
+   * \param[in] nft_ The transferred NFT.
+   * \param[in] is_outgoing_ True, if the transfer is outgoing.
+   * \param[in] comment_ Comment added to the transaction.
+   * \param[in] is_comment_encrypted_ True, if the comment is encrypted and must be decrypted using the user's private key.
+   */
+  tonWalletTransactionTypeNftTransfer(object_ptr<tonNft> &&nft_, bool is_outgoing_, string const &comment_, bool is_comment_encrypted_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 547073159;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Change of the wallet key.
+ */
+class tonWalletTransactionTypeKeyChange final : public TonWalletTransactionType {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Change of the wallet key.
+   */
+  tonWalletTransactionTypeKeyChange();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1748368342;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonWalletTransaction;
+
+/**
+ * Represents a list of TON Gram transactions.
+ */
+class tonWalletTransactions final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The total amount of owned TON Grams, in the smallest units of the cryptocurrency.
+  int53 gram_amount_;
+  /// List of transactions.
+  array<object_ptr<tonWalletTransaction>> transactions_;
+  /// The offset for the next request. If empty, then there are no more results.
+  string next_offset_;
+
+  /**
+   * Represents a list of TON Gram transactions.
+   */
+  tonWalletTransactions();
+
+  /**
+   * Represents a list of TON Gram transactions.
+   *
+   * \param[in] gram_amount_ The total amount of owned TON Grams, in the smallest units of the cryptocurrency.
+   * \param[in] transactions_ List of transactions.
+   * \param[in] next_offset_ The offset for the next request. If empty, then there are no more results.
+   */
+  tonWalletTransactions(int53 gram_amount_, array<object_ptr<tonWalletTransaction>> &&transactions_, string const &next_offset_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1372826145;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * This class is an abstract base class.
+ * Represents expected receiver of a TON wallet transfer.
+ */
+class TonWalletTransferReceiver: public Object {
+ public:
+};
+
+/**
+ * The receiver is specified by its username.
+ */
+class tonWalletTransferReceiverUser final : public TonWalletTransferReceiver {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Username of the user. Use searchPublicChat to find the user, check that it is a regular user, and then use createUserTonWallet to get information about the user's TON wallet.
+  string username_;
+
+  /**
+   * The receiver is specified by its username.
+   */
+  tonWalletTransferReceiverUser();
+
+  /**
+   * The receiver is specified by its username.
+   *
+   * \param[in] username_ Username of the user. Use searchPublicChat to find the user, check that it is a regular user, and then use createUserTonWallet to get information about the user's TON wallet.
+   */
+  explicit tonWalletTransferReceiverUser(string const &username_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1279755598;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The receiver is specified by its address.
+ */
+class tonWalletTransferReceiverAddress final : public TonWalletTransferReceiver {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Address of the receiver. Use getAddressTonWallet to get information about the user's TON wallet.
+  string address_;
+
+  /**
+   * The receiver is specified by its address.
+   */
+  tonWalletTransferReceiverAddress();
+
+  /**
+   * The receiver is specified by its address.
+   *
+   * \param[in] address_ Address of the receiver. Use getAddressTonWallet to get information about the user's TON wallet.
+   */
+  explicit tonWalletTransferReceiverAddress(string const &address_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 8405880;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonWalletTransaction;
+
+/**
+ * Represents result of cryptocurrency transfer from the current user's TON wallet.
+ */
+class tonWalletTransferResult final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// True, if the transfer is gasless.
+  bool is_gasless_;
+  /// Unique identifier of the sent message; use getTonWalletTransactionByMsgHash to poll information about the transaction.
+  bytes msg_hash_;
+  /// The completed transaction; may be null if the transaction is still pending.
+  object_ptr<tonWalletTransaction> transaction_;
+
+  /**
+   * Represents result of cryptocurrency transfer from the current user's TON wallet.
+   */
+  tonWalletTransferResult();
+
+  /**
+   * Represents result of cryptocurrency transfer from the current user's TON wallet.
+   *
+   * \param[in] is_gasless_ True, if the transfer is gasless.
+   * \param[in] msg_hash_ Unique identifier of the sent message; use getTonWalletTransactionByMsgHash to poll information about the transaction.
+   * \param[in] transaction_ The completed transaction; may be null if the transaction is still pending.
+   */
+  tonWalletTransferResult(bool is_gasless_, bytes const &msg_hash_, object_ptr<tonWalletTransaction> &&transaction_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1353122790;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -81294,6 +83944,12 @@ class supergroupFullInfo;
 class termsOfService;
 
 class textCompositionStyle;
+
+class tonConnectSession;
+
+class tonWalletGaslessTransfersInfo;
+
+class tonWalletState;
 
 class trendingStickerSets;
 
@@ -86523,6 +89179,45 @@ class updateStoryStealthMode final : public Update {
 };
 
 /**
+ * Lists of suffixes allowed in secondary bot usernames, which can be added additionally to the main username if the bot's owner has a Telegram Premium subscription.
+ */
+class updateAllowedBotUsernamePremiumSuffixes final : public Update {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The list of allowed suffixes.
+  array<string> suffixes_;
+
+  /**
+   * Lists of suffixes allowed in secondary bot usernames, which can be added additionally to the main username if the bot's owner has a Telegram Premium subscription.
+   */
+  updateAllowedBotUsernamePremiumSuffixes();
+
+  /**
+   * Lists of suffixes allowed in secondary bot usernames, which can be added additionally to the main username if the bot's owner has a Telegram Premium subscription.
+   *
+   * \param[in] suffixes_ The list of allowed suffixes.
+   */
+  explicit updateAllowedBotUsernamePremiumSuffixes(array<string> &&suffixes_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -95421585;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * Lists of bots which Mini Apps must be allowed to read text from clipboard and must be opened without a warning.
  */
 class updateTrustedMiniAppBots final : public Update {
@@ -87731,6 +90426,162 @@ class updateOwnedGramCount final : public Update {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -2126618955;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The state of the TON wallet of the current user has changed.
+ */
+class updateTonWalletState final : public Update {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The new state of the wallet.
+  object_ptr<tonWalletState> state_;
+
+  /**
+   * The state of the TON wallet of the current user has changed.
+   */
+  updateTonWalletState();
+
+  /**
+   * The state of the TON wallet of the current user has changed.
+   *
+   * \param[in] state_ The new state of the wallet.
+   */
+  explicit updateTonWalletState(object_ptr<tonWalletState> &&state_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1146625413;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * The information about gasless transfers has changed.
+ */
+class updateTonWalletGaslessTransfersInfo final : public Update {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The new state of the wallet.
+  object_ptr<tonWalletGaslessTransfersInfo> info_;
+
+  /**
+   * The information about gasless transfers has changed.
+   */
+  updateTonWalletGaslessTransfersInfo();
+
+  /**
+   * The information about gasless transfers has changed.
+   *
+   * \param[in] info_ The new state of the wallet.
+   */
+  explicit updateTonWalletGaslessTransfersInfo(object_ptr<tonWalletGaslessTransfersInfo> &&info_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1340758750;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * A session of a TON Connect has changed.
+ */
+class updateTonWalletTonConnectSession final : public Update {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The new state of the session.
+  object_ptr<tonConnectSession> session_;
+
+  /**
+   * A session of a TON Connect has changed.
+   */
+  updateTonWalletTonConnectSession();
+
+  /**
+   * A session of a TON Connect has changed.
+   *
+   * \param[in] session_ The new state of the session.
+   */
+  explicit updateTonWalletTonConnectSession(object_ptr<tonConnectSession> &&session_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1709603581;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * TON Connect sessions must be disconnected in a regular way.
+ */
+class updateTonWalletTonConnectSessionDisconnectRequired final : public Update {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifiers of the sessions.
+  array<int64> session_ids_;
+
+  /**
+   * TON Connect sessions must be disconnected in a regular way.
+   */
+  updateTonWalletTonConnectSessionDisconnectRequired();
+
+  /**
+   * TON Connect sessions must be disconnected in a regular way.
+   *
+   * \param[in] session_ids_ Identifiers of the sessions.
+   */
+  explicit updateTonWalletTonConnectSessionDisconnectRequired(array<int64> &&session_ids_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 919346049;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -92320,6 +95171,92 @@ class userSupportInfo final : public Object {
 };
 
 /**
+ * Contains TON wallet address of a user.
+ */
+class userTonWalletAddress final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the user; 0 if unknown.
+  int53 user_id_;
+  /// Address of the user's wallet in the TON blockchain.
+  string wallet_address_;
+  /// Public key of the user.
+  bytes public_key_;
+
+  /**
+   * Contains TON wallet address of a user.
+   */
+  userTonWalletAddress();
+
+  /**
+   * Contains TON wallet address of a user.
+   *
+   * \param[in] user_id_ Identifier of the user; 0 if unknown.
+   * \param[in] wallet_address_ Address of the user's wallet in the TON blockchain.
+   * \param[in] public_key_ Public key of the user.
+   */
+  userTonWalletAddress(int53 user_id_, string const &wallet_address_, bytes const &public_key_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -666000734;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class userTonWalletAddress;
+
+/**
+ * Represents a list of TON wallet addresses of users.
+ */
+class userTonWalletAddresses final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// A list of TON wallet addresses.
+  array<object_ptr<userTonWalletAddress>> addresses_;
+
+  /**
+   * Represents a list of TON wallet addresses of users.
+   */
+  userTonWalletAddresses();
+
+  /**
+   * Represents a list of TON wallet addresses of users.
+   *
+   * \param[in] addresses_ A list of TON wallet addresses.
+   */
+  explicit userTonWalletAddresses(array<object_ptr<userTonWalletAddress>> &&addresses_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -814605800;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
  * This class is an abstract base class.
  * Represents the type of user. The following types are possible: regular users, deleted users and bots.
  */
@@ -92519,6 +95456,8 @@ class usernames final : public Object {
   string editable_username_;
   /// Collectible usernames that were purchased at https://fragment.com and can be passed to getCollectibleItemInfo for more details.
   array<string> collectible_usernames_;
+  /// Secondary non-collectible username; for bots only. Can't be used in toggleBotUsernameIsActive; use addBotSecondaryUsername or deleteBotSecondaryUsername to edit it. If the username is disabled, then Telegram Premium subscription is required to re-enable it.
+  string secondary_username_;
 
   /**
    * Describes usernames assigned to a user, a supergroup, or a channel.
@@ -92532,11 +95471,12 @@ class usernames final : public Object {
    * \param[in] disabled_usernames_ List of currently disabled usernames; the username can be activated with toggleUsernameIsActive, toggleBotUsernameIsActive, or toggleSupergroupUsernameIsActive.
    * \param[in] editable_username_ Active or disabled username, which may be changed with setUsername or setSupergroupUsername.
    * \param[in] collectible_usernames_ Collectible usernames that were purchased at https://fragment.com and can be passed to getCollectibleItemInfo for more details.
+   * \param[in] secondary_username_ Secondary non-collectible username; for bots only. Can't be used in toggleBotUsernameIsActive; use addBotSecondaryUsername or deleteBotSecondaryUsername to edit it. If the username is disabled, then Telegram Premium subscription is required to re-enable it.
    */
-  usernames(array<string> &&active_usernames_, array<string> &&disabled_usernames_, string const &editable_username_, array<string> &&collectible_usernames_);
+  usernames(array<string> &&active_usernames_, array<string> &&disabled_usernames_, string const &editable_username_, array<string> &&collectible_usernames_, string const &secondary_username_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 1263390614;
+  static const std::int32_t ID = 768022622;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -93219,6 +96159,48 @@ class voiceNote final : public Object {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -1175302923;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+/**
+ * Describes balance of the current user in the bot https://t.me/walt.
+ */
+class walletBotBalance final : public Object {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// True, if the user has positive TON Gram balance.
+  bool has_balance_;
+  /// The URL to open to launch the bot; may be empty if none.
+  string url_;
+
+  /**
+   * Describes balance of the current user in the bot https://t.me/walt.
+   */
+  walletBotBalance();
+
+  /**
+   * Describes balance of the current user in the bot https://t.me/walt.
+   *
+   * \param[in] has_balance_ True, if the user has positive TON Gram balance.
+   * \param[in] url_ The URL to open to launch the bot; may be empty if none.
+   */
+  walletBotBalance(bool has_balance_, string const &url_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -855214867;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -94036,6 +97018,59 @@ class addBotMediaPreview final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<botMediaPreview>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Adds a secondary username to a bot. Can be called only if userTypeBot.can_be_edited, the bot has no secondary username and the current user has Telegram Premium subscription. May return an error with a message &quot;OWNER_USERNAMES_LIMIT_EXCEEDED&quot; if the current user already owns at least getOption(&quot;secondary_bot_username_count_max&quot;) bots with a secondary username.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class addBotSecondaryUsername final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the target bot.
+  int53 bot_user_id_;
+  /// The new secondary username; must be non-empty. Use checkBotUsername to check username validness.
+  string username_;
+
+  /**
+   * Default constructor for a function, which adds a secondary username to a bot. Can be called only if userTypeBot.can_be_edited, the bot has no secondary username and the current user has Telegram Premium subscription. May return an error with a message &quot;OWNER_USERNAMES_LIMIT_EXCEEDED&quot; if the current user already owns at least getOption(&quot;secondary_bot_username_count_max&quot;) bots with a secondary username.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  addBotSecondaryUsername();
+
+  /**
+   * Creates a function, which adds a secondary username to a bot. Can be called only if userTypeBot.can_be_edited, the bot has no secondary username and the current user has Telegram Premium subscription. May return an error with a message &quot;OWNER_USERNAMES_LIMIT_EXCEEDED&quot; if the current user already owns at least getOption(&quot;secondary_bot_username_count_max&quot;) bots with a secondary username.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] bot_user_id_ Identifier of the target bot.
+   * \param[in] username_ The new secondary username; must be non-empty. Use checkBotUsername to check username validness.
+   */
+  addBotSecondaryUsername(int53 bot_user_id_, string const &username_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 352599609;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -96397,6 +99432,65 @@ class answerShippingQuery final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class ok;
+
+/**
+ * Sends an answer for a request received through TON Connect.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class answerTonConnectRequest final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the TON Connect session.
+  int64 session_id_;
+  /// Identifier of the message with the request.
+  int53 message_id_;
+  /// Identifier to trace the request.
+  string trace_id_;
+  /// Body of the response.
+  bytes body_;
+
+  /**
+   * Default constructor for a function, which sends an answer for a request received through TON Connect.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  answerTonConnectRequest();
+
+  /**
+   * Creates a function, which sends an answer for a request received through TON Connect.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] session_id_ Unique identifier of the TON Connect session.
+   * \param[in] message_id_ Identifier of the message with the request.
+   * \param[in] trace_id_ Identifier to trace the request.
+   * \param[in] body_ Body of the response.
+   */
+  answerTonConnectRequest(int64 session_id_, int53 message_id_, string const &trace_id_, bytes const &body_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 931013809;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class InputInlineQueryResult;
 
 class inlineMessageId;
@@ -97961,7 +101055,7 @@ class checkAuthenticationWebToken final : public Function {
 class CheckChatUsernameResult;
 
 /**
- * Checks whether a username can be set for a new bot. Use checkChatUsername to check username for other chat types.
+ * Checks whether a username can be set for a new bot or assigned as a secondary username to an existing bot. Use checkChatUsername to check username for other chat types.
  *
  * Returns object_ptr<CheckChatUsernameResult>.
  */
@@ -97977,25 +101071,28 @@ class checkBotUsername final : public Function {
  public:
   /// Username to be checked.
   string username_;
+  /// Pass true to check whether the username is suitable as a secondary username for an existing bot; pass false to check whether the username is suitable for createBot.
+  bool is_secondary_;
 
   /**
-   * Default constructor for a function, which checks whether a username can be set for a new bot. Use checkChatUsername to check username for other chat types.
+   * Default constructor for a function, which checks whether a username can be set for a new bot or assigned as a secondary username to an existing bot. Use checkChatUsername to check username for other chat types.
    *
    * Returns object_ptr<CheckChatUsernameResult>.
    */
   checkBotUsername();
 
   /**
-   * Creates a function, which checks whether a username can be set for a new bot. Use checkChatUsername to check username for other chat types.
+   * Creates a function, which checks whether a username can be set for a new bot or assigned as a secondary username to an existing bot. Use checkChatUsername to check username for other chat types.
    *
    * Returns object_ptr<CheckChatUsernameResult>.
    *
    * \param[in] username_ Username to be checked.
+   * \param[in] is_secondary_ Pass true to check whether the username is suitable as a secondary username for an existing bot; pass false to check whether the username is suitable for createBot.
    */
-  explicit checkBotUsername(string const &username_);
+  checkBotUsername(string const &username_, bool is_secondary_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1358454679;
+  static const std::int32_t ID = 508444428;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<CheckChatUsernameResult>;
@@ -98668,6 +101765,45 @@ class checkStickerSetName final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class walletBotBalance;
+
+/**
+ * Returns information about balance of the current user in the bot https://t.me/walt; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<WalletBotBalance>.
+ */
+class checkWalletBotBalance final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Default constructor for a function, which returns information about balance of the current user in the bot https://t.me/walt; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<WalletBotBalance>.
+   */
+  checkWalletBotBalance();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1585020937;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<walletBotBalance>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class ok;
 
 /**
@@ -98712,6 +101848,65 @@ class checkWebAppFileDownload final : public Function {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -389397278;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Claims a request received through TON Connect for processing on this device.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class claimTonConnectRequest final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the TON Connect session.
+  int64 session_id_;
+  /// Identifier of the message with the request.
+  int53 message_id_;
+  /// Identifier of the request assigned by the dApp.
+  string dapp_request_id_;
+  /// Pass true to reject the request.
+  bool is_rejected_;
+
+  /**
+   * Default constructor for a function, which claims a request received through TON Connect for processing on this device.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  claimTonConnectRequest();
+
+  /**
+   * Creates a function, which claims a request received through TON Connect for processing on this device.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] session_id_ Unique identifier of the TON Connect session.
+   * \param[in] message_id_ Identifier of the message with the request.
+   * \param[in] dapp_request_id_ Identifier of the request assigned by the dApp.
+   * \param[in] is_rejected_ Pass true to reject the request.
+   */
+  claimTonConnectRequest(int64 session_id_, int53 message_id_, string const &dapp_request_id_, bool is_rejected_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1261244142;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -100167,7 +103362,7 @@ class createBot final : public Function {
   int53 manager_bot_user_id_;
   /// Name of the bot; 1-64 characters.
   string name_;
-  /// Username of the bot. The username must end with &quot;bot&quot;. Use checkBotUsername to find whether the name is suitable.
+  /// Username of the bot. The username must end with &quot;bot&quot; or a string from updateAllowedBotUsernamePremiumSuffixes case-insensitive. Use checkBotUsername to find whether the name is suitable. If the username doesn't end with &quot;bot&quot;, then the current user must have Telegram Premium subscription, the chosen username will be assigned as secondary and an additional regular username ending with &quot;bot&quot; will be automatically assigned to the created bot.
   string username_;
   /// Pass true if the bot is created from an internalLinkTypeRequestManagedBot link.
   bool via_link_;
@@ -100186,7 +103381,7 @@ class createBot final : public Function {
    *
    * \param[in] manager_bot_user_id_ Identifier of the bot that will manage the created bot.
    * \param[in] name_ Name of the bot; 1-64 characters.
-   * \param[in] username_ Username of the bot. The username must end with &quot;bot&quot;. Use checkBotUsername to find whether the name is suitable.
+   * \param[in] username_ Username of the bot. The username must end with &quot;bot&quot; or a string from updateAllowedBotUsernamePremiumSuffixes case-insensitive. Use checkBotUsername to find whether the name is suitable. If the username doesn't end with &quot;bot&quot;, then the current user must have Telegram Premium subscription, the chosen username will be assigned as secondary and an additional regular username ending with &quot;bot&quot; will be automatically assigned to the created bot.
    * \param[in] via_link_ Pass true if the bot is created from an internalLinkTypeRequestManagedBot link.
    */
   createBot(int53 manager_bot_user_id_, string const &name_, string const &username_, bool via_link_);
@@ -101073,6 +104268,86 @@ class createNewSupergroupChat final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class onRampPaymentSession;
+
+/**
+ * Creates a session for an on-ramp payment.
+ *
+ * Returns object_ptr<OnRampPaymentSession>.
+ */
+class createOnRampPaymentSession final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the on-ramp provider.
+  string provider_id_;
+  /// The cryptocurrency that will be bought.
+  string cryptocurrency_;
+  /// Address to which the cryptocurrency will be sent.
+  string address_;
+  /// Name of the chosen payment method; pass an empty string if none.
+  string payment_method_name_;
+  /// ISO 4217 currency code of the currency that will be used for the purchase; pass an empty string if unknown.
+  string base_currency_;
+  /// The amount of the cryptocurrency to buy; pass an empty string if the user selected base_currency_amount.
+  string cryptocurrency_amount_;
+  /// The amount of the base currency to spend; pass an empty string if the user selected cryptocurrency_amount.
+  string base_currency_amount_;
+  /// Memo for the query; pass an empty string if none.
+  string memo_;
+  /// Preferred theme for the WebView; pass &quot;light&quot; for a light theme, &quot;dark&quot; for a dark theme, or leave empty for a default theme.
+  string theme_;
+  /// The URL opened on successful payment; pass an empty string if none.
+  string success_return_url_;
+  /// The URL opened on failed payment; pass an empty string if none.
+  string fail_return_url_;
+
+  /**
+   * Default constructor for a function, which creates a session for an on-ramp payment.
+   *
+   * Returns object_ptr<OnRampPaymentSession>.
+   */
+  createOnRampPaymentSession();
+
+  /**
+   * Creates a function, which creates a session for an on-ramp payment.
+   *
+   * Returns object_ptr<OnRampPaymentSession>.
+   *
+   * \param[in] provider_id_ Unique identifier of the on-ramp provider.
+   * \param[in] cryptocurrency_ The cryptocurrency that will be bought.
+   * \param[in] address_ Address to which the cryptocurrency will be sent.
+   * \param[in] payment_method_name_ Name of the chosen payment method; pass an empty string if none.
+   * \param[in] base_currency_ ISO 4217 currency code of the currency that will be used for the purchase; pass an empty string if unknown.
+   * \param[in] cryptocurrency_amount_ The amount of the cryptocurrency to buy; pass an empty string if the user selected base_currency_amount.
+   * \param[in] base_currency_amount_ The amount of the base currency to spend; pass an empty string if the user selected cryptocurrency_amount.
+   * \param[in] memo_ Memo for the query; pass an empty string if none.
+   * \param[in] theme_ Preferred theme for the WebView; pass &quot;light&quot; for a light theme, &quot;dark&quot; for a dark theme, or leave empty for a default theme.
+   * \param[in] success_return_url_ The URL opened on successful payment; pass an empty string if none.
+   * \param[in] fail_return_url_ The URL opened on failed payment; pass an empty string if none.
+   */
+  createOnRampPaymentSession(string const &provider_id_, string const &cryptocurrency_, string const &address_, string const &payment_method_name_, string const &base_currency_, string const &cryptocurrency_amount_, string const &base_currency_amount_, string const &memo_, string const &theme_, string const &success_return_url_, string const &fail_return_url_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -259267122;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<onRampPaymentSession>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class chat;
 
 /**
@@ -101444,6 +104719,109 @@ class createTextCompositionStyle final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<textCompositionStyle>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonConnectSession;
+
+/**
+ * Creates a TON Connect session; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<TonConnectSession>.
+ */
+class createTonConnectSession final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Hex-encoded public X25519 key of the dApp.
+  string dapp_client_id_;
+  /// URL of the manifest of the dApp.
+  string manifest_url_;
+
+  /**
+   * Default constructor for a function, which creates a TON Connect session; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonConnectSession>.
+   */
+  createTonConnectSession();
+
+  /**
+   * Creates a function, which creates a TON Connect session; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonConnectSession>.
+   *
+   * \param[in] dapp_client_id_ Hex-encoded public X25519 key of the dApp.
+   * \param[in] manifest_url_ URL of the manifest of the dApp.
+   */
+  createTonConnectSession(string const &dapp_client_id_, string const &manifest_url_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1463778794;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonConnectSession>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class userTonWalletAddress;
+
+/**
+ * Creates a TON wallet for the specified regular user; can be used only if getOption(&quot;can_use_ton_wallet&quot;). The current user must have positive TON wallet balance.
+ *
+ * Returns object_ptr<UserTonWalletAddress>.
+ */
+class createUserTonWallet final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the user.
+  int53 user_id_;
+
+  /**
+   * Default constructor for a function, which creates a TON wallet for the specified regular user; can be used only if getOption(&quot;can_use_ton_wallet&quot;). The current user must have positive TON wallet balance.
+   *
+   * Returns object_ptr<UserTonWalletAddress>.
+   */
+  createUserTonWallet();
+
+  /**
+   * Creates a function, which creates a TON wallet for the specified regular user; can be used only if getOption(&quot;can_use_ton_wallet&quot;). The current user must have positive TON wallet balance.
+   *
+   * Returns object_ptr<UserTonWalletAddress>.
+   *
+   * \param[in] user_id_ Identifier of the user.
+   */
+  explicit createUserTonWallet(int53 user_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1295458892;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<userTonWalletAddress>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -102039,6 +105417,56 @@ class deleteBotMediaPreviews final : public Function {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -1397512722;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Removes a secondary username from a bot. Can be called only if userTypeBot.can_be_edited == true and the bot has a secondary username.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class deleteBotSecondaryUsername final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the target bot.
+  int53 bot_user_id_;
+
+  /**
+   * Default constructor for a function, which removes a secondary username from a bot. Can be called only if userTypeBot.can_be_edited == true and the bot has a secondary username.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  deleteBotSecondaryUsername();
+
+  /**
+   * Creates a function, which removes a secondary username from a bot. Can be called only if userTypeBot.can_be_edited == true and the bot has a secondary username.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] bot_user_id_ Identifier of the target bot.
+   */
+  explicit deleteBotSecondaryUsername(int53 bot_user_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1892068368;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -102785,6 +106213,56 @@ class deleteCommands final : public Function {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = 1002732586;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Deletes a community; requires owner privileges.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class deleteCommunity final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the community.
+  int53 community_id_;
+
+  /**
+   * Default constructor for a function, which deletes a community; requires owner privileges.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  deleteCommunity();
+
+  /**
+   * Creates a function, which deletes a community; requires owner privileges.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] community_id_ Identifier of the community.
+   */
+  explicit deleteCommunity(int53 community_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1848566901;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -104211,6 +107689,56 @@ class deleteTextCompositionStyle final : public Function {
 class ok;
 
 /**
+ * Deletes the current TON wallet of the user and creates a new one; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<Ok>.
+ */
+class deleteTonWallet final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Password of the current user; pass an empty string unless receive an error with a message &quot;PASSWORD_MISSING&quot; for a passwordless request.
+  string password_;
+
+  /**
+   * Default constructor for a function, which deletes the current TON wallet of the user and creates a new one; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<Ok>.
+   */
+  deleteTonWallet();
+
+  /**
+   * Creates a function, which deletes the current TON wallet of the user and creates a new one; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] password_ Password of the current user; pass an empty string unless receive an error with a message &quot;PASSWORD_MISSING&quot; for a passwordless request.
+   */
+  explicit deleteTonWallet(string const &password_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1886897005;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
  * Closes the TDLib instance, destroying all local data without a proper logout. The current user session will remain in the list of all active sessions. All local data will be destroyed. After the destruction completes updateAuthorizationState with authorizationStateClosed will be sent. Can be called before authorization.
  *
  * Returns object_ptr<Ok>.
@@ -104324,6 +107852,108 @@ class disableProxy final : public Function {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -2100095102;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Disables backup of the TON wallet of the user. Works only if tonWalletState.is_backup_enabled is true.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class disableTonWalletBackup final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Password of the current user; pass an empty string unless receive an error with a message &quot;PASSWORD_MISSING&quot; for a passwordless request.
+  string password_;
+
+  /**
+   * Default constructor for a function, which disables backup of the TON wallet of the user. Works only if tonWalletState.is_backup_enabled is true.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  disableTonWalletBackup();
+
+  /**
+   * Creates a function, which disables backup of the TON wallet of the user. Works only if tonWalletState.is_backup_enabled is true.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] password_ Password of the current user; pass an empty string unless receive an error with a message &quot;PASSWORD_MISSING&quot; for a passwordless request.
+   */
+  explicit disableTonWalletBackup(string const &password_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1331171002;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+class tonWalletOwnershipProof;
+
+/**
+ * Disables backup of the TON wallet of the user using proof of wallet ownership instead of the password. Works only if tonWalletState.is_backup_enabled is true.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class disableTonWalletBackupWithProof final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Proof of the TON wallet ownership; use getTonWalletOwnershipProofChallenge to get a challenge for the proof.
+  object_ptr<tonWalletOwnershipProof> proof_;
+
+  /**
+   * Default constructor for a function, which disables backup of the TON wallet of the user using proof of wallet ownership instead of the password. Works only if tonWalletState.is_backup_enabled is true.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  disableTonWalletBackupWithProof();
+
+  /**
+   * Creates a function, which disables backup of the TON wallet of the user using proof of wallet ownership instead of the password. Works only if tonWalletState.is_backup_enabled is true.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] proof_ Proof of the TON wallet ownership; use getTonWalletOwnershipProofChallenge to get a challenge for the proof.
+   */
+  explicit disableTonWalletBackupWithProof(object_ptr<tonWalletOwnershipProof> &&proof_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1938588651;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -104498,6 +108128,59 @@ class disconnectAllWebsites final : public Function {
 class ok;
 
 /**
+ * Closes a TON Connect session.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class disconnectTonConnectSession final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the TON Connect session to close.
+  int64 session_id_;
+  /// Encrypted body of the disconnect event; may be empty if the session has already been closed. Use getTonConnectSessionNextEventId to get event identifier for the event.
+  bytes body_;
+
+  /**
+   * Default constructor for a function, which closes a TON Connect session.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  disconnectTonConnectSession();
+
+  /**
+   * Creates a function, which closes a TON Connect session.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] session_id_ Unique identifier of the TON Connect session to close.
+   * \param[in] body_ Encrypted body of the disconnect event; may be empty if the session has already been closed. Use getTonConnectSessionNextEventId to get event identifier for the event.
+   */
+  disconnectTonConnectSession(int64 session_id_, bytes const &body_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -230966976;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
  * Disconnects website from the current user's Telegram account.
  *
  * Returns object_ptr<Ok>.
@@ -104533,6 +108216,56 @@ class disconnectWebsite final : public Function {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = -778767395;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Dismissess a received web token without consumption; for official Telegram apps only.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class dismissWebToken final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The token to dismiss.
+  string token_;
+
+  /**
+   * Default constructor for a function, which dismissess a received web token without consumption; for official Telegram apps only.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  dismissWebToken();
+
+  /**
+   * Creates a function, which dismissess a received web token without consumption; for official Telegram apps only.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] token_ The token to dismiss.
+   */
+  explicit dismissWebToken(string const &token_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1397082340;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -105234,69 +108967,6 @@ class editBusinessStory final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<story>;
-
-  /**
-   * Helper function for to_string method. Appends string representation of the object to the storer.
-   * \param[in] s Storer to which object string representation will be appended.
-   * \param[in] field_name Object field_name if applicable.
-   */
-  void store(TlStorerToString &s, const char *field_name) const final;
-};
-
-class InputMessageContent;
-
-class ReplyMarkup;
-
-class ok;
-
-/**
- * Edits the message from which a callback query has originated with an ephemeral message; for bots only.
- *
- * Returns object_ptr<Ok>.
- */
-class editCallbackQueryMessage final : public Function {
-  /**
-   * Returns identifier uniquely determining a type of the object.
-   * \return this->ID.
-   */
-  std::int32_t get_id() const final {
-    return ID;
-  }
-
- public:
-  /// Identifier of the callback query.
-  int64 callback_query_id_;
-  /// Pass true if the content of the message must be protected from forwarding and saving.
-  bool protect_content_;
-  /// The new message reply markup; pass null if none.
-  object_ptr<ReplyMarkup> reply_markup_;
-  /// New content of the message. Must be one of the following types: inputMessageText, inputMessageAnimation, inputMessageAudio, inputMessageDocument, inputMessagePhoto, inputMessageRichMessage, inputMessageSticker, inputMessageVideo, inputMessageVideoNote, inputMessageVoiceNote.
-  object_ptr<InputMessageContent> input_message_content_;
-
-  /**
-   * Default constructor for a function, which edits the message from which a callback query has originated with an ephemeral message; for bots only.
-   *
-   * Returns object_ptr<Ok>.
-   */
-  editCallbackQueryMessage();
-
-  /**
-   * Creates a function, which edits the message from which a callback query has originated with an ephemeral message; for bots only.
-   *
-   * Returns object_ptr<Ok>.
-   *
-   * \param[in] callback_query_id_ Identifier of the callback query.
-   * \param[in] protect_content_ Pass true if the content of the message must be protected from forwarding and saving.
-   * \param[in] reply_markup_ The new message reply markup; pass null if none.
-   * \param[in] input_message_content_ New content of the message. Must be one of the following types: inputMessageText, inputMessageAnimation, inputMessageAudio, inputMessageDocument, inputMessagePhoto, inputMessageRichMessage, inputMessageSticker, inputMessageVideo, inputMessageVideoNote, inputMessageVoiceNote.
-   */
-  editCallbackQueryMessage(int64 callback_query_id_, bool protect_content_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
-
-  /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = 403509242;
-
-  /// Typedef for the type returned by the function.
-  using ReturnType = object_ptr<ok>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -107044,6 +110714,61 @@ class enableProxy final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class ok;
+
+class tonWalletOwnershipProof;
+
+/**
+ * Enables backup of the TON wallet of the user. Works only if tonWalletState.can_enable_backup is true.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class enableTonWalletBackup final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The secret phrase of the user's TON wallet as a space separated list of words.
+  string secret_phrase_;
+  /// Proof of the TON wallet ownership; use getTonWalletOwnershipProofChallenge to get a challenge for the proof.
+  object_ptr<tonWalletOwnershipProof> proof_;
+
+  /**
+   * Default constructor for a function, which enables backup of the TON wallet of the user. Works only if tonWalletState.can_enable_backup is true.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  enableTonWalletBackup();
+
+  /**
+   * Creates a function, which enables backup of the TON wallet of the user. Works only if tonWalletState.can_enable_backup is true.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] secret_phrase_ The secret phrase of the user's TON wallet as a space separated list of words.
+   * \param[in] proof_ Proof of the TON wallet ownership; use getTonWalletOwnershipProofChallenge to get a challenge for the proof.
+   */
+  enableTonWalletBackup(string const &secret_phrase_, object_ptr<tonWalletOwnershipProof> &&proof_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 754479745;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class GroupCallDataChannel;
 
 class data;
@@ -107555,6 +111280,56 @@ class getActiveSessions final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<sessions>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class userTonWalletAddress;
+
+/**
+ * Returns information about a TON wallet with the given address; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<UserTonWalletAddress>.
+ */
+class getAddressTonWallet final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Address in the TON blockchain.
+  string address_;
+
+  /**
+   * Default constructor for a function, which returns information about a TON wallet with the given address; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<UserTonWalletAddress>.
+   */
+  getAddressTonWallet();
+
+  /**
+   * Creates a function, which returns information about a TON wallet with the given address; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<UserTonWalletAddress>.
+   *
+   * \param[in] address_ Address in the TON blockchain.
+   */
+  explicit getAddressTonWallet(string const &address_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1227177723;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<userTonWalletAddress>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -112050,6 +115825,56 @@ class getCommands final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class communityFullInfo;
+
+/**
+ * Returns full information about a community.
+ *
+ * Returns object_ptr<CommunityFullInfo>.
+ */
+class getCommunityFullInfo final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Community identifier.
+  int53 community_id_;
+
+  /**
+   * Default constructor for a function, which returns full information about a community.
+   *
+   * Returns object_ptr<CommunityFullInfo>.
+   */
+  getCommunityFullInfo();
+
+  /**
+   * Creates a function, which returns full information about a community.
+   *
+   * Returns object_ptr<CommunityFullInfo>.
+   *
+   * \param[in] community_id_ Community identifier.
+   */
+  explicit getCommunityFullInfo(int53 community_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -2128198899;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<communityFullInfo>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class AffiliateType;
 
 class connectedAffiliateProgram;
@@ -112462,6 +116287,45 @@ class getCreatedPublicChats final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<chats>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class currencyExchangeRates;
+
+/**
+ * Returns exchange rates of currencies to USD.
+ *
+ * Returns object_ptr<CurrencyExchangeRates>.
+ */
+class getCurrencyExchangeRates final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Default constructor for a function, which returns exchange rates of currencies to USD.
+   *
+   * Returns object_ptr<CurrencyExchangeRates>.
+   */
+  getCurrencyExchangeRates();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1880730661;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<currencyExchangeRates>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -117955,6 +121819,289 @@ class getOauthLinkInfo final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class onRampPaymentAvailability;
+
+/**
+ * Returns the available on-ramp payment methods based on the current user location.
+ *
+ * Returns object_ptr<OnRampPaymentAvailability>.
+ */
+class getOnRampPaymentAvailability final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the on-ramp provider.
+  string provider_id_;
+  /// The cryptocurrency that will be bought.
+  string cryptocurrency_;
+  /// ISO 4217 currency code of the currency that will be used for the purchase; pass an empty string if unknown.
+  string base_currency_;
+
+  /**
+   * Default constructor for a function, which returns the available on-ramp payment methods based on the current user location.
+   *
+   * Returns object_ptr<OnRampPaymentAvailability>.
+   */
+  getOnRampPaymentAvailability();
+
+  /**
+   * Creates a function, which returns the available on-ramp payment methods based on the current user location.
+   *
+   * Returns object_ptr<OnRampPaymentAvailability>.
+   *
+   * \param[in] provider_id_ Unique identifier of the on-ramp provider.
+   * \param[in] cryptocurrency_ The cryptocurrency that will be bought.
+   * \param[in] base_currency_ ISO 4217 currency code of the currency that will be used for the purchase; pass an empty string if unknown.
+   */
+  getOnRampPaymentAvailability(string const &provider_id_, string const &cryptocurrency_, string const &base_currency_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -298703297;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<onRampPaymentAvailability>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class onRampPaymentLimits;
+
+/**
+ * Returns the limits for an on-ramp payment; only for providers that supports limits retrieval.
+ *
+ * Returns object_ptr<OnRampPaymentLimits>.
+ */
+class getOnRampPaymentLimits final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the on-ramp provider.
+  string provider_id_;
+  /// The cryptocurrency that will be bought.
+  string cryptocurrency_;
+  /// ISO 4217 currency code of the currency that will be used for the purchase.
+  string base_currency_;
+  /// Name of the chosen payment method; pass an empty string if none.
+  string payment_method_name_;
+
+  /**
+   * Default constructor for a function, which returns the limits for an on-ramp payment; only for providers that supports limits retrieval.
+   *
+   * Returns object_ptr<OnRampPaymentLimits>.
+   */
+  getOnRampPaymentLimits();
+
+  /**
+   * Creates a function, which returns the limits for an on-ramp payment; only for providers that supports limits retrieval.
+   *
+   * Returns object_ptr<OnRampPaymentLimits>.
+   *
+   * \param[in] provider_id_ Unique identifier of the on-ramp provider.
+   * \param[in] cryptocurrency_ The cryptocurrency that will be bought.
+   * \param[in] base_currency_ ISO 4217 currency code of the currency that will be used for the purchase.
+   * \param[in] payment_method_name_ Name of the chosen payment method; pass an empty string if none.
+   */
+  getOnRampPaymentLimits(string const &provider_id_, string const &cryptocurrency_, string const &base_currency_, string const &payment_method_name_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1655117622;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<onRampPaymentLimits>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class onRampPaymentQuote;
+
+/**
+ * Returns a quote for an on-ramp payment; only for providers that supports quote retrieval.
+ *
+ * Returns object_ptr<OnRampPaymentQuote>.
+ */
+class getOnRampPaymentQuote final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the on-ramp provider.
+  string provider_id_;
+  /// The cryptocurrency that will be bought.
+  string cryptocurrency_;
+  /// ISO 4217 currency code of the currency that will be used for the purchase.
+  string base_currency_;
+  /// The amount of the cryptocurrency to buy; pass an empty string if the user selected base_currency_amount.
+  string cryptocurrency_amount_;
+  /// The amount of the base currency to spend; pass an empty string if the user selected cryptocurrency_amount.
+  string base_currency_amount_;
+  /// Name of the chosen payment method; pass an empty string if none.
+  string payment_method_name_;
+
+  /**
+   * Default constructor for a function, which returns a quote for an on-ramp payment; only for providers that supports quote retrieval.
+   *
+   * Returns object_ptr<OnRampPaymentQuote>.
+   */
+  getOnRampPaymentQuote();
+
+  /**
+   * Creates a function, which returns a quote for an on-ramp payment; only for providers that supports quote retrieval.
+   *
+   * Returns object_ptr<OnRampPaymentQuote>.
+   *
+   * \param[in] provider_id_ Unique identifier of the on-ramp provider.
+   * \param[in] cryptocurrency_ The cryptocurrency that will be bought.
+   * \param[in] base_currency_ ISO 4217 currency code of the currency that will be used for the purchase.
+   * \param[in] cryptocurrency_amount_ The amount of the cryptocurrency to buy; pass an empty string if the user selected base_currency_amount.
+   * \param[in] base_currency_amount_ The amount of the base currency to spend; pass an empty string if the user selected cryptocurrency_amount.
+   * \param[in] payment_method_name_ Name of the chosen payment method; pass an empty string if none.
+   */
+  getOnRampPaymentQuote(string const &provider_id_, string const &cryptocurrency_, string const &base_currency_, string const &cryptocurrency_amount_, string const &base_currency_amount_, string const &payment_method_name_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -701180612;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<onRampPaymentQuote>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class currencies;
+
+/**
+ * Returns the list of fiat currencies supported by an on-ramp provider for the given cryptocurrency.
+ *
+ * Returns object_ptr<Currencies>.
+ */
+class getOnRampProviderBaseCurrencies final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the on-ramp provider; only for providers that supports base currencies.
+  string provider_id_;
+  /// The cryptocurrency that will be bought.
+  string cryptocurrency_;
+
+  /**
+   * Default constructor for a function, which returns the list of fiat currencies supported by an on-ramp provider for the given cryptocurrency.
+   *
+   * Returns object_ptr<Currencies>.
+   */
+  getOnRampProviderBaseCurrencies();
+
+  /**
+   * Creates a function, which returns the list of fiat currencies supported by an on-ramp provider for the given cryptocurrency.
+   *
+   * Returns object_ptr<Currencies>.
+   *
+   * \param[in] provider_id_ Unique identifier of the on-ramp provider; only for providers that supports base currencies.
+   * \param[in] cryptocurrency_ The cryptocurrency that will be bought.
+   */
+  getOnRampProviderBaseCurrencies(string const &provider_id_, string const &cryptocurrency_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1538920144;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<currencies>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class onRampProviders;
+
+/**
+ * Returns available on-ramp providers.
+ *
+ * Returns object_ptr<OnRampProviders>.
+ */
+class getOnRampProviders final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Pass a cryptocurrency to receive only providers that support it; pass an empty string to receive all providers.
+  string cryptocurrency_;
+
+  /**
+   * Default constructor for a function, which returns available on-ramp providers.
+   *
+   * Returns object_ptr<OnRampProviders>.
+   */
+  getOnRampProviders();
+
+  /**
+   * Creates a function, which returns available on-ramp providers.
+   *
+   * Returns object_ptr<OnRampProviders>.
+   *
+   * \param[in] cryptocurrency_ Pass a cryptocurrency to receive only providers that support it; pass an empty string to receive all providers.
+   */
+  explicit getOnRampProviders(string const &cryptocurrency_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1322197529;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<onRampProviders>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class OptionValue;
 
 /**
@@ -122499,7 +126646,7 @@ class getTextCompositionStyleExample final : public Function {
 class textEntities;
 
 /**
- * Returns all entities (mentions, hashtags, cashtags, bot commands, bank card numbers, URLs, and email addresses) found in the text. Can be called synchronously.
+ * Returns all entities (mentions, hashtags, cashtags, bot commands, bank card numbers, TON blockchain addresses, URLs, and email addresses) found in the text. Can be called synchronously.
  *
  * Returns object_ptr<TextEntities>.
  */
@@ -122517,14 +126664,14 @@ class getTextEntities final : public Function {
   string text_;
 
   /**
-   * Default constructor for a function, which returns all entities (mentions, hashtags, cashtags, bot commands, bank card numbers, URLs, and email addresses) found in the text. Can be called synchronously.
+   * Default constructor for a function, which returns all entities (mentions, hashtags, cashtags, bot commands, bank card numbers, TON blockchain addresses, URLs, and email addresses) found in the text. Can be called synchronously.
    *
    * Returns object_ptr<TextEntities>.
    */
   getTextEntities();
 
   /**
-   * Creates a function, which returns all entities (mentions, hashtags, cashtags, bot commands, bank card numbers, URLs, and email addresses) found in the text. Can be called synchronously.
+   * Creates a function, which returns all entities (mentions, hashtags, cashtags, bot commands, bank card numbers, TON blockchain addresses, URLs, and email addresses) found in the text. Can be called synchronously.
    *
    * Returns object_ptr<TextEntities>.
    *
@@ -122715,12 +126862,240 @@ class getTimeZones final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class tonCenterStreamingApiUrl;
+
+/**
+ * Returns a URL for TON Center Streaming API.
+ *
+ * Returns object_ptr<TonCenterStreamingApiUrl>.
+ */
+class getTonCenterStreamingApiUrl final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Default constructor for a function, which returns a URL for TON Center Streaming API.
+   *
+   * Returns object_ptr<TonCenterStreamingApiUrl>.
+   */
+  getTonCenterStreamingApiUrl();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1072334480;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonCenterStreamingApiUrl>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonConnectRequests;
+
+/**
+ * Returns pending requests with a dApp through TON Connect.
+ *
+ * Returns object_ptr<TonConnectRequests>.
+ */
+class getTonConnectDAppPendingRequests final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Hex-encoded public X25519 key of the dApp.
+  string dapp_client_id_;
+
+  /**
+   * Default constructor for a function, which returns pending requests with a dApp through TON Connect.
+   *
+   * Returns object_ptr<TonConnectRequests>.
+   */
+  getTonConnectDAppPendingRequests();
+
+  /**
+   * Creates a function, which returns pending requests with a dApp through TON Connect.
+   *
+   * Returns object_ptr<TonConnectRequests>.
+   *
+   * \param[in] dapp_client_id_ Hex-encoded public X25519 key of the dApp.
+   */
+  explicit getTonConnectDAppPendingRequests(string const &dapp_client_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1172395254;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonConnectRequests>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonConnectSessionEventId;
+
+/**
+ * Returns the next event identifier for the given TON Connect session.
+ *
+ * Returns object_ptr<TonConnectSessionEventId>.
+ */
+class getTonConnectSessionNextEventId final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the TON Connect session.
+  int64 session_id_;
+
+  /**
+   * Default constructor for a function, which returns the next event identifier for the given TON Connect session.
+   *
+   * Returns object_ptr<TonConnectSessionEventId>.
+   */
+  getTonConnectSessionNextEventId();
+
+  /**
+   * Creates a function, which returns the next event identifier for the given TON Connect session.
+   *
+   * Returns object_ptr<TonConnectSessionEventId>.
+   *
+   * \param[in] session_id_ Unique identifier of the TON Connect session.
+   */
+  explicit getTonConnectSessionNextEventId(int64 session_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1178689222;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonConnectSessionEventId>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonConnectRequests;
+
+/**
+ * Returns pending requests in a TON Connect session.
+ *
+ * Returns object_ptr<TonConnectRequests>.
+ */
+class getTonConnectSessionPendingRequests final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the session.
+  int64 session_id_;
+
+  /**
+   * Default constructor for a function, which returns pending requests in a TON Connect session.
+   *
+   * Returns object_ptr<TonConnectRequests>.
+   */
+  getTonConnectSessionPendingRequests();
+
+  /**
+   * Creates a function, which returns pending requests in a TON Connect session.
+   *
+   * Returns object_ptr<TonConnectRequests>.
+   *
+   * \param[in] session_id_ Unique identifier of the session.
+   */
+  explicit getTonConnectSessionPendingRequests(int64 session_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1611488247;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonConnectRequests>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonConnectSessions;
+
+/**
+ * Returns active TON Connect sessions; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<TonConnectSessions>.
+ */
+class getTonConnectSessions final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Default constructor for a function, which returns active TON Connect sessions; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonConnectSessions>.
+   */
+  getTonConnectSessions();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1869959974;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonConnectSessions>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class TransactionDirection;
 
 class tonTransactions;
 
 /**
- * Returns the list of TON blockchain transactions of the current user.
+ * Returns the list of TON Gram transactions of the current user.
  *
  * Returns object_ptr<TonTransactions>.
  */
@@ -122742,14 +127117,14 @@ class getTonTransactions final : public Function {
   int32 limit_;
 
   /**
-   * Default constructor for a function, which returns the list of TON blockchain transactions of the current user.
+   * Default constructor for a function, which returns the list of TON Gram transactions of the current user.
    *
    * Returns object_ptr<TonTransactions>.
    */
   getTonTransactions();
 
   /**
-   * Creates a function, which returns the list of TON blockchain transactions of the current user.
+   * Creates a function, which returns the list of TON Gram transactions of the current user.
    *
    * Returns object_ptr<TonTransactions>.
    *
@@ -122764,6 +127139,306 @@ class getTonTransactions final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<tonTransactions>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonNfts;
+
+/**
+ * Returns NFTs stored on the TON wallet of the user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<TonNfts>.
+ */
+class getTonWalletNfts final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results.
+  string offset_;
+  /// The maximum number of NFTs to be returned; must be positive and can't be greater than 20.
+  int32 limit_;
+
+  /**
+   * Default constructor for a function, which returns NFTs stored on the TON wallet of the user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonNfts>.
+   */
+  getTonWalletNfts();
+
+  /**
+   * Creates a function, which returns NFTs stored on the TON wallet of the user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonNfts>.
+   *
+   * \param[in] offset_ Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results.
+   * \param[in] limit_ The maximum number of NFTs to be returned; must be positive and can't be greater than 20.
+   */
+  getTonWalletNfts(string const &offset_, int32 limit_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1499593741;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonNfts>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonWalletOwnershipProofChallenge;
+
+/**
+ * Returns a challenge which may be used to proof ownership of a TON wallet; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<TonWalletOwnershipProofChallenge>.
+ */
+class getTonWalletOwnershipProofChallenge final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Default constructor for a function, which returns a challenge which may be used to proof ownership of a TON wallet; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonWalletOwnershipProofChallenge>.
+   */
+  getTonWalletOwnershipProofChallenge();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -334491918;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonWalletOwnershipProofChallenge>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class text;
+
+/**
+ * Returns the secret phrase of the user's TON wallet as a space separated list of words. Works only if tonWalletState.can_export_phrase is true.
+ *
+ * Returns object_ptr<Text>.
+ */
+class getTonWalletSecretPhrase final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Password of the current user; pass an empty string unless receive an error with a message &quot;PASSWORD_MISSING&quot; for a passwordless request.
+  string password_;
+
+  /**
+   * Default constructor for a function, which returns the secret phrase of the user's TON wallet as a space separated list of words. Works only if tonWalletState.can_export_phrase is true.
+   *
+   * Returns object_ptr<Text>.
+   */
+  getTonWalletSecretPhrase();
+
+  /**
+   * Creates a function, which returns the secret phrase of the user's TON wallet as a space separated list of words. Works only if tonWalletState.can_export_phrase is true.
+   *
+   * Returns object_ptr<Text>.
+   *
+   * \param[in] password_ Password of the current user; pass an empty string unless receive an error with a message &quot;PASSWORD_MISSING&quot; for a passwordless request.
+   */
+  explicit getTonWalletSecretPhrase(string const &password_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1644390868;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<text>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonWalletTransaction;
+
+/**
+ * Returns a TON wallet transaction by their identifier.
+ *
+ * Returns object_ptr<TonWalletTransaction>.
+ */
+class getTonWalletTransaction final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the transaction.
+  string transaction_id_;
+
+  /**
+   * Default constructor for a function, which returns a TON wallet transaction by their identifier.
+   *
+   * Returns object_ptr<TonWalletTransaction>.
+   */
+  getTonWalletTransaction();
+
+  /**
+   * Creates a function, which returns a TON wallet transaction by their identifier.
+   *
+   * Returns object_ptr<TonWalletTransaction>.
+   *
+   * \param[in] transaction_id_ Identifier of the transaction.
+   */
+  explicit getTonWalletTransaction(string const &transaction_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 254723496;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonWalletTransaction>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonWalletTransaction;
+
+/**
+ * Returns a TON wallet transaction by their msg_hash; return an error if the transaction isn't finalized yet.
+ *
+ * Returns object_ptr<TonWalletTransaction>.
+ */
+class getTonWalletTransactionByMsgHash final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Value of msg_hash of the transaction.
+  string msg_hash_;
+
+  /**
+   * Default constructor for a function, which returns a TON wallet transaction by their msg_hash; return an error if the transaction isn't finalized yet.
+   *
+   * Returns object_ptr<TonWalletTransaction>.
+   */
+  getTonWalletTransactionByMsgHash();
+
+  /**
+   * Creates a function, which returns a TON wallet transaction by their msg_hash; return an error if the transaction isn't finalized yet.
+   *
+   * Returns object_ptr<TonWalletTransaction>.
+   *
+   * \param[in] msg_hash_ Value of msg_hash of the transaction.
+   */
+  explicit getTonWalletTransactionByMsgHash(string const &msg_hash_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 777069339;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonWalletTransaction>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class TransactionDirection;
+
+class tonWalletTransactions;
+
+/**
+ * Returns the list of TON wallet transactions of the current user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<TonWalletTransactions>.
+ */
+class getTonWalletTransactions final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Direction of the transactions to receive; pass null to get all transactions.
+  object_ptr<TransactionDirection> direction_;
+  /// Offset of the first transaction to return as received from the previous request; use empty string to get the first chunk of results.
+  string offset_;
+  /// The maximum number of transactions to return.
+  int32 limit_;
+
+  /**
+   * Default constructor for a function, which returns the list of TON wallet transactions of the current user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonWalletTransactions>.
+   */
+  getTonWalletTransactions();
+
+  /**
+   * Creates a function, which returns the list of TON wallet transactions of the current user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonWalletTransactions>.
+   *
+   * \param[in] direction_ Direction of the transactions to receive; pass null to get all transactions.
+   * \param[in] offset_ Offset of the first transaction to return as received from the previous request; use empty string to get the first chunk of results.
+   * \param[in] limit_ The maximum number of transactions to return.
+   */
+  getTonWalletTransactions(object_ptr<TransactionDirection> &&direction_, string const &offset_, int32 limit_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1119847015;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonWalletTransactions>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -123570,6 +128245,56 @@ class getUserSupportInfo final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<userSupportInfo>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class userTonWalletAddresses;
+
+/**
+ * Returns TON wallet addresses of the specified users; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<UserTonWalletAddresses>.
+ */
+class getUserTonWalletAddresses final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifiers of the users whose wallet addresses have to be returned. If a user has no TON wallet, it will be skipped in the result.
+  array<int53> user_ids_;
+
+  /**
+   * Default constructor for a function, which returns TON wallet addresses of the specified users; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<UserTonWalletAddresses>.
+   */
+  getUserTonWalletAddresses();
+
+  /**
+   * Creates a function, which returns TON wallet addresses of the specified users; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<UserTonWalletAddresses>.
+   *
+   * \param[in] user_ids_ Identifiers of the users whose wallet addresses have to be returned. If a user has no TON wallet, it will be skipped in the result.
+   */
+  explicit getUserTonWalletAddresses(array<int53> &&user_ids_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1030468042;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<userTonWalletAddresses>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -125175,56 +129900,6 @@ class loadChats final : public Function {
 class ok;
 
 /**
- * Returns full information about a community. The data will be sent through update.
- *
- * Returns object_ptr<Ok>.
- */
-class loadCommunityFullInfo final : public Function {
-  /**
-   * Returns identifier uniquely determining a type of the object.
-   * \return this->ID.
-   */
-  std::int32_t get_id() const final {
-    return ID;
-  }
-
- public:
-  /// Community identifier.
-  int53 community_id_;
-
-  /**
-   * Default constructor for a function, which returns full information about a community. The data will be sent through update.
-   *
-   * Returns object_ptr<Ok>.
-   */
-  loadCommunityFullInfo();
-
-  /**
-   * Creates a function, which returns full information about a community. The data will be sent through update.
-   *
-   * Returns object_ptr<Ok>.
-   *
-   * \param[in] community_id_ Community identifier.
-   */
-  explicit loadCommunityFullInfo(int53 community_id_);
-
-  /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -913011971;
-
-  /// Typedef for the type returned by the function.
-  using ReturnType = object_ptr<ok>;
-
-  /**
-   * Helper function for to_string method. Appends string representation of the object to the storer.
-   * \param[in] s Storer to which object string representation will be appended.
-   * \param[in] field_name Object field_name if applicable.
-   */
-  void store(TlStorerToString &s, const char *field_name) const final;
-};
-
-class ok;
-
-/**
  * Loads more topics in a channel direct messages chat administered by the current user. The loaded topics will be sent through updateDirectMessagesChatTopic. Topics are sorted by their topic.order in descending order. Returns a 404 error if all topics have been loaded.
  *
  * Returns object_ptr<Ok>.
@@ -125455,6 +130130,84 @@ class loadSavedMessagesTopics final : public Function {
 
   /// Identifier uniquely determining a type of the object.
   static const std::int32_t ID = 289855160;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Loads or reloads the current state of gasless transfers for the current user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<Ok>.
+ */
+class loadTonWalletGaslessTransfersInfo final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Default constructor for a function, which loads or reloads the current state of gasless transfers for the current user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<Ok>.
+   */
+  loadTonWalletGaslessTransfersInfo();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 2023155190;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Loads state of the TON wallet of the current user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<Ok>.
+ */
+class loadTonWalletState final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+
+  /**
+   * Default constructor for a function, which loads state of the TON wallet of the current user; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<Ok>.
+   */
+  loadTonWalletState();
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 354270648;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -130044,6 +134797,64 @@ class replaceStickerInSet final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class ok;
+
+class tonWalletOwnershipProof;
+
+/**
+ * Replaces the current TON wallet with another existing v6r2 wallet or changes private key of the current TON wallet; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<Ok>.
+ */
+class replaceTonWallet final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Password of the current user; pass an empty string unless receive an error with a message &quot;PASSWORD_MISSING&quot; for a passwordless request.
+  string password_;
+  /// Original public key of the new TON wallet.
+  bytes anchor_public_key_;
+  /// Proof of ownership of the new private key of the TON wallet; use getTonWalletOwnershipProofChallenge to get a challenge for the proof.
+  object_ptr<tonWalletOwnershipProof> proof_;
+
+  /**
+   * Default constructor for a function, which replaces the current TON wallet with another existing v6r2 wallet or changes private key of the current TON wallet; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<Ok>.
+   */
+  replaceTonWallet();
+
+  /**
+   * Creates a function, which replaces the current TON wallet with another existing v6r2 wallet or changes private key of the current TON wallet; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] password_ Password of the current user; pass an empty string unless receive an error with a message &quot;PASSWORD_MISSING&quot; for a passwordless request.
+   * \param[in] anchor_public_key_ Original public key of the new TON wallet.
+   * \param[in] proof_ Proof of ownership of the new private key of the TON wallet; use getTonWalletOwnershipProofChallenge to get a challenge for the proof.
+   */
+  replaceTonWallet(string const &password_, bytes const &anchor_public_key_, object_ptr<tonWalletOwnershipProof> &&proof_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1127922374;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class rtmpUrl;
 
 /**
@@ -130085,6 +134896,72 @@ class replaceVideoChatRtmpUrl final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<rtmpUrl>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class InputMessageContent;
+
+class ReplyMarkup;
+
+class ok;
+
+/**
+ * Replies to a callback query with an ephemeral message; for bots only.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class replyToCallbackQueryWithEphemeralMessage final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the callback query.
+  int64 callback_query_id_;
+  /// Pass true if the ephemeral message must replace the message from which the callback query originated.
+  bool replace_callback_query_message_;
+  /// Pass true if the content of the message must be protected from forwarding and saving.
+  bool protect_content_;
+  /// The new message reply markup; pass null if none.
+  object_ptr<ReplyMarkup> reply_markup_;
+  /// New content of the message. Must be one of the following types: inputMessageText, inputMessageAnimation, inputMessageAudio, inputMessageDocument, inputMessagePhoto, inputMessageRichMessage, inputMessageSticker, inputMessageVideo, inputMessageVideoNote, inputMessageVoiceNote.
+  object_ptr<InputMessageContent> input_message_content_;
+
+  /**
+   * Default constructor for a function, which replies to a callback query with an ephemeral message; for bots only.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  replyToCallbackQueryWithEphemeralMessage();
+
+  /**
+   * Creates a function, which replies to a callback query with an ephemeral message; for bots only.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] callback_query_id_ Identifier of the callback query.
+   * \param[in] replace_callback_query_message_ Pass true if the ephemeral message must replace the message from which the callback query originated.
+   * \param[in] protect_content_ Pass true if the content of the message must be protected from forwarding and saving.
+   * \param[in] reply_markup_ The new message reply markup; pass null if none.
+   * \param[in] input_message_content_ New content of the message. Must be one of the following types: inputMessageText, inputMessageAnimation, inputMessageAudio, inputMessageDocument, inputMessagePhoto, inputMessageRichMessage, inputMessageSticker, inputMessageVideo, inputMessageVideoNote, inputMessageVoiceNote.
+   */
+  replyToCallbackQueryWithEphemeralMessage(int64 callback_query_id_, bool replace_callback_query_message_, bool protect_content_, object_ptr<ReplyMarkup> &&reply_markup_, object_ptr<InputMessageContent> &&input_message_content_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -77034825;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
@@ -130147,7 +135024,7 @@ class reportAuthenticationCodeMissing final : public Function {
 class ReportChatResult;
 
 /**
- * Reports a chat to the Telegram moderators. A chat can be reported only from the chat action bar, or if chat.can_be_reported.
+ * Reports a chat to the Telegram moderators. A chat can be reported only from the chat action bar, if chat.can_be_reported, or if messageProperties.can_report_chat.
  *
  * Returns object_ptr<ReportChatResult>.
  */
@@ -130171,14 +135048,14 @@ class reportChat final : public Function {
   string text_;
 
   /**
-   * Default constructor for a function, which reports a chat to the Telegram moderators. A chat can be reported only from the chat action bar, or if chat.can_be_reported.
+   * Default constructor for a function, which reports a chat to the Telegram moderators. A chat can be reported only from the chat action bar, if chat.can_be_reported, or if messageProperties.can_report_chat.
    *
    * Returns object_ptr<ReportChatResult>.
    */
   reportChat();
 
   /**
-   * Creates a function, which reports a chat to the Telegram moderators. A chat can be reported only from the chat action bar, or if chat.can_be_reported.
+   * Creates a function, which reports a chat to the Telegram moderators. A chat can be reported only from the chat action bar, if chat.can_be_reported, or if messageProperties.can_report_chat.
    *
    * Returns object_ptr<ReportChatResult>.
    *
@@ -135479,6 +140356,194 @@ class sendTextMessageDraft final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class TonCenterApiRequestType;
+
+class text;
+
+/**
+ * Sends a request to TON Center API and returns its response in JSON format.
+ *
+ * Returns object_ptr<Text>.
+ */
+class sendTonCenterApiRequest final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// The path of the requested endpoint. See https://toncenter.com/api/v3/index.html for the list of supported endpoints.
+  string endpoint_;
+  /// Type of the request.
+  object_ptr<TonCenterApiRequestType> type_;
+
+  /**
+   * Default constructor for a function, which sends a request to TON Center API and returns its response in JSON format.
+   *
+   * Returns object_ptr<Text>.
+   */
+  sendTonCenterApiRequest();
+
+  /**
+   * Creates a function, which sends a request to TON Center API and returns its response in JSON format.
+   *
+   * Returns object_ptr<Text>.
+   *
+   * \param[in] endpoint_ The path of the requested endpoint. See https://toncenter.com/api/v3/index.html for the list of supported endpoints.
+   * \param[in] type_ Type of the request.
+   */
+  sendTonCenterApiRequest(string const &endpoint_, object_ptr<TonCenterApiRequestType> &&type_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -812754760;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<text>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class ok;
+
+/**
+ * Accepts or rejects a TON Connect session.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class sendTonConnectSessionConnectResult final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the session.
+  int64 session_id_;
+  /// Answer to the challenge received from setTonConnectSessionWalletClientId.
+  bytes challenge_answer_;
+  /// Pass true to reject the request; pass false to accept it.
+  bool is_error_;
+  /// Body of the result.
+  bytes body_;
+  /// Identifier to trace the connection request.
+  string trace_id_;
+
+  /**
+   * Default constructor for a function, which accepts or rejects a TON Connect session.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  sendTonConnectSessionConnectResult();
+
+  /**
+   * Creates a function, which accepts or rejects a TON Connect session.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] session_id_ Unique identifier of the session.
+   * \param[in] challenge_answer_ Answer to the challenge received from setTonConnectSessionWalletClientId.
+   * \param[in] is_error_ Pass true to reject the request; pass false to accept it.
+   * \param[in] body_ Body of the result.
+   * \param[in] trace_id_ Identifier to trace the connection request.
+   */
+  sendTonConnectSessionConnectResult(int64 session_id_, bytes const &challenge_answer_, bool is_error_, bytes const &body_, string const &trace_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1435055549;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonWalletTransferResult;
+
+/**
+ * Sends a cryptocurrency from the user's TON wallet; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+ *
+ * Returns object_ptr<TonWalletTransferResult>.
+ */
+class sendTonWalletTransfer final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the user who will receive the transfer; pass 0 if unknown.
+  int53 user_id_;
+  /// Address in the TON blockchain of the transaction peer.
+  string address_;
+  /// The amount of the sent cryptocurrency, in the smallest units of the cryptocurrency.
+  int53 amount_;
+  /// Comment added to the transaction.
+  string comment_;
+  /// Pass true if the comment is encrypted and must be decrypted using the receiver's or sender's private key.
+  bool is_comment_encrypted_;
+  /// Non-persistent identifier, which will be returned back in messageSendingStatePending object and can be used to match sent messages and corresponding updateNewMessage updates.
+  int32 sending_id_;
+  /// Serialized data for regular cryptocurrency transfer request. The minimum allowed transfer amount is getOption(&quot;ton_wallet_transfer_amount_min&quot;).
+  bytes regular_transfer_data_;
+  /// Serialized data for gasless cryptocurrency transfer request; pass an empty string to force a regular request. The minimum allowed transfer amount for a gassless transfer is getOption(&quot;ton_wallet_gasless_transfer_amount_min&quot;).
+  bytes gasless_transfer_data_;
+
+  /**
+   * Default constructor for a function, which sends a cryptocurrency from the user's TON wallet; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonWalletTransferResult>.
+   */
+  sendTonWalletTransfer();
+
+  /**
+   * Creates a function, which sends a cryptocurrency from the user's TON wallet; can be used only if getOption(&quot;can_use_ton_wallet&quot;).
+   *
+   * Returns object_ptr<TonWalletTransferResult>.
+   *
+   * \param[in] user_id_ Identifier of the user who will receive the transfer; pass 0 if unknown.
+   * \param[in] address_ Address in the TON blockchain of the transaction peer.
+   * \param[in] amount_ The amount of the sent cryptocurrency, in the smallest units of the cryptocurrency.
+   * \param[in] comment_ Comment added to the transaction.
+   * \param[in] is_comment_encrypted_ Pass true if the comment is encrypted and must be decrypted using the receiver's or sender's private key.
+   * \param[in] sending_id_ Non-persistent identifier, which will be returned back in messageSendingStatePending object and can be used to match sent messages and corresponding updateNewMessage updates.
+   * \param[in] regular_transfer_data_ Serialized data for regular cryptocurrency transfer request. The minimum allowed transfer amount is getOption(&quot;ton_wallet_transfer_amount_min&quot;).
+   * \param[in] gasless_transfer_data_ Serialized data for gasless cryptocurrency transfer request; pass an empty string to force a regular request. The minimum allowed transfer amount for a gassless transfer is getOption(&quot;ton_wallet_gasless_transfer_amount_min&quot;).
+   */
+  sendTonWalletTransfer(int53 user_id_, string const &address_, int53 amount_, string const &comment_, bool is_comment_encrypted_, int32 sending_id_, bytes const &regular_transfer_data_, bytes const &gasless_transfer_data_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 173682008;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonWalletTransferResult>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class customRequestResult;
 
 /**
@@ -138705,6 +143770,116 @@ class setCommunityName final : public Function {
   void store(TlStorerToString &s, const char *field_name) const final;
 };
 
+class communityPermissions;
+
+class ok;
+
+/**
+ * Changes permissions of regular members in the given community; requires can_ban_members administrator right in the community.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class setCommunityPermissions final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the community.
+  int53 community_id_;
+  /// New permissions of the community.
+  object_ptr<communityPermissions> permissions_;
+
+  /**
+   * Default constructor for a function, which changes permissions of regular members in the given community; requires can_ban_members administrator right in the community.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  setCommunityPermissions();
+
+  /**
+   * Creates a function, which changes permissions of regular members in the given community; requires can_ban_members administrator right in the community.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] community_id_ Identifier of the community.
+   * \param[in] permissions_ New permissions of the community.
+   */
+  setCommunityPermissions(int53 community_id_, object_ptr<communityPermissions> &&permissions_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = 1089063260;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class InputChatPhoto;
+
+class ok;
+
+/**
+ * Changes the photo of a community; requires can_change_info administrator right in the community.
+ *
+ * Returns object_ptr<Ok>.
+ */
+class setCommunityPhoto final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Identifier of the community.
+  int53 community_id_;
+  /// New chat photo; pass null to delete the chat photo.
+  object_ptr<InputChatPhoto> photo_;
+
+  /**
+   * Default constructor for a function, which changes the photo of a community; requires can_change_info administrator right in the community.
+   *
+   * Returns object_ptr<Ok>.
+   */
+  setCommunityPhoto();
+
+  /**
+   * Creates a function, which changes the photo of a community; requires can_change_info administrator right in the community.
+   *
+   * Returns object_ptr<Ok>.
+   *
+   * \param[in] community_id_ Identifier of the community.
+   * \param[in] photo_ New chat photo; pass null to delete the chat photo.
+   */
+  setCommunityPhoto(int53 community_id_, object_ptr<InputChatPhoto> &&photo_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -2055048100;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
 class ok;
 
 /**
@@ -140519,6 +145694,8 @@ class setMessageSenderBlockList final : public Function {
 
 class MessageSender;
 
+class formattedText;
+
 class ok;
 
 /**
@@ -140540,8 +145717,8 @@ class setMessageSenderBotVerification final : public Function {
   int53 bot_user_id_;
   /// Identifier of the user or the supergroup or channel chat, which will be verified by the bot.
   object_ptr<MessageSender> verified_id_;
-  /// Custom description of verification reason; 0-getOption(&quot;bot_verification_custom_description_length_max&quot;). If empty, then &quot;was verified by organization &quot;organization_name&quot;&quot; will be used as description. Can be specified only if the bot is allowed to provide custom description.
-  string custom_description_;
+  /// Custom description of verification reason; 0-getOption(&quot;bot_verification_custom_description_length_max&quot;) characters. Only TextUrl entities are supported. If empty, then &quot;was verified by organization &quot;organization_name&quot;&quot; will be used as description. Can be specified only if the bot is allowed to provide custom description.
+  object_ptr<formattedText> custom_description_;
 
   /**
    * Default constructor for a function, which changes the verification status of a user or a chat by an owned bot.
@@ -140557,12 +145734,12 @@ class setMessageSenderBotVerification final : public Function {
    *
    * \param[in] bot_user_id_ Identifier of the owned bot, which will verify the user or the chat.
    * \param[in] verified_id_ Identifier of the user or the supergroup or channel chat, which will be verified by the bot.
-   * \param[in] custom_description_ Custom description of verification reason; 0-getOption(&quot;bot_verification_custom_description_length_max&quot;). If empty, then &quot;was verified by organization &quot;organization_name&quot;&quot; will be used as description. Can be specified only if the bot is allowed to provide custom description.
+   * \param[in] custom_description_ Custom description of verification reason; 0-getOption(&quot;bot_verification_custom_description_length_max&quot;) characters. Only TextUrl entities are supported. If empty, then &quot;was verified by organization &quot;organization_name&quot;&quot; will be used as description. Can be specified only if the bot is allowed to provide custom description.
    */
-  setMessageSenderBotVerification(int53 bot_user_id_, object_ptr<MessageSender> &&verified_id_, string const &custom_description_);
+  setMessageSenderBotVerification(int53 bot_user_id_, object_ptr<MessageSender> &&verified_id_, object_ptr<formattedText> &&custom_description_);
 
   /// Identifier uniquely determining a type of the object.
-  static const std::int32_t ID = -1262364086;
+  static const std::int32_t ID = 2101755632;
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
@@ -142676,6 +147853,59 @@ class setTdlibParameters final : public Function {
 
   /// Typedef for the type returned by the function.
   using ReturnType = object_ptr<ok>;
+
+  /**
+   * Helper function for to_string method. Appends string representation of the object to the storer.
+   * \param[in] s Storer to which object string representation will be appended.
+   * \param[in] field_name Object field_name if applicable.
+   */
+  void store(TlStorerToString &s, const char *field_name) const final;
+};
+
+class tonConnectChallenge;
+
+/**
+ * Sets wallet_client_id for a pending TON Connect session. Then, sendTonConnectSessionConnectResult must be used to accept or reject the session.
+ *
+ * Returns object_ptr<TonConnectChallenge>.
+ */
+class setTonConnectSessionWalletClientId final : public Function {
+  /**
+   * Returns identifier uniquely determining a type of the object.
+   * \return this->ID.
+   */
+  std::int32_t get_id() const final {
+    return ID;
+  }
+
+ public:
+  /// Unique identifier of the session.
+  int64 session_id_;
+  /// Hex-encoded public X25519 key of the current user's application calculated from the TON wallet private key and session parameters.
+  string wallet_client_id_;
+
+  /**
+   * Default constructor for a function, which sets wallet_client_id for a pending TON Connect session. Then, sendTonConnectSessionConnectResult must be used to accept or reject the session.
+   *
+   * Returns object_ptr<TonConnectChallenge>.
+   */
+  setTonConnectSessionWalletClientId();
+
+  /**
+   * Creates a function, which sets wallet_client_id for a pending TON Connect session. Then, sendTonConnectSessionConnectResult must be used to accept or reject the session.
+   *
+   * Returns object_ptr<TonConnectChallenge>.
+   *
+   * \param[in] session_id_ Unique identifier of the session.
+   * \param[in] wallet_client_id_ Hex-encoded public X25519 key of the current user's application calculated from the TON wallet private key and session parameters.
+   */
+  setTonConnectSessionWalletClientId(int64 session_id_, string const &wallet_client_id_);
+
+  /// Identifier uniquely determining a type of the object.
+  static const std::int32_t ID = -1686326443;
+
+  /// Typedef for the type returned by the function.
+  using ReturnType = object_ptr<tonConnectChallenge>;
 
   /**
    * Helper function for to_string method. Appends string representation of the object to the storer.
