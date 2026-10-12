@@ -135,7 +135,7 @@ jobs:
       - name: Build TDLib
         working-directory: thirdparty
         run: |
-          if [ ! -f tdlib_linux_x86_64/lib/libtdjson.so.1.8.67 ]; then
+          if [ ! -f tdlib_linux_x86_64/lib/libtdjson.so.1.8.68 ]; then
             bash ./build.sh
           else
             echo "Using cached Linux TDLib build"
@@ -200,7 +200,7 @@ jobs:
         run: |
           required_files=(
             addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so
-            addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.67
+            addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.68
           )
           for file in "${required_files[@]}"; do
             if [ ! -f "$file" ]; then
