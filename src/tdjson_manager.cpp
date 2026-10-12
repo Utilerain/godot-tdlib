@@ -6,6 +6,7 @@
 #include "tdjson_client.hpp"
 
 #include <atomic>
+#include <unordered_map>
 
 #include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/classes/project_settings.hpp>

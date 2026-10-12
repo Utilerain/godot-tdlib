@@ -1,7 +1,9 @@
 #include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/classes/thread.hpp>
-#include <atomic>
 #include <godot_cpp/classes/mutex.hpp>
+
+#include <atomic>
+#include <unordered_map>
 
 namespace godot
 {
