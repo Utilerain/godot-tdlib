@@ -1,0 +1,25 @@
+#include <godot_cpp/classes/ref_counted.hpp>
+
+namespace godot
+{
+    class TdJsonClient : public RefCounted
+    {
+        GDCLASS(TdJsonClient, RefCounted)
+
+    protected:
+        static void _bind_methods();
+
+    public:
+        void send(Dictionary p_request);
+        int get_client_id();
+        void _on_response(Dictionary p_response); // used for getting updates from TdJsonManager
+        void set_bot_token(String p_bot_token);
+        void close_and_destroy();
+        static Ref<TdJsonClient> create();
+        void _set_client_id(int client_id = 0);
+    
+    private:
+        int _client_id = 0;
+        void _set_bot_token(Dictionary p_response, Dictionary p_parameters);
+    };
+}

@@ -16,7 +16,7 @@ void function(p_param)
     Dictionary _resp;
 }
 
-// private
+// private (you also can use this on public method, but for internal unbinded operations)
 void _function(p_param)
 {
     Dictionary _req;

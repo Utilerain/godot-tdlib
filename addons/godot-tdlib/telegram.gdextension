@@ -5,7 +5,8 @@ compatibility_minimum = 4.5
 reloadable = true
 
 [icons]
-TdJson = "icons/telegram.png"
+TdJsonManager = "icons/telegram.png"
+TdJsonClient = "icons/telegram.png"
 
 [libraries]
 
@@ -32,7 +33,7 @@ windows.x86_64 = {
     "bin/godot_tdlib_win_x86_64/z.dll": ""
 }
 linux.x86_64 = {
-    "bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.67": ""
+    "bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.68": ""
 }
 android.arm64 = {
     "bin/godot_tdlib_android_arm64/libtdjson.so": ""

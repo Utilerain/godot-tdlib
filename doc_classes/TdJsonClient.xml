@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TdJsonClient" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		A TDLib JSON client instance.
+	</brief_description>
+	<description>
+		An instance of a TDLib client. Use [code]TdJsonManager.create_client()[/code] or [code]TdJsonClient.create()[/code] to create a new instance. Use [code]send[/code] to send requests and receive responses via the [signal]response_received[/signal] signal.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="close_and_destroy">
+			<return type="void" />
+			<description>
+				Safely closes and destroys the TDLib client instance. After calling this method, the client id of instance will be 0.
+			</description>
+		</method>
+		<method name="create" qualifiers="static">
+			<return type="TdJsonClient" />
+			<description>
+				Creates a TDLib client instance and returns it.
+			</description>
+		</method>
+		<method name="get_client_id">
+			<return type="int" />
+			<description>
+				Returns the client ID of the session.
+			</description>
+		</method>
+		<method name="send">
+			<return type="void" />
+			<param index="0" name="request" type="Dictionary" />
+			<description>
+				Sends a request to the TDLib client. May be called from any thread.
+			</description>
+		</method>
+		<method name="set_bot_token">
+			<return type="void" />
+			<param index="0" name="bot_token" type="String" />
+			<description>
+				Sets the authentication token of a bot and logs in when TDLib reaches [code]authorizationStateWaitPhoneNumber[/code].
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="response_received">
+			<param index="0" name="client_id" type="int" />
+			<param index="1" name="response" type="Dictionary" />
+			<description>
+				Emits when a response or update is received for this client.
+			</description>
+		</signal>
+	</signals>
+</class>

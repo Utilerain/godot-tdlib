@@ -1,6 +1,6 @@
 extends Node
 
-var client: TdJson
+var client: TdJsonClient
 var reqversion := {"@type": "getOption", "name": "version"}
 #region Taken from https://github.com/tdlib/td/blob/master/example/python/tdjson_example.py
 #	You should obtain your own api_id and api_hash at https://my.telegram.org
@@ -10,6 +10,7 @@ var api_id := 94575
 var bot_token := "abcdefg"
 
 var response: Dictionary
+var current_auth_state := {}
 
 var USR_PATH = OS.get_user_data_dir()
 signal wait_for_phone_number
@@ -17,20 +18,20 @@ signal wait_for_auth_code
 signal wait_for_password
 signal login_completed
 signal state_changed
-
+signal logout_completed
 
 func _ready() -> void:
-	client = TdJson.new()
-	client.set_max_verbosity_level(4)
-	client.set_verbosity_level(2)
-	client.request_received.connect(receive_signal)
-	client.set_tdlib_parameters(self.api_id, 
+	TdJsonManager.set_max_verbosity_level(4)
+	TdJsonManager.set_verbosity_level(2)
+	TdJsonManager.request_received.connect(receive_signal)
+	TdJsonManager.set_tdlib_parameters(self.api_id, 
 		self.api_hash, 
 		"1.0.0",
-		"Desktop")
-	client.start_poll()
+		"Desktop", "user://tdlib_test_data", true)
 	# client.set_bot_token(bot_token)
-
+	client = TdJsonClient.create()
+	TdJsonManager.start_poll()
+	
 func receive_signal(_response: Dictionary): 
 	if not _response.has("@type"):
 		return
@@ -44,11 +45,13 @@ func update_state(response):
 	if event_type == "updateAuthorizationState":
 		var auth_state = response["authorization_state"]
 		var auth_type = auth_state["@type"]
-		
+		current_auth_state = auth_state
+
 		if auth_type == "authorizationStateClosed":
-			return
+			reset_client()
+			logout_completed.emit()
 		
-		# Deprecated: use TdJson.set_tdlib_parameters() instead
+		# Deprecated: use TdJsonManager.set_tdlib_parameters() instead
 		#elif auth_type == "authorizationStateWaitTdlibParameters": 
 			#client.send(
 			#{
@@ -102,8 +105,7 @@ func send_password(password):
 	)
 
 func _exit_tree() -> void:
-	client.stop_poll()
-	print(client.is_running())
+	TdJsonManager.stop_poll()
 
 func print_json(data):
 	print(JSON.stringify(data, "\t"))
@@ -118,3 +120,10 @@ func search_for_state(event_type: String, timeout_sec: float = 3.0) -> Dictionar
 		await TdlibSingleton.state_changed
 	
 	return {}
+
+func reset_client() -> void:
+	if client:
+		# client.close_and_destroy()
+		client = null
+	
+	client = TdJsonClient.create()
