@@ -28,8 +28,6 @@ func run_tests() -> void:
 	check(extension != null, "GDExtension resource is available")
 	
 	var manager = ClassDB.instantiate("TdJsonManager") if ClassDB.can_instantiate("TdJsonManager") else Engine.get_singleton("TdJsonManager")
-	if manager == null and typeof(TdJsonManager) != TYPE_NIL:
-		manager = TdJsonManager
 
 	check(manager != null, "TdJsonManager class/singleton is registered")
 	if manager == null:
@@ -48,7 +46,7 @@ func run_tests() -> void:
 	check(option.get("@type", "") == "optionValueString", "execute returns a parsed TDLib object")
 	check(not String(option.get("value", "")).is_empty(), "execute preserves the response value")
 
-	var client: TdJsonClient = manager.create_client()
+	var client = manager.create_client()
 	check(client != null and client.get_client_id() > 0, "client id is allocated")
 
 	if not client.response_received.is_connected(on_response):
