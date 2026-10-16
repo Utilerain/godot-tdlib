@@ -1,10 +1,12 @@
 #include "register_types.hpp"
 #include "tdjson_manager.hpp"
 #include "tdjson_client.hpp"
+
 #include <godot_cpp/godot.hpp>
-#include <gdextension_interface.h>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/engine.hpp>
+
+#include <gdextension_interface.h>
 
 static godot::TdJsonManager *td_json_instance = nullptr;
 
@@ -28,8 +30,9 @@ void uninitialize_telegram_module(godot::ModuleInitializationLevel p_level)
         return;
     }
     godot::Engine::get_singleton()->unregister_singleton("TdJsonManager");
-    
-    if (td_json_instance) {
+
+    if (td_json_instance)
+    {
         memdelete(td_json_instance);
         td_json_instance = nullptr;
     }

@@ -5,9 +5,6 @@
 #include "tdjson_manager.hpp"
 #include "tdjson_client.hpp"
 
-#include <atomic>
-#include <unordered_map>
-
 #include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/godot.hpp>
@@ -17,6 +14,8 @@
 
 #include <td/telegram/td_json_client.h>
 
+#include <atomic>
+#include <unordered_map>
 
 using namespace godot;
 
@@ -134,7 +133,6 @@ TdJsonManager::TdJsonManager()
     _set_log_message_callback();
     _mutex.instantiate();
 }
-
 
 /**
  * Alias to setTdlibParameters. Sets the parameters for TDLib initialization.
@@ -269,10 +267,12 @@ void TdJsonManager::_send(Dictionary p_request)
 // Starts the TDLib client.
 void TdJsonManager::start_poll()
 {
-    if (_is_running.load()) {
+    if (_is_running.load())
+    {
         return;
     }
-    if (_worker_thread.is_valid() && _worker_thread->is_started()) {
+    if (_worker_thread.is_valid() && _worker_thread->is_started())
+    {
         return;
     }
     _is_running.store(true);
@@ -288,7 +288,6 @@ void TdJsonManager::start_poll()
 
     _worker_thread->start(Callable(this, "_thread_poll"));
     _worker_thread_id = _worker_thread->get_id().to_int();
-    
 }
 
 // Stops the TDLib client.
@@ -411,7 +410,8 @@ TdJsonManager::~TdJsonManager()
         memdelete(_log_callback);
         _log_callback = nullptr;
     }
-    if (TdJsonManager::_instance == this) {
+    if (TdJsonManager::_instance == this)
+    {
         TdJsonManager::_instance = nullptr;
     }
 }
