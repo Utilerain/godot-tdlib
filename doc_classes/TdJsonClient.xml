@@ -18,7 +18,7 @@
 		<method name="create" qualifiers="static">
 			<return type="TdJsonClient" />
 			<description>
-				Creates a TDLib client instance and returns it.
+				Creates a TDLib client instance and returns it. Instances must be created using this method or [code]TdJsonManager.create_client()[/code]. 
 			</description>
 		</method>
 		<method name="get_client_id">

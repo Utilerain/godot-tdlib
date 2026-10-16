@@ -5,6 +5,7 @@
 #include <godot_cpp/godot.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 
 #include <gdextension_interface.h>
 
@@ -17,6 +18,7 @@ void initialize_telegram_module(godot::ModuleInitializationLevel p_level)
         return;
     }
 
+    godot::UtilityFunctions::print_verbose("Initializing Telegram module...");
     godot::ClassDB::register_class<godot::TdJsonManager>();
     godot::ClassDB::register_class<godot::TdJsonClient>();
     td_json_instance = memnew(godot::TdJsonManager);
@@ -29,6 +31,8 @@ void uninitialize_telegram_module(godot::ModuleInitializationLevel p_level)
     {
         return;
     }
+
+    godot::UtilityFunctions::print_verbose("Uninitializing Telegram module...");
     godot::Engine::get_singleton()->unregister_singleton("TdJsonManager");
 
     if (td_json_instance)

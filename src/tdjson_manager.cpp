@@ -28,6 +28,7 @@ using namespace godot;
  */
 Dictionary TdJsonManager::execute(Dictionary p_request)
 {
+    godot::UtilityFunctions::print_verbose("TdJsonManager::execute: ", p_request);
     String _req = JSON::stringify(p_request);
     const char *_resp = td_execute(_req.utf8().get_data());
 
@@ -56,7 +57,7 @@ Dictionary TdJsonManager::receive(double p_timeout)
 {
     if (is_running() && _worker_thread_id != godot::OS::get_singleton()->get_thread_caller_id())
     {
-        print_error("TdJsonManager::receive() should not be called from multiple threads simultaneously. Did you use TdJsonManager::start_poll() and TdJsonManager::receive() at the same time?");
+        godot::UtilityFunctions::push_error("TdJsonManager::receive() should not be called from multiple threads simultaneously. Did you use TdJsonManager::start_poll() and TdJsonManager::receive() at the same time?");
         return Dictionary();
     }
 
@@ -224,7 +225,7 @@ void TdJsonManager::_set_tdlib_parameters(Dictionary p_response, Dictionary p_pa
         return;
     }
 
-    _send(p_parameters);
+    _send_to_all_clients(p_parameters);
 }
 
 const double POLL_TIMEOUT = 10.0;
@@ -256,7 +257,7 @@ void TdJsonManager::_thread_poll()
     }
 }
 
-void TdJsonManager::_send(Dictionary p_request)
+void TdJsonManager::_send_to_all_clients(Dictionary p_request)
 {
     for (auto &[client_id, client] : _clients)
     {
@@ -279,7 +280,7 @@ void TdJsonManager::start_poll()
     Dictionary _req;
     _req["@type"] = "getOption";
     _req["name"] = "version";
-    _send(_req);
+    _send_to_all_clients(_req);
 
     if (_worker_thread.is_null())
     {
@@ -325,6 +326,7 @@ TdJsonManager *TdJsonManager::get_singleton()
 
 Ref<TdJsonClient> TdJsonManager::create_client()
 {
+    godot::UtilityFunctions::print_verbose("TdJsonManager::create_client");
     Ref<TdJsonClient> client = memnew(TdJsonClient);
     client->_set_client_id(td_create_client_id());
 
@@ -342,6 +344,7 @@ Ref<TdJsonClient> TdJsonManager::create_client()
 
 void TdJsonManager::remove_client(Ref<TdJsonClient> p_client)
 {
+    godot::UtilityFunctions::print_verbose("TdJsonManager::remove_client: ", p_client->get_client_id());
     int _id = p_client->get_client_id();
     if (_clients.find(_id) == _clients.end() || _id == 0)
     {

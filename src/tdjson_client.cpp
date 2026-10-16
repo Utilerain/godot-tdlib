@@ -14,6 +14,7 @@ using namespace godot;
  */
 void TdJsonClient::send(Dictionary p_request)
 {
+    godot::UtilityFunctions::print_verbose("TdJsonClient::send: ", p_request);
     String _req = JSON::stringify(p_request);
     td_send(_client_id, _req.utf8().get_data());
 }
@@ -66,11 +67,13 @@ void TdJsonClient::set_bot_token(String p_bot_token)
 
 void TdJsonClient::close_and_destroy()
 {
+    godot::UtilityFunctions::print_verbose("TdJsonClient::close_and_destroy: ", _client_id);
     TdJsonManager::get_singleton()->remove_client(this);
 }
 
 Ref<TdJsonClient> TdJsonClient::create()
 {
+    godot::UtilityFunctions::print_verbose("TdJsonClient::create");
     return TdJsonManager::get_singleton()->create_client();
 }
 
@@ -81,17 +84,18 @@ void TdJsonClient::_set_client_id(int p_client_id)
 
 void TdJsonClient::_bind_methods()
 {
-    // public
+    // public methods
     ClassDB::bind_method(D_METHOD("send", "request"), &TdJsonClient::send);
     ClassDB::bind_method(D_METHOD("get_client_id"), &TdJsonClient::get_client_id);
     ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJsonClient::set_bot_token);
     ClassDB::bind_method(D_METHOD("close_and_destroy"), &TdJsonClient::close_and_destroy);
 
-    // private
+    // private methods
     ClassDB::bind_method(D_METHOD("_set_bot_token", "p_response", "p_parameters"), &TdJsonClient::_set_bot_token);
 
-    // static
+    // static methods
     ClassDB::bind_static_method("TdJsonClient", D_METHOD("create"), &TdJsonClient::create);
 
+    // signals
     ADD_SIGNAL(MethodInfo("response_received", PropertyInfo(Variant::INT, "client_id"), PropertyInfo(Variant::DICTIONARY, "response")));
 }
