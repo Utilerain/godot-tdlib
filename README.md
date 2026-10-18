@@ -3,70 +3,66 @@
 
 GDExtension C++ wrapper for working with [TdLib](https://github.com/tdlib/td) (JSON interface) on Godot Engine.
 
-### Realized Functions
+## Features
 
-1. `TdJson.send` (td_send from [td_json_client.h](https://core.telegram.org/tdlib/docs/td__json__client_8h.html))
-2. `TdJson.receive` (td_receive from [td_json_client.h](https://core.telegram.org/tdlib/docs/td__json__client_8h.html))
-3. `TdJson.execute` (td_execute from [td_json_client.h](https://core.telegram.org/tdlib/docs/td__json__client_8h.html))
-4. `TdJson.set_verbosity_level` (custom function for easier adjustment of verbosity level)
-5. `TdJson.set_max_verbosity_level` (custom function for set maximum verbosity level before Tdlib starts)
-6. `TdJson.set_log_callback` (create custom callback for tracking changes in TdLib)
+- `TdJsonManager` - global singleton for TDLib configuration, synchronous requests, logging, and polling.
+- `TdJsonClient` - an individual TDLib client. Create one with `TdJsonClient.create()` or `TdJsonManager.create_client()`, send requests with `send()`, and close it with `close_and_destroy()`.
+- Receive all updates through `TdJsonManager.request_received`, or connect to a specific client's `response_received` signal.
+- Configure TDLib parameters, set a bot token, query the TDLib version, and control log verbosity.
+- The extension requires Godot 4.5 or newer.
 
 ## Usage
 
-This wrapper can be used to create games or applications for integration or create alternative Telegram clients through Telegram Database Api. Look **[example](./example)** for discover.
-General pattern of usage:
+The wrapper can be used to integrate TDLib into a Godot game or application, including a Telegram client. See the [example project](./example) for a working login flow.
+
+Create a client, connect to the manager's response signal, and start the polling thread:
 ```gdscript
-var client := TdJson.new()
-while true:
-	var result = client.receive(10.0)
-	if result:
-		# parse the result as a JSON object and process it as an incoming update or the answer to a previously sent request
-		pass
+var client: TdJsonClient
+
+func _ready() -> void:
+	client = TdJsonClient.create()
+	TdJsonManager.request_received.connect(_on_response_received)
+	TdJsonManager.start_poll()
+
+func _on_response_received(response: Dictionary) -> void:
+	# Handle a TDLib update or the answer to a request.
+	print(response)
 ```
 
+`TdJsonManager.request_received` emits every response received by the manager as one `Dictionary`; `TdJsonClient.response_received` emits responses for that client with its client ID and response dictionary. `TdJsonManager.receive(timeout)` is available for manual polling, but do not call it concurrently with `start_poll()`.
+
+Call `TdJsonManager.set_tdlib_parameters(...)` with your Telegram API credentials before polling; the manager sends them when TDLib requests initialization. Use `client.send(...)` to send TDLib JSON API requests after creating the client. The example project demonstrates both initialization and authentication.
 
 ## Build (Linux, Windows)
 
-Follow the instructions for complete build:
-* Download and install [python 3.9+](https://www.python.org/)
-* Install **scons** with pip or other package manager
-* Build TdLib packages and its dependencies (check [README.md](./thirdparty/README.md))
-
-After that, open terminal and write this:
+Install [Python 3.9+](https://www.python.org/) and SCons, then build the TDLib packages and dependencies as described in [thirdparty/README.md](./thirdparty/README.md). From the repository root, build the extension for your native platform:
+```shell
+scons -j <number-of-cores> target=template_debug
 ```
-scons -j XXX
-```
-Where XXX - CPU cores for build parallelism.
 
 ## Build (Android)
 
-The easiest way for build is using Docker:
-* Install [Docker](https://www.docker.com/products/docker-desktop/)
-* Build TdLib packages and its dependencies (check [README.md](./thirdparty/README.md))
-* Build [Dockerfile](./Dockerfile) image
-* Run image (check [Dockerfile](./Dockerfile) instruction)
-
-Otherwise, if you want to do it manually, do this (linux):
-
-* Download and install build-essential, python3, scons, unzip, wget, git using your package manager
-* Build TdLib packages and its dependencies (check [README.md](./thirdparty/README.md))
-* Write this on your terminal:
+The provided [Dockerfile](./Dockerfile) uses Android NDK 28.1.13356709. Install [Docker](https://www.docker.com/products/docker-desktop/), build the image, and run SCons with the project directory mounted:
 ```
-mkdir -p /opt/android/ndk/28.1.13356709
-wget -q https://dl.google.com/android/repository/android-ndk-r28-linux.zip -O /tmp/ndk.zip
-unzip -q /tmp/ndk.zip -d /tmp
-cp -r /tmp/android-ndk-r28/. /opt/android/ndk/28.1.13356709/
-rm -rf /tmp/ndk.zip /tmp/android-ndk-r28
-scons platform=android ANDROID_HOME=/opt/android
+docker build -t godot-tdlib-android-builder .
+docker run --rm -v ${PWD}:/build godot-tdlib-android-builder scons -j6 platform=android target=template_debug
 ```
+TDLib Android libraries must also be built; see [thirdparty/README.md](./thirdparty/README.md).
 
 ## Supported platforms
-| Platform | Support |
-|-----------|:------------:|
-|   Windows     | ✅ supported
-|   Linux       | ✅ supported
-|   Android     | ✅ supported
-|   macOS       | ❌ not supported
-|   iOS       | ❌ not supported
 
+| Platform | Architectures | Support |
+|----------|---------------|:-------:|
+| Windows  | x86_64        | ✅ |
+| Linux    | x86_64        | ✅ |
+| Android  | arm64, arm32, x86_64, x86_32 | ✅ |
+| macOS    | —             | ❌ |
+| iOS      | —             | ❌ |
+
+## Tests
+
+Run the headless test project from the repository root:
+```powershell
+.\gen\godot.exe --path .\tests --headless
+```
+See [tests/README.md](./tests/README.md) for test coverage and the documentation check.
