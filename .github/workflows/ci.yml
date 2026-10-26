@@ -200,7 +200,7 @@ jobs:
         run: |
           required_files=(
             addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so
-            addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.68
+            addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.69
           )
           for file in "${required_files[@]}"; do
             if [ ! -f "$file" ]; then
