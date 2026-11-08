@@ -3,10 +3,10 @@
 # You can install those dependencies using package manager.
 
 cd td
-if [ ! -d "build" ]; then
-  mkdir build
+if [ ! -d "build_linux_x86_64" ]; then
+  mkdir build_linux_x86_64
 fi
-cd build
+cd build_linux_x86_64
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=../../tdlib_linux_x86_64 ..
 cmake --build . --target install --parallel "${CMAKE_BUILD_PARALLEL_LEVEL:-2}"
 cd ..

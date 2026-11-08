@@ -35,7 +35,7 @@ if (-not (Test-Path (Join-Path $ZlibRoot "include\zlib.h")) -or
 	throw "vcpkg did not install zlib for x64-windows"
 }
 
-$BuildRoot = Join-Path $TdRoot "build"
+$BuildRoot = Join-Path $TdRoot "build_windows_x86_64"
 New-Item -ItemType Directory -Path $BuildRoot -Force | Out-Null
 Push-Location $BuildRoot
 try {
