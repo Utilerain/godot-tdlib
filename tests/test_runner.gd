@@ -1,6 +1,6 @@
 extends Node
 
-const TDLIB_VERSION = "1.8.69"
+const TDLIB_VERSION = "1.8.70"
 
 var failures := 0
 var received_count := 0

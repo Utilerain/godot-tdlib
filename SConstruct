@@ -4,7 +4,7 @@ import shutil
 
 localEnv = Environment(tools=["default"])
 localEnv["build_profile"] = "build_profile.json"
-tdlib_version = "1.8.69"
+tdlib_version = "1.8.70"
 
 android_archs = {
     "arm64": "arm64-v8a",
