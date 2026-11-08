@@ -6,7 +6,7 @@
 #   1. Build the Docker image:
 #      docker build -t godot-tdlib-android-builder .
 #   2. Run the container, mounting the project directory:
-#       docker run --rm -v /path/to/your/godot-tdlib:/project godot-tdlib-android-builder
+#       docker run --rm -v /path/to/your/godot-tdlib:/build godot-tdlib-android-builder
 #       (For example (Windows): docker run --rm -v ${PWD}:/build godot-tdlib-android-builder scons -j6 platform=android verbose=true)
 #       (For example (Linux): docker run --rm -v $(pwd):/build godot-tdlib-android-builder scons -j6 platform=android verbose=true)
 #
