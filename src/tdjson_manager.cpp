@@ -55,28 +55,39 @@ Dictionary TdJsonManager::execute(Dictionary p_request)
  */
 Dictionary TdJsonManager::receive(double p_timeout)
 {
+    godot::UtilityFunctions::print_verbose("TdJsonManager::receive: ", _parsed);
+
     if (is_running() && _worker_thread_id != godot::OS::get_singleton()->get_thread_caller_id())
     {
         godot::UtilityFunctions::push_error("TdJsonManager::receive() should not be called from multiple threads simultaneously. Did you use TdJsonManager::start_poll() and TdJsonManager::receive() at the same time?");
         return Dictionary();
     }
-
-    _mutex->lock();
-    const char *_resp = td_receive(p_timeout);
-
-    if (_resp == nullptr)
+ 
+    const char *_resp = nullptr;
     {
-        return Dictionary();
+        MutexLock lock(*_mutex.ptr());
+        _resp = td_receive(p_timeout);
+        if (!resp) return Dictionary();
     }
-    Dictionary _resp_parsed = Dictionary(JSON::parse_string(String(_resp)));
-    call_deferred("emit_signal", "request_received", _resp_parsed);
-    godot::UtilityFunctions::print_verbose("TdJsonManager::receive: ", _resp_parsed);
-    for (auto &client : _clients)
+
+    Dictionary _parsed = Dictionary(JSON::parse_string(String(_resp)));
+
+    Vector<Ref<tdJsonClient>> _snapshot;
     {
-        client.second->_on_response(_resp_parsed);
+        MutexLock lock(*_mutex.ptr());
+        for (auto &client : _clients)
+        {
+            _snapshot.push_back(client.second);
+        }
     }
-    _mutex->unlock();
-    return _resp_parsed;
+
+    for (auto &client : _snapshot)
+    {
+        client->_on_response(_parsed);
+    }
+    
+    call_deferred("emit_signal", "request_received", _parsed);
+    return _parsed;
 }
 
 // Logs message output for godot console
