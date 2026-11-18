@@ -47,12 +47,14 @@ namespace godot
     private:
         void _set_log_message_callback();
         int _max_verbosity_level = 4;
-        void _set_tdlib_parameters(Dictionary p_response, Dictionary p_parameters);
+        void _set_tdlib_parameters_if_exists(Dictionary p_response, Dictionary p_parameters);
         void _thread_poll();
         void _send_to_all_clients(Dictionary p_request);
         static Callable *_log_callback;
         Ref<Thread> _worker_thread;
         std::atomic<bool> _is_running{false};
+        std::atomic<bool> _tdlib_params_set{false};
+        Dictionary _tdlib_params;
         Ref<Mutex> _mutex;
         static inline TdJsonManager *_instance = nullptr;
         std::unordered_map<int, Ref<TdJsonClient>> _clients;

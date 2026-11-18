@@ -85,7 +85,7 @@ Dictionary TdJsonManager::receive(double p_timeout)
     {
         client->_on_response(_parsed);
     }
-    
+
     call_deferred("emit_signal", "request_received", _parsed);
     return _parsed;
 }
@@ -208,7 +208,8 @@ void TdJsonManager::set_tdlib_parameters(
         _req["system_version"] = p_system_version;
     }
 
-    connect("request_received", Callable(this, "_set_tdlib_parameters").bind(_req));
+    _tdlib_params = _req;
+    _tdlib_params_set.store(true);
 }
 
 // \return Current version of the tdlib
@@ -220,8 +221,10 @@ String TdJsonManager::get_tdlib_version()
     return String(execute(_req).get("value", ""));
 }
 
-void TdJsonManager::_set_tdlib_parameters(Dictionary p_response, Dictionary p_parameters)
+void TdJsonManager::_set_tdlib_parameters_if_exists(Dictionary p_response, Dictionary p_parameters)
 {
+    if (_tdlib_params_set.load()) return;
+
     String _type = p_response.get("@type", "");
     if (_type != "updateAuthorizationState")
     {
@@ -237,6 +240,7 @@ void TdJsonManager::_set_tdlib_parameters(Dictionary p_response, Dictionary p_pa
     }
 
     _send_to_all_clients(p_parameters);
+    _tdlib_params_set.store(true);
 }
 
 const double POLL_TIMEOUT = 10.0;
@@ -409,7 +413,6 @@ void TdJsonManager::_bind_methods()
 
     // private methods
     ClassDB::bind_method(D_METHOD("_thread_poll"), &TdJsonManager::_thread_poll);
-    ClassDB::bind_method(D_METHOD("_set_tdlib_parameters", "p_response", "p_parameters"), &TdJsonManager::_set_tdlib_parameters);
 
     // signals
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
