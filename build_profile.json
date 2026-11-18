@@ -10,7 +10,6 @@
 		"Thread",
 		"Mutex",
 		"Object",
-		"Engine",
-		"MutexLock"
+		"Engine"
 	]
 }
