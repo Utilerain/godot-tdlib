@@ -65,9 +65,9 @@ void TdJsonClient::set_bot_token(String p_bot_token)
     connect("response_received", Callable(this, "_set_bot_token").bind(_req));
 }
 
-void TdJsonClient::close_and_destroy()
+void TdJsonClient::close()
 {
-    godot::UtilityFunctions::print_verbose("TdJsonClient::close_and_destroy: ", _client_id);
+    godot::UtilityFunctions::print_verbose("TdJsonClient::close: ", _client_id);
     TdJsonManager::get_singleton()->remove_client(this);
 }
 
@@ -88,7 +88,7 @@ void TdJsonClient::_bind_methods()
     ClassDB::bind_method(D_METHOD("send", "request"), &TdJsonClient::send);
     ClassDB::bind_method(D_METHOD("get_client_id"), &TdJsonClient::get_client_id);
     ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJsonClient::set_bot_token);
-    ClassDB::bind_method(D_METHOD("close_and_destroy"), &TdJsonClient::close_and_destroy);
+    ClassDB::bind_method(D_METHOD("close"), &TdJsonClient::close);
 
     // private methods
     ClassDB::bind_method(D_METHOD("_set_bot_token", "p_response", "p_parameters"), &TdJsonClient::_set_bot_token);
