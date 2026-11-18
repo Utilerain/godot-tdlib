@@ -87,6 +87,7 @@ Dictionary TdJsonManager::receive(double p_timeout)
         client->_on_response(_parsed);
     }
 
+    _set_tdlib_parameters_if_exist(_parsed, _tdlib_params);
     call_deferred("emit_signal", "request_received", _parsed);
     return _parsed;
 }
@@ -222,7 +223,7 @@ String TdJsonManager::get_tdlib_version()
     return String(execute(_req).get("value", ""));
 }
 
-void TdJsonManager::_set_tdlib_parameters_if_exists(Dictionary p_response, Dictionary p_parameters)
+void TdJsonManager::_set_tdlib_parameters_if_exist(Dictionary p_response, Dictionary p_parameters)
 {
     if (_tdlib_params_set.load()) return;
 
