@@ -87,8 +87,9 @@ Dictionary TdJsonManager::receive(double p_timeout)
         client->_on_response(_parsed);
     }
 
-    _set_tdlib_parameters_if_exist(_parsed, _tdlib_params);
+    _try_send_tdlib_parameters(_parsed);
     call_deferred("emit_signal", "request_received", _parsed);
+
     return _parsed;
 }
 
@@ -210,7 +211,10 @@ void TdJsonManager::set_tdlib_parameters(
         _req["system_version"] = p_system_version;
     }
 
-    _tdlib_params = _req;
+    {
+        MutexLock lock(*_mutex.ptr());
+        _tdlib_params = _req;
+    }
     _tdlib_params_sent.store(false);
 }
 
@@ -223,23 +227,29 @@ String TdJsonManager::get_tdlib_version()
     return String(execute(_req).get("value", ""));
 }
 
-void TdJsonManager::_set_tdlib_parameters_if_exist(Dictionary p_response, Dictionary p_parameters)
+void TdJsonManager::_try_send_tdlib_parameters(const Dictionary &p_resp)
 {
     if (_tdlib_params_sent.load()) return;
+    if (_tdlib_params.is_empty()) return;
 
-    String _type = p_response.get("@type", "");
+    String _type = p_resp.get("@type", "");
     if (_type != "updateAuthorizationState")
     {
         return;
     }
 
-    Dictionary _auth_state = p_response.get("authorization_state", Dictionary());
+    Dictionary _auth_state = p_resp.get("authorization_state", Dictionary());
     String _auth_type = _auth_state.get("@type", "");
 
     if (_auth_type != "authorizationStateWaitTdlibParameters") return;
-    if (_tdlib_params_sent.exchange(true)) return; 
 
-    _send_to_all_clients(p_parameters);
+    Dictionary _params;
+    {
+        MutexLock lock(*_mutex.ptr());
+        if (_tdlib_params_sent.exchange(true)) return; 
+        _params = _tdlib_params;
+    }
+    _send_to_all_clients(_params);
 }
 
 const double POLL_TIMEOUT = 1.0;
