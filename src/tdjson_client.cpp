@@ -32,7 +32,7 @@ void TdJsonClient::_on_response(Dictionary p_response)
     {
         return;
     }
-    emit_signal("response_received", _client_id, p_response);
+    call_deferred("emit_signal", "response_received", _client_id, p_response);
 }
 
 void TdJsonClient::_set_bot_token(Dictionary p_response, Dictionary p_parameters)
