@@ -243,7 +243,7 @@ void TdJsonManager::_set_tdlib_parameters_if_exists(Dictionary p_response, Dicti
     _tdlib_params_set.store(true);
 }
 
-const double POLL_TIMEOUT = 10.0;
+const double POLL_TIMEOUT = 1.0;
 
 void TdJsonManager::_thread_poll()
 {
