@@ -54,7 +54,7 @@ namespace godot
         static Callable *_log_callback;
         Ref<Thread> _worker_thread;
         std::atomic<bool> _is_running{false};
-        std::atomic<bool> _tdlib_params_set{false};
+        std::atomic<bool> _tdlib_params_sent{false};
         Dictionary _tdlib_params;
         Ref<Mutex> _mutex;
         static inline TdJsonManager *_instance = nullptr;

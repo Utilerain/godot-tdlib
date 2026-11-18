@@ -211,7 +211,7 @@ void TdJsonManager::set_tdlib_parameters(
     }
 
     _tdlib_params = _req;
-    _tdlib_params_set.store(true);
+    _tdlib_params_sent.store(false);
 }
 
 // \return Current version of the tdlib
@@ -225,7 +225,7 @@ String TdJsonManager::get_tdlib_version()
 
 void TdJsonManager::_set_tdlib_parameters_if_exist(Dictionary p_response, Dictionary p_parameters)
 {
-    if (_tdlib_params_set.load()) return;
+    if (_tdlib_params_sent.load()) return;
 
     String _type = p_response.get("@type", "");
     if (_type != "updateAuthorizationState")
@@ -236,13 +236,10 @@ void TdJsonManager::_set_tdlib_parameters_if_exist(Dictionary p_response, Dictio
     Dictionary _auth_state = p_response.get("authorization_state", Dictionary());
     String _auth_type = _auth_state.get("@type", "");
 
-    if (_auth_type != "authorizationStateWaitTdlibParameters")
-    {
-        return;
-    }
+    if (_auth_type != "authorizationStateWaitTdlibParameters") return;
+    if (_tdlib_params_sent.exchange(true)) return; 
 
     _send_to_all_clients(p_parameters);
-    _tdlib_params_set.store(true);
 }
 
 const double POLL_TIMEOUT = 1.0;
