@@ -11,6 +11,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/os.hpp>
 #include <godot_cpp/classes/thread.hpp>
+#include <godot_cpp/core/mutex_lock.hpp>
 
 #include <td/telegram/td_json_client.h>
 
@@ -55,7 +56,6 @@ Dictionary TdJsonManager::execute(Dictionary p_request)
  */
 Dictionary TdJsonManager::receive(double p_timeout)
 {
-    godot::UtilityFunctions::print_verbose("TdJsonManager::receive: ", _parsed);
 
     if (is_running() && _worker_thread_id != godot::OS::get_singleton()->get_thread_caller_id())
     {
@@ -67,12 +67,13 @@ Dictionary TdJsonManager::receive(double p_timeout)
     {
         MutexLock lock(*_mutex.ptr());
         _resp = td_receive(p_timeout);
-        if (!resp) return Dictionary();
+        if (!_resp) return Dictionary();
     }
 
     Dictionary _parsed = Dictionary(JSON::parse_string(String(_resp)));
+    godot::UtilityFunctions::print_verbose("TdJsonManager::receive: ", _parsed);
 
-    Vector<Ref<tdJsonClient>> _snapshot;
+    Vector<Ref<TdJsonClient>> _snapshot;
     {
         MutexLock lock(*_mutex.ptr());
         for (auto &client : _clients)

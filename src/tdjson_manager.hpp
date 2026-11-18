@@ -1,6 +1,7 @@
 #include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/classes/thread.hpp>
 #include <godot_cpp/classes/mutex.hpp>
+#include <godot_cpp/core/mutex_lock.hpp>
 
 #include <atomic>
 #include <unordered_map>
