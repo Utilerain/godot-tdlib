@@ -1,6 +1,6 @@
 extends Node
 
-const TDLIB_VERSION = "1.8.70"
+const TDLIB_VERSION = "1.8.71"
 
 var failures := 0
 var received_count := 0
@@ -81,7 +81,7 @@ func run_tests() -> void:
 	if client.response_received.is_connected(on_response):
 		client.response_received.disconnect(on_response)
 
-	client.close_and_destroy()
+	client.close()
 	await get_tree().process_frame
 
 func wait_for_response(timeout, manager):
