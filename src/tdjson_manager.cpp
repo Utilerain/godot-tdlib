@@ -35,6 +35,7 @@ Dictionary TdJsonManager::execute(Dictionary p_request)
 
     if (!_resp)
     {
+        UtilityFunctions::push_error("TdJsonManager::execute: request rejected by TDLib: ", p_request);
         return Dictionary();
     }
 
