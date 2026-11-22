@@ -27,7 +27,7 @@ echo "unzip utility found, continuing script execution..."
 
 
 cd tdlib_android
-commit_hash=23383aef218a3123f02b744bfa91bde21056a814
+commit_hash=f10611ee1f03f91ddae8185483a1ccfd3d664668
 docker build --build-arg TDLIB_INTERFACE=JSON --build-arg ANDROID_STL=c++_shared --build-arg ANDROID_NDK_VERSION=28.1.13356709 --build-arg COMMIT_HASH=$commit_hash --output builds .
 cd builds
 unzip tdlib.zip
