@@ -18,6 +18,10 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Record TDLib ref
+        shell: bash
+        run: git -C thirdparty/td rev-parse HEAD > .td-ref.txt
+
       - name: Cache TDLib and vcpkg
         id: cache-tdlib-windows
         uses: actions/cache@v4
@@ -29,7 +33,7 @@ jobs:
             thirdparty/vcpkg/downloads
             thirdparty/td/build
             thirdparty/tdlib_win_x86_64
-          key: tdlib-windows-v2-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
+          key: tdlib-windows-v3-${{ hashFiles('thirdparty/build.ps1', '.td-ref.txt') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
 
       - name: Build TDLib
         if: steps.cache-tdlib-windows.outputs.cache-hit != 'true'
@@ -53,6 +57,10 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Record TDLib ref
+        shell: bash
+        run: git -C thirdparty/td rev-parse HEAD > .td-ref.txt
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -72,7 +80,7 @@ jobs:
             thirdparty/vcpkg/downloads
             thirdparty/td/build
             thirdparty/tdlib_win_x86_64
-          key: tdlib-windows-v2-${{ hashFiles('thirdparty/build.ps1') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
+          key: tdlib-windows-v3-${{ hashFiles('thirdparty/build.ps1', '.td-ref.txt') }}-vcpkg-9e593bb18ea69cc5095e012465dcd675a822ed0d
           fail-on-cache-miss: true
       
       - name: Restore SCons Cache
@@ -132,6 +140,10 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Record TDLib ref
+        shell: bash
+        run: git -C thirdparty/td rev-parse HEAD > .td-ref.txt
+
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -142,12 +154,12 @@ jobs:
         with:
           path: |
             thirdparty/tdlib_linux_x86_64
-          key: tdlib-linux-${{ hashFiles('thirdparty/build.sh') }}-${{ hashFiles('thirdparty/td/CMakeLists.txt') }}
+          key: tdlib-linux-v2-${{ hashFiles('thirdparty/build.sh', '.td-ref.txt') }}
 
       - name: Build TDLib
         working-directory: thirdparty
         run: |
-          if [ ! -f tdlib_linux_x86_64/lib/libtdjson.so.1.8.68 ]; then
+          if ! ls tdlib_linux_x86_64/lib/libtdjson.so.* >/dev/null 2>&1; then
             bash ./build.sh
           else
             echo "Using cached Linux TDLib build"
@@ -169,6 +181,10 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Record TDLib ref
+        shell: bash
+        run: git -C thirdparty/td rev-parse HEAD > .td-ref.txt
+
       - name: Install Godot rendering dependencies
         run: |
           sudo apt-get update
@@ -186,7 +202,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: thirdparty/tdlib_linux_x86_64
-          key: tdlib-linux-${{ hashFiles('thirdparty/build.sh') }}-${{ hashFiles('thirdparty/td/CMakeLists.txt') }}
+          key: tdlib-linux-v2-${{ hashFiles('thirdparty/build.sh', '.td-ref.txt') }}
       
       - name: Restore SCons Cache
         uses: actions/cache@v4
@@ -278,6 +294,10 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Record TDLib ref
+        shell: bash
+        run: git -C thirdparty/td rev-parse HEAD > .td-ref.txt
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -285,7 +305,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: thirdparty/tdlib_android/builds
-          key: tdlib-android-${{ hashFiles('thirdparty/build_android.sh', 'thirdparty/tdlib_android/Dockerfile', 'thirdparty/tdlib_android/*.sh') }}
+          key: tdlib-android-v2-${{ hashFiles('thirdparty/build_android.sh', 'thirdparty/tdlib_android/Dockerfile', 'thirdparty/tdlib_android/*.sh', '.td-ref.txt') }}
 
       - name: Build TDLib for Android
         working-directory: thirdparty
