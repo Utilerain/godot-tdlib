@@ -111,7 +111,7 @@ Callable *TdJsonManager::_log_callback;
 
 // Sets the callback that will be called when a message is added to the internal TDLib log.
 // None of the TDLib methods can be called from the callback. By default the callback is set in set_log_message_callback
-void TdJsonManager::set_log_callback(Callable p_callback)
+void TdJsonManager::set_log_callback(Callable p_callback, int p_max_verbosity_level = 4)
 {
     if (_log_callback)
     {
@@ -120,7 +120,7 @@ void TdJsonManager::set_log_callback(Callable p_callback)
     _log_callback = memnew(Callable);
     *_log_callback = p_callback;
 
-    td_set_log_message_callback(_max_verbosity_level, [](int verbosity_level, const char *message)
+    td_set_log_message_callback(p_max_verbosity_level, [](int verbosity_level, const char *message)
                                 {
         if (_log_callback && _log_callback->is_valid()) {
             _log_callback->call_deferred(Variant(verbosity_level), Variant(String(message)));
