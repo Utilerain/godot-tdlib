@@ -42,6 +42,7 @@ Dictionary TdJsonManager::execute(Dictionary p_request)
     Variant _resp_parsed = JSON::parse_string(String(_resp));
     if (_resp_parsed.get_type() != Variant::DICTIONARY)
     {
+        UtilityFunctions::push_error("TdJsonManager::execute: failed to parse response for request: ", p_request);
         return Dictionary();
     }
 
