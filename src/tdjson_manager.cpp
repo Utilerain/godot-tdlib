@@ -324,10 +324,7 @@ void TdJsonManager::stop_poll()
     {
         Dictionary _req;
         _req["@type"] = "close";
-        for (auto &[client_id, client] : _clients)
-        {
-            client->send(_req);
-        }
+        _send_to_all_clients(_req);
         _is_running.store(false);
 
         if (_worker_thread->is_alive())
