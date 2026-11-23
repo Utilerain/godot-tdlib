@@ -315,6 +315,7 @@ void TdJsonManager::start_poll()
 
     _worker_thread->start(Callable(this, "_thread_poll"));
     _worker_thread_id = _worker_thread->get_id().to_int();
+    emit_signal("poll_started");
 }
 
 // Stops the TDLib client.
@@ -335,6 +336,7 @@ void TdJsonManager::stop_poll()
 
     _worker_thread_id = 0;
     _worker_thread.unref();
+    emit_signal("poll_stopped");
 }
 
 bool TdJsonManager::is_running()
@@ -424,6 +426,8 @@ void TdJsonManager::_bind_methods()
 
     // signals
     ADD_SIGNAL(MethodInfo("request_received", PropertyInfo(Variant::DICTIONARY, "response")));
+    ADD_SIGNAL(MethodInfo("poll_started"));
+    ADD_SIGNAL(MethodInfo("poll_stopped"));
 }
 
 TdJsonManager::~TdJsonManager()
