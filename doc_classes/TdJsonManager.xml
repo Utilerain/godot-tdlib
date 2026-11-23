@@ -64,6 +64,7 @@
 		<method name="set_log_callback">
 			<return type="void" />
 			<param index="0" name="callback" type="Callable" />
+			<param index="1" name="max_verbosity_level" type="int" />
 			<description>
 				Sets the callback called when a message is added to the internal TDLib log. The callback must accept [code]verbosity_level[/code] and [code]message[/code].
 			</description>
@@ -139,6 +140,14 @@
 		</method>
 	</methods>
 	<signals>
+		<signal name="poll_started">
+			<description>
+			</description>
+		</signal>
+		<signal name="poll_stopped">
+			<description>
+			</description>
+		</signal>
 		<signal name="request_received">
 			<param index="0" name="response" type="Dictionary" />
 			<description>
