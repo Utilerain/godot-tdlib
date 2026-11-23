@@ -19,11 +19,11 @@ namespace godot
     public:
         TdJsonManager();
         ~TdJsonManager();
-        Dictionary execute(Dictionary request);
-        Dictionary receive(double timeout);
-        void set_max_verbosity_level(int verbosity_level);
-        void set_verbosity_level(int new_verbosity_level);
-        void set_log_callback(Callable callback);
+        Dictionary execute(Dictionary p_request);
+        Dictionary receive(double p_timeout);
+        void set_max_verbosity_level(int p_verbosity_level);
+        void set_verbosity_level(int p_new_verbosity_level);
+        void set_log_callback(Callable p_callback, int p_max_verbosity_level);
         void set_tdlib_parameters(
             int p_api_id,
             String p_api_hash,
@@ -43,7 +43,7 @@ namespace godot
         bool is_running();
         static TdJsonManager *get_singleton();
         Ref<TdJsonClient> create_client();
-        void remove_client(Ref<TdJsonClient> client);
+        void remove_client(Ref<TdJsonClient> p_client);
 
     private:
         void _set_log_message_callback();
