@@ -1,0 +1,80 @@
+name: TDLib update
+
+on:
+  schedule:
+    - cron: '0 6 1 * *' # monthly, on the 1st day at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    name: Check for a new TDLib version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Detect the latest TDLib version
+        id: detect
+        run: |
+          # TDLib does not tag releases after v1.8.0; the current version lives in the root CMakeLists.txt.
+          LATEST=$(curl -sfL https://raw.githubusercontent.com/tdlib/td/master/CMakeLists.txt \
+            | sed -n 's/^project(TDLib VERSION \([0-9][0-9.]*\).*/\1/p')
+          if [ -z "$LATEST" ]; then
+            echo "Could not detect the latest TDLib version from tdlib/td master"
+            exit 1
+          fi
+          CURRENT=$(sed -n 's/^tdlib_version = "\(.*\)"$/\1/p' SConstruct)
+          echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          echo "Latest TDLib on master: $LATEST, pinned in this repo: $CURRENT"
+
+      - name: Checkout the new TDLib commit
+        if: steps.detect.outputs.latest != steps.detect.outputs.current
+        run: |
+          LATEST="${{ steps.detect.outputs.latest }}"
+          git -C thirdparty/td fetch --filter=blob:none --unshallow origin master 2>/dev/null \
+            || git -C thirdparty/td fetch --filter=blob:none origin master \
+            || git -C thirdparty/td fetch origin master
+          # TDLib marks releases with commits named "Update version to X."
+          SHA=$(git -C thirdparty/td log --format="%H" --grep="Update version to ${LATEST}" -1 refs/remotes/origin/master || true)
+          if [ -z "$SHA" ]; then
+            echo "Could not find a TDLib commit 'Update version to ${LATEST}' on master"
+            exit 1
+          fi
+          echo "Checking out TDLib commit $SHA"
+          git -C thirdparty/td checkout "$SHA"
+
+      - name: Update version references
+        if: steps.detect.outputs.latest != steps.detect.outputs.current
+        run: |
+          LATEST="${{ steps.detect.outputs.latest }}"
+          sed -i "s/^tdlib_version = \".*\"$/tdlib_version = \"${LATEST}\"/" SConstruct
+          sed -i "s/^const TDLIB_VERSION = \".*\"$/const TDLIB_VERSION = \"${LATEST}\"/" tests/test_runner.gd
+          sed -i "s/libtdjson\.so\.[0-9][0-9.]*/libtdjson.so.${LATEST}/g" .github/workflows/ci.yml \
+            addons/godot-tdlib/telegram.gdextension example/addons/godot-tdlib/telegram.gdextension tests/addons/godot-tdlib/telegram.gdextension
+          sed -i "s/libtdjson\.[0-9][0-9.]*\.dylib/libtdjson.${LATEST}.dylib/g" \
+            addons/godot-tdlib/telegram.gdextension example/addons/godot-tdlib/telegram.gdextension tests/addons/godot-tdlib/telegram.gdextension
+
+      - name: Check version consistency
+        if: steps.detect.outputs.latest != steps.detect.outputs.current
+        run: python3 scripts/check_versions.py
+
+      - name: Create Pull Request
+        if: steps.detect.outputs.latest != steps.detect.outputs.current
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update TDLib to ${{ steps.detect.outputs.latest }}"
+          title: "chore: update TDLib to ${{ steps.detect.outputs.latest }}"
+          body: |
+            Automatic TDLib version bump: ${{ steps.detect.outputs.current }} -> ${{ steps.detect.outputs.latest }}.
+
+            CI will rebuild TDLib binaries for all platforms (the first run is expected to have a cache miss).
+          branch: bump-tdlib-${{ steps.detect.outputs.latest }}
+          delete-branch: true
