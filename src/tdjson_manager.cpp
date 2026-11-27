@@ -75,18 +75,25 @@ Dictionary TdJsonManager::receive(double p_timeout)
     Dictionary _parsed = Dictionary(JSON::parse_string(String(_resp)));
     godot::UtilityFunctions::print_verbose("TdJsonManager::receive: ", _parsed);
 
-    Vector<Ref<TdJsonClient>> _snapshot;
+    int _resp_client_id = (int)_parsed.get("@client_id", 0);
+
+    Ref<TdJsonClient> _target = nullptr;
     {
         MutexLock lock(*_mutex.ptr());
-        for (auto &client : _clients)
+        auto it = _clients.find(_resp_client_id);
+        if (it != _clients.end()) 
         {
-            _snapshot.push_back(client.second);
+            _target = it->second;
         }
     }
 
-    for (auto &client : _snapshot)
+    if (_target.is_valid())
     {
-        client->_on_response(_parsed);
+        _target->_on_response(_parsed);
+    }
+    else
+    {
+        UtilityFunctions::print_verbose("TdJsonManager::receive: No client found for response with @client_id: ", _resp_client_id);
     }
 
     _try_send_tdlib_parameters(_parsed);
