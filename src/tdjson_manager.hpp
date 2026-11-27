@@ -58,6 +58,7 @@ namespace godot
             String p_system_language_code,
             String p_system_version);
         void _set_client_params(int p_client_id, const Dictionary &p_params);
+        static Dictionary _make_wrapper_error(int p_code, const String &p_message);
 
     private:
         // TDLib parameters for one client: either explicitly assigned via

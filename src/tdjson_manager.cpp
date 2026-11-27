@@ -36,17 +36,28 @@ Dictionary TdJsonManager::execute(Dictionary p_request)
     if (!_resp)
     {
         UtilityFunctions::push_error("TdJsonManager::execute: request rejected by TDLib: ", p_request);
-        return Dictionary();
+        return _make_wrapper_error(400, "Request rejected by TDLib: the request is not executable synchronously or is malformed.");
     }
 
     Variant _resp_parsed = JSON::parse_string(String(_resp));
     if (_resp_parsed.get_type() != Variant::DICTIONARY)
     {
         UtilityFunctions::push_error("TdJsonManager::execute: failed to parse response for request: ", p_request);
-        return Dictionary();
+        return _make_wrapper_error(500, "Failed to parse the TDLib response.");
     }
 
     return _resp_parsed;
+}
+
+// Builds an error object in the wrapper's own format, distinct from TDLib's own "error" responses:
+// {"@type": "godot-tdlib-error", "code": ..., "message": ...}
+Dictionary TdJsonManager::_make_wrapper_error(int p_code, const String &p_message)
+{
+    Dictionary _error;
+    _error["@type"] = "godot-tdlib-error";
+    _error["code"] = p_code;
+    _error["message"] = p_message;
+    return _error;
 }
 
 /**

@@ -46,6 +46,10 @@ func run_tests() -> void:
 	check(option.get("@type", "") == "optionValueString", "execute returns a parsed TDLib object")
 	check(not String(option.get("value", "")).is_empty(), "execute preserves the response value")
 
+	var sync_error: Dictionary = manager.execute({"@type": "sendMessage", "chat_id": 0, "input_message_content": {"@type": "inputMessageText", "text": {"@type": "formattedText", "text": "test"}}})
+	check(sync_error.get("@type", "") == "error", "execute passes TDLib error responses through unchanged")
+	check(int(sync_error.get("code", 0)) != 0 and not String(sync_error.get("message", "")).is_empty(), "TDLib error carries code and message")
+
 	var client = manager.create_client()
 	check(client != null and client.get_client_id() > 0, "client id is allocated")
 

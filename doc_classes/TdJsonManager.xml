@@ -33,6 +33,8 @@
 			<param index="0" name="request" type="Dictionary" />
 			<description>
 				Synchronously executes a TDLib request. A request can be executed synchronously only if it is documented with "Can be called synchronously".
+				TDLib's own error responses (for example, for a request that cannot be executed synchronously) are returned unchanged with [code]@type[/code] [code]error[/code], containing [code]code[/code] and [code]message[/code].
+				If the wrapper itself fails (the request is rejected at the TDLib JSON interface level or the response cannot be parsed), returns a wrapper error object with [code]@type[/code] [code]godot-tdlib-error[/code] — distinct from TDLib's own errors. Codes: [code]400[/code] — rejected by TDLib, [code]500[/code] — unparseable response.
 			</description>
 		</method>
 		<method name="get_tdlib_version">
