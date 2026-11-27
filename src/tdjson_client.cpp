@@ -65,6 +65,33 @@ void TdJsonClient::set_bot_token(String p_bot_token)
     connect("response_received", Callable(this, "_set_bot_token").bind(_req));
 }
 
+// Sets the TDLib parameters for this client. The request is stored and sent automatically (once)
+// when this client reaches authorizationStateWaitTdlibParameters. Without explicit parameters the
+// client falls back to the default parameters set via TdJsonManager::set_tdlib_parameters.
+void TdJsonClient::set_tdlib_parameters(
+    int p_api_id,
+    String p_api_hash,
+    String p_application_version,
+    String p_device_model,
+    String p_database_directory,
+    bool p_use_test_dc,
+    String p_files_directory,
+    bool p_use_file_database,
+    bool p_use_message_database,
+    bool p_use_secret_chats,
+    String p_system_language_code,
+    String p_system_version)
+{
+    TdJsonManager *_manager = TdJsonManager::get_singleton();
+    if (!_manager)
+    {
+        godot::UtilityFunctions::push_error("TdJsonClient::set_tdlib_parameters: TdJsonManager is not available");
+        return;
+    }
+    Dictionary _req = TdJsonManager::_build_tdlib_params_request(p_api_id, p_api_hash, p_application_version, p_device_model, p_database_directory, p_use_test_dc, p_files_directory, p_use_file_database, p_use_message_database, p_use_secret_chats, p_system_language_code, p_system_version);
+    _manager->_set_client_params(_client_id, _req);
+}
+
 void TdJsonClient::close()
 {
     godot::UtilityFunctions::print_verbose("TdJsonClient::close: ", _client_id);
@@ -88,6 +115,29 @@ void TdJsonClient::_bind_methods()
     ClassDB::bind_method(D_METHOD("send", "request"), &TdJsonClient::send);
     ClassDB::bind_method(D_METHOD("get_client_id"), &TdJsonClient::get_client_id);
     ClassDB::bind_method(D_METHOD("set_bot_token", "bot_token"), &TdJsonClient::set_bot_token);
+    ClassDB::bind_method(
+        D_METHOD("set_tdlib_parameters",
+                 "api_id",
+                 "api_hash",
+                 "application_version",
+                 "device_model",
+                 "database_directory",
+                 "use_test_dc",
+                 "files_directory",
+                 "use_file_database",
+                 "use_message_database",
+                 "use_secret_chats",
+                 "system_language_code",
+                 "system_version"),
+        &TdJsonClient::set_tdlib_parameters,
+        DEFVAL(String("user://tdlib_data")),
+        DEFVAL(false),
+        DEFVAL(String("")),
+        DEFVAL(true),
+        DEFVAL(true),
+        DEFVAL(true),
+        DEFVAL(String("")),
+        DEFVAL(String("")));
     ClassDB::bind_method(D_METHOD("close"), &TdJsonClient::close);
 
     // private methods

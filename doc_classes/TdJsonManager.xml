@@ -98,7 +98,7 @@
 			<param index="10" name="system_language_code" type="String" default="&quot;&quot;" />
 			<param index="11" name="system_version" type="String" default="&quot;&quot;" />
 			<description>
-				Sets the parameters for TDLib initialization. Activates on [code]authorizationStateWaitTdlibParameters[/code].
+				Sets the default parameters for TDLib initialization. They are applied automatically (at most once) to every client that does not have its own parameters, when that client reaches [code]authorizationStateWaitTdlibParameters[/code]. Clients can override them with [method TdJsonClient.set_tdlib_parameters].
 				- [code]api_id[/code] - Application identifier for Telegram API access, which can be obtained at [url=https://my.telegram.org]https://my.telegram.org[/url].
 				- [code]api_hash[/code] - Application identifier hash for Telegram API access, which can be obtained at [url=https://my.telegram.org]https://my.telegram.org[/url].
 				- [code]application_version[/code] - Application version; must be non-empty.

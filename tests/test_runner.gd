@@ -65,6 +65,29 @@ func run_tests() -> void:
 	check(received_count >= 1, "receive emits request_received at least once")
 	check(last_response.get("@extra", "") == "send-test", "signal carries the received response")
 
+	# Routing isolation: responses are delivered only to their own client
+	var client_b = manager.create_client()
+	check(client_b != null and client_b.get_client_id() > 0, "second client id is allocated")
+	var counts := {"a": 0, "b": 0}
+	var on_a := func(_client_id, _response = null): counts["a"] += 1
+	var on_b := func(_client_id, _response = null): counts["b"] += 1
+	client.response_received.connect(on_a)
+	client_b.response_received.connect(on_b)
+
+	client_b.send({"@type": "getOption", "name": "version", "@extra": "route-b"})
+	var waited := 0.0
+	while waited < 2.0 and counts["b"] == 0:
+		manager.receive(0.1)
+		await get_tree().process_frame
+		waited += 0.1
+
+	check(counts["b"] >= 1, "client B receives its own response")
+	check(counts["a"] == 0, "client A does not receive client B responses")
+
+	client.response_received.disconnect(on_a)
+	client_b.response_received.disconnect(on_b)
+	client_b.close()
+
 	manager.start_poll()
 	await get_tree().process_frame
 	check(manager.is_running(), "start_poll starts the worker")
@@ -83,6 +106,10 @@ func run_tests() -> void:
 
 	client.close()
 	await get_tree().process_frame
+
+	# Free the manager created via ClassDB.instantiate to avoid an ObjectDB leak at exit
+	if ClassDB.can_instantiate("TdJsonManager"):
+		manager.free()
 
 func wait_for_response(timeout, manager):
 	while timeout > 0.0:

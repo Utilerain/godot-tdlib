@@ -41,6 +41,37 @@
 				Sets the authentication token of a bot and logs in when TDLib reaches [code]authorizationStateWaitPhoneNumber[/code].
 			</description>
 		</method>
+		<method name="set_tdlib_parameters">
+			<return type="void" />
+			<param index="0" name="api_id" type="int" />
+			<param index="1" name="api_hash" type="String" />
+			<param index="2" name="application_version" type="String" />
+			<param index="3" name="device_model" type="String" />
+			<param index="4" name="database_directory" type="String" default="&quot;user://tdlib_data&quot;" />
+			<param index="5" name="use_test_dc" type="bool" default="false" />
+			<param index="6" name="files_directory" type="String" default="&quot;&quot;" />
+			<param index="7" name="use_file_database" type="bool" default="true" />
+			<param index="8" name="use_message_database" type="bool" default="true" />
+			<param index="9" name="use_secret_chats" type="bool" default="true" />
+			<param index="10" name="system_language_code" type="String" default="&quot;&quot;" />
+			<param index="11" name="system_version" type="String" default="&quot;&quot;" />
+			<description>
+				Sets the parameters for TDLib initialization for this client specifically. The request is sent automatically (at most once) when this client reaches [code]authorizationStateWaitTdlibParameters[/code]. If this method is not called, the default parameters set through [method TdJsonManager.set_tdlib_parameters] are used instead.
+				Warning: each client requires its own [code]database_directory[/code] — TDLib holds an exclusive sqlite lock on the directory, so two clients with the same directory cannot run simultaneously.
+				- [code]api_id[/code] - Application identifier for Telegram API access, which can be obtained at [url=https://my.telegram.org]https://my.telegram.org[/url].
+				- [code]api_hash[/code] - Application identifier hash for Telegram API access, which can be obtained at [url=https://my.telegram.org]https://my.telegram.org[/url].
+				- [code]application_version[/code] - Application version; must be non-empty.
+				- [code]device_model[/code] - Model of the device the application is being run on; must be non-empty.
+				- [code]database_directory[/code] - Path to the directory for the persistent database; by default uses user data directory ([code]"user://tdlib_data/"[/code]).
+				- [code]use_test_dc[/code] - If true, the Telegram test environment will be used instead of the production environment.
+				- [code]files_directory[/code] - Path to the directory for storing files; by default uses [code]database_directory[/code].
+				- [code]use_file_database[/code] - If true, information about downloaded and uploaded files will be saved between application restarts.
+				- [code]use_message_database[/code] - If true, the local database will be used for storing chats and messages between application restarts.
+				- [code]use_secret_chats[/code] - If true, support for secret chats will be enabled.
+				- [code]system_language_code[/code] - IETF language tag of the user's operating system language; By default uses locale language of the OS.
+				- [code]system_version[/code] - Version of the user's operating system; By default uses the version of the OS.
+			</description>
+		</method>
 	</methods>
 	<signals>
 		<signal name="response_received">

@@ -77,6 +77,11 @@ Dictionary TdJsonManager::receive(double p_timeout)
 
     int _resp_client_id = (int)_parsed.get("@client_id", 0);
 
+    if ((String)_parsed.get("@type", "") == "error" && String(_parsed.get("@extra", "")).begins_with("set_params_"))
+    {
+        UtilityFunctions::push_error("TdJsonManager: setTdlibParameters failed for client ", _resp_client_id, ": ", (String)_parsed.get("message", ""));
+    }
+
     Ref<TdJsonClient> _target = nullptr;
     {
         MutexLock lock(*_mutex.ptr());
@@ -96,7 +101,7 @@ Dictionary TdJsonManager::receive(double p_timeout)
         UtilityFunctions::print_verbose("TdJsonManager::receive: No client found for response with @client_id: ", _resp_client_id);
     }
 
-    _try_send_tdlib_parameters(_parsed);
+    _try_send_tdlib_parameters(_parsed, _target);
     call_deferred("emit_signal", "request_received", _parsed);
 
     return _parsed;
@@ -187,6 +192,38 @@ void TdJsonManager::set_tdlib_parameters(
     String p_system_language_code,
     String p_system_version)
 {
+    Dictionary _req = _build_tdlib_params_request(p_api_id, p_api_hash, p_application_version, p_device_model, p_database_directory, p_use_test_dc, p_files_directory, p_use_file_database, p_use_message_database, p_use_secret_chats, p_system_language_code, p_system_version);
+
+    {
+        MutexLock lock(*_mutex.ptr());
+        _default_params = _req;
+        // Re-arm the clients that rely on the default parameters.
+        for (auto &client_auth : _auth)
+        {
+            if (!client_auth.second.has_own)
+            {
+                client_auth.second.sent = false;
+            }
+        }
+    }
+}
+
+// Builds the setTdlibParameters request. Shared by TdJsonManager::set_tdlib_parameters (default
+// parameters) and TdJsonClient::set_tdlib_parameters (per-client parameters).
+Dictionary TdJsonManager::_build_tdlib_params_request(
+    int p_api_id,
+    String p_api_hash,
+    String p_application_version,
+    String p_device_model,
+    String p_database_directory,
+    bool p_use_test_dc,
+    String p_files_directory,
+    bool p_use_file_database,
+    bool p_use_message_database,
+    bool p_use_secret_chats,
+    String p_system_language_code,
+    String p_system_version)
+{
     Dictionary _req;
     _req["@type"] = "setTdlibParameters";
     _req["api_id"] = p_api_id;
@@ -199,7 +236,7 @@ void TdJsonManager::set_tdlib_parameters(
 
     if (p_files_directory != String(""))
     {
-        _req["files_directory"] = p_files_directory;
+        _req["files_directory"] = ProjectSettings::get_singleton()->globalize_path(String(p_files_directory));
     }
 
     _req["use_file_database"] = p_use_file_database;
@@ -220,11 +257,45 @@ void TdJsonManager::set_tdlib_parameters(
         _req["system_version"] = p_system_version;
     }
 
+    return _req;
+}
+
+// Stores per-client TDLib parameters (TdJsonClient::set_tdlib_parameters).
+// Warns if another client is already configured with the same database/files directory:
+// TDLib holds an exclusive sqlite lock on the database directory.
+void TdJsonManager::_set_client_params(int p_client_id, const Dictionary &p_params)
+{
+    if (p_client_id == 0)
+    {
+        UtilityFunctions::push_error("TdJsonManager::set_client_params: the client has no id, create it via create_client()");
+        return;
+    }
+
+    String _db_dir = (String)p_params.get("database_directory", "");
+    String _files_dir = p_params.has("files_directory") ? (String)p_params.get("files_directory", "") : _db_dir;
+
     {
         MutexLock lock(*_mutex.ptr());
-        _tdlib_params = _req;
+        ClientAuth &_rec = _auth[p_client_id];
+        _rec.params = p_params;
+        _rec.has_own = true;
+        _rec.sent = false;
+
+        for (const auto &client_auth : _auth)
+        {
+            if (client_auth.first == p_client_id || !client_auth.second.has_own)
+            {
+                continue;
+            }
+            const Dictionary &_other = client_auth.second.params;
+            String _other_db = (String)_other.get("database_directory", "");
+            String _other_files = _other.has("files_directory") ? (String)_other.get("files_directory", "") : _other_db;
+            if (_db_dir == _other_db || _files_dir == _other_files)
+            {
+                UtilityFunctions::push_warning("TdJsonManager: clients ", p_client_id, " and ", client_auth.first, " share a database/files directory. TDLib requires an exclusive sqlite lock per directory, one of the clients will fail to start.");
+            }
+        }
     }
-    _tdlib_params_sent.store(false);
 }
 
 // \return Current version of the tdlib
@@ -236,13 +307,15 @@ String TdJsonManager::get_tdlib_version()
     return String(execute(_req).get("value", ""));
 }
 
-void TdJsonManager::_try_send_tdlib_parameters(const Dictionary &p_resp)
+// Sends the stored TDLib parameters to the client that reached authorizationStateWaitTdlibParameters.
+// Explicit per-client parameters take priority; otherwise the default parameters are used, at most once per client.
+void TdJsonManager::_try_send_tdlib_parameters(const Dictionary &p_resp, const Ref<TdJsonClient> &p_client)
 {
-    if (_tdlib_params_sent.load()) return;
-    if (_tdlib_params.is_empty()) return;
-
-    String _type = p_resp.get("@type", "");
-    if (_type != "updateAuthorizationState")
+    if (p_client.is_null() || p_client->get_client_id() == 0)
+    {
+        return;
+    }
+    if ((String)p_resp.get("@type", "") != "updateAuthorizationState")
     {
         return;
     }
@@ -252,13 +325,39 @@ void TdJsonManager::_try_send_tdlib_parameters(const Dictionary &p_resp)
 
     if (_auth_type != "authorizationStateWaitTdlibParameters") return;
 
+    int _client_id = p_client->get_client_id();
     Dictionary _params;
+    bool _send = false;
     {
         MutexLock lock(*_mutex.ptr());
-        if (_tdlib_params_sent.exchange(true)) return; 
-        _params = _tdlib_params;
+        ClientAuth &_rec = _auth[_client_id];
+        if (_rec.has_own)
+        {
+            if (_rec.sent)
+            {
+                return;
+            }
+            _rec.sent = true;
+            _params = _rec.params;
+            _send = true;
+        }
+        else if (!_default_params.is_empty() && !_rec.sent)
+        {
+            _rec.sent = true;
+            _params = _default_params;
+            _send = true;
+        }
     }
-    _send_to_all_clients(_params);
+
+    if (!_send)
+    {
+        UtilityFunctions::push_warning("TdJsonManager: client ", _client_id, " reached authorizationStateWaitTdlibParameters without TDLib parameters, authorization will stall. Call set_tdlib_parameters().");
+        return;
+    }
+
+    // Tag the request so its ok/error response can be attributed back to setTdlibParameters.
+    _params["@extra"] = "set_params_" + String::num_int64(_client_id);
+    p_client->send(_params);
 }
 
 const double POLL_TIMEOUT = 1.0;
@@ -292,6 +391,7 @@ void TdJsonManager::_thread_poll()
 
 void TdJsonManager::_send_to_all_clients(Dictionary p_request)
 {
+    MutexLock lock(*_mutex.ptr());
     for (auto &[client_id, client] : _clients)
     {
         client->send(p_request);
@@ -362,7 +462,10 @@ Ref<TdJsonClient> TdJsonManager::create_client()
     Ref<TdJsonClient> client = memnew(TdJsonClient);
     client->_set_client_id(td_create_client_id());
 
-    _clients[client->get_client_id()] = client;
+    {
+        MutexLock lock(*_mutex.ptr());
+        _clients[client->get_client_id()] = client;
+    }
 
     if (is_running())
     {
@@ -378,14 +481,22 @@ void TdJsonManager::remove_client(Ref<TdJsonClient> p_client)
 {
     godot::UtilityFunctions::print_verbose("TdJsonManager::remove_client: ", p_client->get_client_id());
     int _id = p_client->get_client_id();
-    if (_clients.find(_id) == _clients.end() || _id == 0)
+    if (_id == 0)
     {
         return;
+    }
+    {
+        MutexLock lock(*_mutex.ptr());
+        if (_clients.find(_id) == _clients.end())
+        {
+            return;
+        }
+        _clients.erase(_id);
+        _auth.erase(_id);
     }
     Dictionary _req;
     _req["@type"] = "close";
     p_client->send(_req);
-    _clients.erase(_id);
     p_client->_set_client_id(0);
 }
 
