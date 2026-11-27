@@ -265,6 +265,126 @@ jobs:
             exit ${LASTERRCODE:-0}
           fi
 
+  macos_tdlib:
+    name: macOS TDLib build
+    runs-on: macos-latest
+    steps:
+      - name: Checkout submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Record TDLib ref
+        shell: bash
+        run: git -C thirdparty/td rev-parse HEAD > .td-ref.txt
+
+      - name: Install gperf
+        run: brew install gperf
+
+      - name: Cache TDLib build
+        uses: actions/cache@v4
+        with:
+          path: thirdparty/tdlib_macos_arm64
+          key: tdlib-macos-v1-${{ hashFiles('thirdparty/build_macos.sh', '.td-ref.txt') }}
+
+      - name: Build TDLib
+        working-directory: thirdparty
+        run: |
+          if ! ls tdlib_macos_*/lib/libtdjson*.dylib >/dev/null 2>&1; then
+            bash ./build_macos.sh
+          else
+            echo "Using cached macOS TDLib build"
+          fi
+
+      - name: Upload TDLib
+        uses: actions/upload-artifact@v4
+        with:
+          path: thirdparty/tdlib_macos_arm64
+          name: tdlib-macos
+
+  macos:
+    name: macOS GDExtension build and tests
+    needs: macos_tdlib
+    runs-on: macos-latest
+    steps:
+      - name: Checkout submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Record TDLib ref
+        shell: bash
+        run: git -C thirdparty/td rev-parse HEAD > .td-ref.txt
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install SCons
+        run: python -m pip install scons
+
+      - name: Restore TDLib cache
+        uses: actions/cache/restore@v4
+        with:
+          path: thirdparty/tdlib_macos_arm64
+          key: tdlib-macos-v1-${{ hashFiles('thirdparty/build_macos.sh', '.td-ref.txt') }}
+          fail-on-cache-miss: true
+
+      - name: Restore SCons Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/.sconsign.dblite
+            **/*.obj
+            **/*.o
+            **/*.os
+          key: scons-${{ runner.os }}-${{ hashFiles('**/SConstruct', '**/SConscript') }}
+          restore-keys: |
+            scons-${{ runner.os }}-
+
+      - name: Build GDExtension
+        run: |
+          scons -j"$(sysctl -n hw.ncpu)" platform=macos arch=arm64 target=template_debug
+          scons -j"$(sysctl -n hw.ncpu)" platform=macos arch=arm64 target=template_release
+
+      - name: Upload GDExtension
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-tdlib-macos-debug-release
+          path: addons/godot-tdlib/bin/godot_tdlib_macos_arm64/*
+          if-no-files-found: error
+
+      - name: Download Godot
+        run: |
+          curl -L \
+            https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_macos.universal.zip \
+            -o godot-ci.zip
+          unzip -q godot-ci.zip -d godot-ci
+          xattr -cr godot-ci || true
+
+      - name: Run headless tests
+        timeout-minutes: 5
+        run: |
+          if [ ! -f addons/godot-tdlib/bin/godot_tdlib_macos_arm64/libgodot_tdlib_debug.dylib ]; then
+            echo "macOS GDExtension file is missing: libgodot_tdlib_debug.dylib"
+            exit 1
+          fi
+          if ! ls addons/godot-tdlib/bin/godot_tdlib_macos_arm64/libtdjson*.dylib >/dev/null 2>&1; then
+            echo "macOS TDLib dylib is missing in the GDExtension bin directory"
+            exit 1
+          fi
+          echo "macOS GDExtension dependencies:"
+          otool -L addons/godot-tdlib/bin/godot_tdlib_macos_arm64/libgodot_tdlib_debug.dylib
+          ./godot-ci/Godot.app/Contents/MacOS/Godot --path ./tests --headless --audio-driver Dummy --display-driver headless || LASTERRCODE=$?
+
+          if [ "${LASTERRCODE:-0}" -eq 134 ]; then
+            echo "Warning: catched error 134 on exit"
+            exit 0
+          else
+            exit ${LASTERRCODE:-0}
+          fi
+
   docs:
     name: Check generated documentation
     runs-on: windows-latest
@@ -325,7 +445,7 @@ jobs:
           
   commit_changes:
       name: Create Pull Request with updated includes and libs
-      needs: [windows_tdlib, linux_tdlib, android]
+      needs: [windows_tdlib, linux_tdlib, macos_tdlib, android]
       runs-on: ubuntu-latest
       if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
       permissions:
@@ -346,6 +466,12 @@ jobs:
           with:
             name: tdlib-linux
             path: thirdparty/tdlib_linux_x86_64
+
+        - name: Download macOS TDLib
+          uses: actions/download-artifact@v4
+          with:
+            name: tdlib-macos
+            path: thirdparty/tdlib_macos_arm64
 
         - name: Download Android TDLib
           uses: actions/download-artifact@v4

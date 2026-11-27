@@ -8,6 +8,7 @@ reloadable = true
 
 windows.debug.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_win_x86_64/godot_tdlib_debug.dll"
 linux.debug.x86_64 = "res://../addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so"
+macos.debug.arm64 = "res://../addons/godot-tdlib/bin/godot_tdlib_macos_arm64/libgodot_tdlib_debug.dylib"
 android.debug.arm64 = "res://../addons/godot-tdlib/bin/godot_tdlib_android_arm64/libgodot_tdlib_debug.so"
 
 [dependencies]
@@ -20,6 +21,9 @@ windows.x86_64 = {
 }
 linux.x86_64 = {
     "res://../addons/godot-tdlib/bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.71": ""
+}
+macos.arm64 = {
+    "res://../addons/godot-tdlib/bin/godot_tdlib_macos_arm64/libtdjson.1.8.71.dylib": ""
 }
 android.arm64 = {
     "res://../addons/godot-tdlib/bin/godot_tdlib_android_arm64/libtdjson.so": ""

@@ -14,6 +14,8 @@ windows.release.x86_64 = "bin/godot_tdlib_win_x86_64/godot_tdlib.dll"
 windows.debug.x86_64 = "bin/godot_tdlib_win_x86_64/godot_tdlib_debug.dll"
 linux.release.x86_64 = "bin/godot_tdlib_linux_x86_64/libgodot_tdlib.so"
 linux.debug.x86_64 = "bin/godot_tdlib_linux_x86_64/libgodot_tdlib_debug.so"
+macos.release.arm64 = "bin/godot_tdlib_macos_arm64/libgodot_tdlib.dylib"
+macos.debug.arm64 = "bin/godot_tdlib_macos_arm64/libgodot_tdlib_debug.dylib"
 android.debug.arm64 = "bin/godot_tdlib_android_arm64/libgodot_tdlib_debug.so"
 android.release.arm64 = "bin/godot_tdlib_android_arm64/libgodot_tdlib.so"
 android.debug.x86_64 = "bin/godot_tdlib_android_x86_64/libgodot_tdlib_debug.so"
@@ -34,6 +36,9 @@ windows.x86_64 = {
 }
 linux.x86_64 = {
     "bin/godot_tdlib_linux_x86_64/libtdjson.so.1.8.71": ""
+}
+macos.arm64 = {
+    "bin/godot_tdlib_macos_arm64/libtdjson.1.8.71.dylib": ""
 }
 android.arm64 = {
     "bin/godot_tdlib_android_arm64/libtdjson.so": ""

@@ -25,16 +25,27 @@ env = SConscript("godot-cpp/SConstruct", {"env": env})
 
 target_os = env["platform"].replace("dows", "")
 target_template = env["target"]
+tdlib_arch = env["arch"]
 if target_os == "android":
     tdlib_include = "thirdparty/tdlib_android/include"
     if env["arch"] in android_archs:
         tdlib_lib_path = "thirdparty/tdlib_android/builds/tdlib/libs/{}".format(android_archs[env["arch"]])
+elif target_os == "macos":
+    # godot-cpp defaults macOS builds to "universal", but the prebuilt TDLib libraries are
+    # single-arch (CI builds the native arm64 variant). Fall back to arm64 when no
+    # universal TDLib build is present, and name the output directory after the TDLib arch.
+    if tdlib_arch == "universal" and not os.path.isdir("thirdparty/tdlib_macos_universal/include"):
+        tdlib_arch = "arm64"
+        print("Note: no universal TDLib build found, linking the arm64 TDLib libraries.")
+    tdlib_include = "thirdparty/tdlib_macos_{}/include".format(tdlib_arch)
+    tdlib_lib_path = "thirdparty/tdlib_macos_{}/lib".format(tdlib_arch)
 else:
     tdlib_include = "thirdparty/tdlib_{}_{}/include".format(target_os,env["arch"])
     tdlib_lib_path = "thirdparty/tdlib_{}_{}/lib".format(target_os,env["arch"])
 
-target_lib = "addons/godot-tdlib/bin/godot_tdlib_{}_{}/godot_tdlib".format(target_os,env["arch"])
-dest_dir = "addons/godot-tdlib/bin/godot_tdlib_{}_{}".format(target_os,env["arch"])
+output_arch = tdlib_arch if target_os == "macos" else env["arch"]
+target_lib = "addons/godot-tdlib/bin/godot_tdlib_{}_{}/godot_tdlib".format(target_os,output_arch)
+dest_dir = "addons/godot-tdlib/bin/godot_tdlib_{}_{}".format(target_os,output_arch)
 
 env.Append(CPPPATH=["src/", tdlib_include])
 env.Append(LIBPATH=[tdlib_lib_path])
@@ -76,6 +87,25 @@ if env["platform"] == "windows":
         dest_path = os.path.join(dest_dir, os.path.basename(src_path))
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
+        try:
+            shutil.copy2(src_path, dest_path)
+        except Exception as e:
+            print('Warning: could not copy', src_path, '->', dest_path, '-', e)
+
+elif env["platform"] == "macos":
+    env.Append(LINKFLAGS=["-Wl,-rpath,@loader_path"])
+
+    dylibs = Glob(tdlib_lib_path + "/libtdjson*.dylib")
+
+    inst_lib = env.Install(dest_dir, dylibs)
+    env.Depends(library, inst_lib)
+
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
+    for node in dylibs:
+        src_path = str(node)
+        dest_path = os.path.join(dest_dir, os.path.basename(src_path))
         try:
             shutil.copy2(src_path, dest_path)
         except Exception as e:
