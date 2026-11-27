@@ -405,6 +405,18 @@ jobs:
           path: generated-docs
           if-no-files-found: warn
 
+  checks:
+    name: Check version consistency
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Check TDLib version references
+        run: python3 scripts/check_versions.py
+
   android:
     name: Android TDLib build (all archs)
     runs-on: ubuntu-22.04
