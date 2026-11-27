@@ -390,7 +390,7 @@ void TdJsonManager::_bind_methods()
     ClassDB::bind_method(D_METHOD("execute", "request"), &TdJsonManager::execute);
     ClassDB::bind_method(D_METHOD("set_max_verbosity_level", "verbosity_level"), &TdJsonManager::set_max_verbosity_level);
     ClassDB::bind_method(D_METHOD("set_verbosity_level", "new_verbosity_level"), &TdJsonManager::set_verbosity_level);
-    ClassDB::bind_method(D_METHOD("set_log_callback", "callback", "max_verbosity_level"), &TdJsonManager::set_log_callback);
+    ClassDB::bind_method(D_METHOD("set_log_callback", "callback", "max_verbosity_level"), &TdJsonManager::set_log_callback, DEFVAL(4));
     ClassDB::bind_method(D_METHOD("get_tdlib_version"), &TdJsonManager::get_tdlib_version);
     ClassDB::bind_method(D_METHOD("start_poll"), &TdJsonManager::start_poll);
     ClassDB::bind_method(D_METHOD("stop_poll"), &TdJsonManager::stop_poll);
